@@ -1,0 +1,766 @@
+{
+  "government_jobs": [
+    {
+      "id": "gov_001",
+      "title": "Junior Engineer (Civil)",
+      "organization": "Public Works Department",
+      "location": "Mumbai, Maharashtra",
+      "sector": "Engineering",
+      "start_date": "2024-02-01",
+      "end_date": "2024-03-15",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["DA", "HRA", "Transport Allowance"],
+        "total": "₹35,000-50,000"
+      },
+      "application_fee": "₹500 (₹250 for SC/ST)",
+      "apply_url": "https://example.gov.in/apply",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BE/BTech in Civil Engineering", "Age: 18-35 years"],
+      "selection_process": ["Written Exam", "Document Verification", "Interview"]
+    },
+    {
+      "id": "gov_002", 
+      "title": "Staff Nurse",
+      "organization": "All India Institute of Medical Sciences",
+      "location": "Delhi",
+      "sector": "Healthcare",
+      "start_date": "2024-01-15",
+      "end_date": "2024-02-28",
+      "salary": {
+        "basic": "₹19,900",
+        "allowances": ["Grade Pay", "DA", "HRA"],
+        "total": "₹30,000-45,000"
+      },
+      "application_fee": "₹800 (₹400 for reserved categories)",
+      "apply_url": "https://aiims.edu/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["B.Sc Nursing/GNM", "Registration with Nursing Council"],
+      "selection_process": ["Computer Based Test", "Skill Test", "Document Verification"]
+    },
+    {
+      "id": "gov_003",
+      "title": "Assistant Manager (Finance)",
+      "organization": "State Bank of India",
+      "location": "Bangalore, Karnataka",
+      "sector": "Banking",
+      "start_date": "2024-02-10",
+      "end_date": "2024-03-25",
+      "salary": {
+        "basic": "₹31,705",
+        "allowances": ["DA", "HRA", "CCA", "Medical"],
+        "total": "₹45,000-65,000"
+      },
+      "application_fee": "₹750 (₹125 for SC/ST/PWD)",
+      "apply_url": "https://sbi.co.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in any discipline", "Age: 21-30 years"],
+      "selection_process": ["Preliminary Exam", "Main Exam", "Group Exercise", "Interview"]
+    },
+    {
+      "id": "gov_004",
+      "title": "Sub Inspector of Police",
+      "organization": "Uttar Pradesh Police",
+      "location": "Lucknow, Uttar Pradesh", 
+      "sector": "Police",
+      "start_date": "2024-01-20",
+      "end_date": "2024-03-10",
+      "salary": {
+        "basic": "₹35,400",
+        "allowances": ["Grade Pay", "DA", "HRA", "Risk Allowance"],
+        "total": "₹50,000-70,000"
+      },
+      "application_fee": "₹400 (₹200 for reserved categories)",
+      "apply_url": "https://uppbpb.gov.in",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate", "Age: 21-28 years", "Physical Standards"],
+      "selection_process": ["Written Exam", "Physical Efficiency Test", "Medical Exam", "Document Verification"]
+    },
+    {
+      "id": "gov_005",
+      "title": "Assistant Professor",
+      "organization": "University Grants Commission",
+      "location": "Chennai, Tamil Nadu",
+      "sector": "Education",
+      "start_date": "2024-02-05",
+      "end_date": "2024-04-15",
+      "salary": {
+        "basic": "₹57,700",
+        "allowances": ["AGP", "DA", "HRA"],
+        "total": "₹75,000-1,00,000"
+      },
+      "application_fee": "₹500 (₹250 for women/SC/ST)",
+      "apply_url": "https://ugcnet.nta.nic.in",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["NET/JRF qualified", "Masters with 55%", "PhD preferred"],
+      "selection_process": ["Screening", "Interview", "Demo Lecture"]
+    },
+    {
+      "id": "gov_006",
+      "title": "Forest Range Officer",
+      "organization": "Ministry of Environment and Forests",
+      "location": "Dehradun, Uttarakhand",
+      "sector": "Environment",
+      "start_date": "2024-01-25",
+      "end_date": "2024-03-20",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["Grade Pay", "Forest Allowance", "DA", "HRA"],
+        "total": "₹40,000-60,000"
+      },
+      "application_fee": "₹600 (₹300 for SC/ST)",
+      "apply_url": "https://forest.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Forestry/Agriculture", "Age: 21-30 years"],
+      "selection_process": ["Written Exam", "Physical Test", "Interview", "Medical Exam"]
+    },
+    {
+      "id": "gov_007",
+      "title": "Scientific Assistant",
+      "organization": "Defence Research and Development Organisation",
+      "location": "Hyderabad, Telangana",
+      "sector": "Research",
+      "start_date": "2024-02-15",
+      "end_date": "2024-04-05",
+      "salary": {
+        "basic": "₹35,400",
+        "allowances": ["DA", "HRA", "Transport", "Special Allowance"],
+        "total": "₹50,000-75,000"
+      },
+      "application_fee": "₹700 (₹200 for women/SC/ST/OBC)",
+      "apply_url": "https://drdo.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech/BE in relevant field", "GATE qualified preferred"],
+      "selection_process": ["Written Test", "Interview", "Document Verification"]
+    },
+    {
+      "id": "gov_008",
+      "title": "Income Tax Inspector",
+      "organization": "Central Board of Direct Taxes",
+      "location": "Pune, Maharashtra",
+      "sector": "Taxation",
+      "start_date": "2024-01-30",
+      "end_date": "2024-03-30",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["Grade Pay", "DA", "HRA", "TA"],
+        "total": "₹35,000-55,000"
+      },
+      "application_fee": "₹500 (Free for women/SC/ST)",
+      "apply_url": "https://incometax.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in any discipline", "Age: 18-27 years"],
+      "selection_process": ["Tier-I Exam", "Tier-II Exam", "Interview", "Document Verification"]
+    },
+    {
+      "id": "gov_009",
+      "title": "Agricultural Development Officer",
+      "organization": "Ministry of Agriculture",
+      "location": "Bhopal, Madhya Pradesh",
+      "sector": "Agriculture",
+      "start_date": "2024-02-20",
+      "end_date": "2024-04-10",
+      "salary": {
+        "basic": "₹29,200",
+        "allowances": ["Grade Pay", "Rural Allowance", "DA", "HRA"],
+        "total": "₹42,000-62,000"
+      },
+      "application_fee": "₹600 (₹300 for reserved categories)",
+      "apply_url": "https://agriculture.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Agriculture", "Age: 21-35 years"],
+      "selection_process": ["Written Exam", "Field Test", "Interview"]
+    },
+    {
+      "id": "gov_010",
+      "title": "Customs Inspector",
+      "organization": "Central Board of Indirect Taxes and Customs",
+      "location": "Kolkata, West Bengal",
+      "sector": "Customs",
+      "start_date": "2024-01-28",
+      "end_date": "2024-03-18",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["Grade Pay", "Port Allowance", "DA", "HRA"],
+        "total": "₹38,000-58,000"
+      },
+      "application_fee": "₹500 (₹250 for women/SC/ST/OBC)",
+      "apply_url": "https://cbic.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in any discipline", "Age: 18-27 years"],
+      "selection_process": ["Written Exam", "Physical Efficiency Test", "Interview"]
+    },
+    {
+      "id": "gov_011",
+      "title": "Junior Research Fellow",
+      "organization": "Council of Scientific and Industrial Research",
+      "location": "New Delhi",
+      "sector": "Research",
+      "start_date": "2024-02-12",
+      "end_date": "2024-04-02",
+      "salary": {
+        "basic": "₹31,000",
+        "allowances": ["HRA", "Contingency Grant"],
+        "total": "₹35,000-40,000"
+      },
+      "application_fee": "₹500 (₹250 for women/SC/ST)",
+      "apply_url": "https://csir.res.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["NET-JRF qualified", "Masters in Science"],
+      "selection_process": ["Interview", "Document Verification"]
+    },
+    {
+      "id": "gov_012",
+      "title": "Transport Inspector", 
+      "organization": "Regional Transport Office",
+      "location": "Jaipur, Rajasthan",
+      "sector": "Transport",
+      "start_date": "2024-01-22",
+      "end_date": "2024-03-12",
+      "salary": {
+        "basic": "₹22,000",
+        "allowances": ["Grade Pay", "Field Allowance", "DA", "HRA"],
+        "total": "₹32,000-48,000"
+      },
+      "application_fee": "₹400 (₹200 for SC/ST)",
+      "apply_url": "https://transport.rajasthan.gov.in",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate", "Age: 18-35 years", "Driving License"],
+      "selection_process": ["Written Exam", "Driving Test", "Interview"]
+    },
+    {
+      "id": "gov_013",
+      "title": "Food Safety Officer",
+      "organization": "Food Safety and Standards Authority",
+      "location": "Ahmedabad, Gujarat",
+      "sector": "Food Safety",
+      "start_date": "2024-02-08",
+      "end_date": "2024-03-28",
+      "salary": {
+        "basic": "₹31,705",
+        "allowances": ["Grade Pay", "Special Allowance", "DA", "HRA"],
+        "total": "₹45,000-65,000"
+      },
+      "application_fee": "₹750 (₹375 for reserved categories)",
+      "apply_url": "https://fssai.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Food Technology/Science", "Age: 21-30 years"],
+      "selection_process": ["Written Exam", "Practical Test", "Interview"]
+    },
+    {
+      "id": "gov_014",
+      "title": "Drug Inspector",
+      "organization": "Central Drugs Standard Control Organization",
+      "location": "Mumbai, Maharashtra",
+      "sector": "Healthcare Regulation",
+      "start_date": "2024-01-18",
+      "end_date": "2024-03-08",
+      "salary": {
+        "basic": "₹29,200",
+        "allowances": ["Grade Pay", "Risk Allowance", "DA", "HRA"],
+        "total": "₹42,000-62,000"
+      },
+      "application_fee": "₹600 (₹300 for women/SC/ST/OBC)",
+      "apply_url": "https://cdsco.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["B.Pharm/M.Pharm", "Age: 21-30 years"],
+      "selection_process": ["Written Exam", "Interview", "Document Verification"]
+    },
+    {
+      "id": "gov_015",
+      "title": "Statistical Investigator",
+      "organization": "National Sample Survey Office",
+      "location": "Bhubaneswar, Odisha",
+      "sector": "Statistics",
+      "start_date": "2024-02-25",
+      "end_date": "2024-04-20",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["Grade Pay", "Field Allowance", "DA", "HRA"],
+        "total": "₹38,000-55,000"
+      },
+      "application_fee": "₹500 (₹250 for SC/ST)",
+      "apply_url": "https://mospi.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Mathematics/Statistics/Economics", "Age: 18-30 years"],
+      "selection_process": ["Written Exam", "Field Test", "Interview"]
+    },
+    {
+      "id": "gov_016",
+      "title": "Junior Architect",
+      "organization": "Central Public Works Department",
+      "location": "Chandigarh",
+      "sector": "Architecture",
+      "start_date": "2024-02-03",
+      "end_date": "2024-03-25",
+      "salary": {
+        "basic": "₹25,500",
+        "allowances": ["Grade Pay", "Field Allowance", "DA", "HRA"],
+        "total": "₹38,000-58,000"
+      },
+      "application_fee": "₹500 (₹250 for women/SC/ST)",
+      "apply_url": "https://cpwd.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["B.Arch degree", "Age: 18-30 years", "COA registration"],
+      "selection_process": ["Written Exam", "Design Test", "Interview"]
+    },
+    {
+      "id": "gov_017",
+      "title": "Meteorologist",
+      "organization": "India Meteorological Department",
+      "location": "Pune, Maharashtra",
+      "sector": "Weather Services",
+      "start_date": "2024-01-26",
+      "end_date": "2024-03-15",
+      "salary": {
+        "basic": "₹35,400",
+        "allowances": ["Grade Pay", "Special Allowance", "DA", "HRA"],
+        "total": "₹50,000-70,000"
+      },
+      "application_fee": "₹700 (₹350 for reserved categories)",
+      "apply_url": "https://mausam.imd.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Masters in Meteorology/Physics", "Age: 21-30 years"],
+      "selection_process": ["Written Exam", "Interview", "Document Verification"]
+    },
+    {
+      "id": "gov_018",
+      "title": "Fire Officer",
+      "organization": "Delhi Fire Service",
+      "location": "New Delhi",
+      "sector": "Emergency Services",
+      "start_date": "2024-02-18",
+      "end_date": "2024-04-08",
+      "salary": {
+        "basic": "₹29,200",
+        "allowances": ["Grade Pay", "Risk Allowance", "DA", "HRA"],
+        "total": "₹45,000-65,000"
+      },
+      "application_fee": "₹600 (₹300 for SC/ST)",
+      "apply_url": "https://delhi.gov.in/fire-service",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Engineering", "Age: 21-30 years", "Physical fitness"],
+      "selection_process": ["Written Exam", "Physical Test", "Medical Exam", "Interview"]
+    },
+    {
+      "id": "gov_019",
+      "title": "Postal Assistant",
+      "organization": "India Post",
+      "location": "Various locations across India",
+      "sector": "Postal Services",
+      "start_date": "2024-01-20",
+      "end_date": "2024-03-05",
+      "salary": {
+        "basic": "₹19,900",
+        "allowances": ["Grade Pay", "DA", "HRA"],
+        "total": "₹28,000-42,000"
+      },
+      "application_fee": "₹500 (₹250 for SC/ST/women)",
+      "apply_url": "https://indiapost.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["12th pass", "Age: 18-27 years", "Computer knowledge"],
+      "selection_process": ["Written Exam", "Computer Typing Test", "Document Verification"]
+    },
+    {
+      "id": "gov_020",
+      "title": "Welfare Officer",
+      "organization": "Ministry of Social Justice and Empowerment",
+      "location": "Thiruvananthapuram, Kerala",
+      "sector": "Social Welfare",
+      "start_date": "2024-02-22",
+      "end_date": "2024-04-12",
+      "salary": {
+        "basic": "₹31,705",
+        "allowances": ["Grade Pay", "Special Allowance", "DA", "HRA"],
+        "total": "₹45,000-65,000"
+      },
+      "application_fee": "₹750 (₹375 for reserved categories)",
+      "apply_url": "https://socialjustice.gov.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Masters in Social Work", "Age: 21-35 years"],
+      "selection_process": ["Written Exam", "Group Discussion", "Interview"]
+    }
+  ],
+  "private_jobs": [
+    {
+      "id": "pvt_001",
+      "title": "Software Developer",
+      "organization": "Tech Mahindra",
+      "location": "Bangalore, Karnataka",
+      "sector": "Information Technology",
+      "start_date": "2024-01-15",
+      "end_date": "2024-03-30",
+      "salary": {
+        "basic": "₹6,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "PF"],
+        "total": "₹6-12 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://techmahindra.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech/BE in CS/IT", "0-2 years experience"],
+      "selection_process": ["Online Test", "Technical Interview", "HR Interview"]
+    },
+    {
+      "id": "pvt_002",
+      "title": "Marketing Executive",
+      "organization": "Asian Paints",
+      "location": "Mumbai, Maharashtra",
+      "sector": "FMCG",
+      "start_date": "2024-02-01",
+      "end_date": "2024-03-20",
+      "salary": {
+        "basic": "₹4,50,000 per annum",
+        "allowances": ["Travel Allowance", "Medical Insurance", "PF"],
+        "total": "₹4.5-8 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://asianpaints.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["MBA in Marketing", "1-3 years experience"],
+      "selection_process": ["Resume Screening", "Group Discussion", "Interview"]
+    },
+    {
+      "id": "pvt_003",
+      "title": "Financial Analyst",
+      "organization": "ICICI Bank",
+      "location": "Pune, Maharashtra",
+      "sector": "Banking",
+      "start_date": "2024-01-25",
+      "end_date": "2024-03-10",
+      "salary": {
+        "basic": "₹5,00,000 per annum",
+        "allowances": ["Performance Incentive", "Medical", "PF"],
+        "total": "₹5-10 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://icicibank.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["CA/CFA/MBA Finance", "2-4 years experience"],
+      "selection_process": ["Aptitude Test", "Technical Interview", "HR Round"]
+    },
+    {
+      "id": "pvt_004",
+      "title": "Data Scientist",
+      "organization": "Flipkart",
+      "location": "Bangalore, Karnataka",
+      "sector": "E-commerce",
+      "start_date": "2024-02-10",
+      "end_date": "2024-04-05",
+      "salary": {
+        "basic": "₹12,00,000 per annum",
+        "allowances": ["Stock Options", "Health Insurance", "Performance Bonus"],
+        "total": "₹12-25 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://flipkart.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Masters in Data Science/Statistics", "2-5 years experience"],
+      "selection_process": ["Coding Test", "Machine Learning Round", "System Design", "HR Interview"]
+    },
+    {
+      "id": "pvt_005",
+      "title": "Business Development Manager",
+      "organization": "Ola",
+      "location": "Gurugram, Haryana",
+      "sector": "Transportation",
+      "start_date": "2024-01-30",
+      "end_date": "2024-03-25",
+      "salary": {
+        "basic": "₹8,00,000 per annum",
+        "allowances": ["Variable Pay", "ESOP", "Medical Insurance"],
+        "total": "₹8-15 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://ola.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["MBA/Graduate", "3-6 years experience in BD"],
+      "selection_process": ["Resume Review", "Case Study", "Panel Interview"]
+    },
+    {
+      "id": "pvt_006",
+      "title": "Product Manager",
+      "organization": "Paytm",
+      "location": "Noida, Uttar Pradesh",
+      "sector": "FinTech",
+      "start_date": "2024-02-05",
+      "end_date": "2024-04-01",
+      "salary": {
+        "basic": "₹15,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Stock Options"],
+        "total": "₹15-30 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://paytm.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech/MBA", "4-8 years product experience"],
+      "selection_process": ["Product Case Study", "Design Round", "Leadership Interview"]
+    },
+    {
+      "id": "pvt_007",
+      "title": "Mechanical Engineer",
+      "organization": "Tata Motors",
+      "location": "Chennai, Tamil Nadu",
+      "sector": "Automotive",
+      "start_date": "2024-01-20",
+      "end_date": "2024-03-15",
+      "salary": {
+        "basic": "₹6,50,000 per annum",
+        "allowances": ["Performance Bonus", "Medical", "PF", "Gratuity"],
+        "total": "₹6.5-12 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://tatamotors.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech Mechanical", "0-3 years experience"],
+      "selection_process": ["Technical Test", "Technical Interview", "HR Interview"]
+    },
+    {
+      "id": "pvt_008",
+      "title": "Sales Manager",
+      "organization": "Bajaj Finserv",
+      "location": "Delhi",
+      "sector": "Financial Services",
+      "start_date": "2024-02-12",
+      "end_date": "2024-03-28",
+      "salary": {
+        "basic": "₹7,00,000 per annum",
+        "allowances": ["Incentives", "Travel Allowance", "Medical Insurance"],
+        "total": "₹7-15 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://bajajfinserv.in/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate/MBA", "3-7 years sales experience"],
+      "selection_process": ["Sales Assessment", "Regional Manager Interview", "HR Round"]
+    },
+    {
+      "id": "pvt_009",
+      "title": "Content Writer",
+      "organization": "Byju's",
+      "location": "Bangalore, Karnataka",
+      "sector": "EdTech",
+      "start_date": "2024-01-28",
+      "end_date": "2024-03-18",
+      "salary": {
+        "basic": "₹4,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Learning Budget"],
+        "total": "₹4-8 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://byjus.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Masters in English/Mass Comm", "1-3 years writing experience"],
+      "selection_process": ["Writing Test", "Content Review", "Interview"]
+    },
+    {
+      "id": "pvt_010",
+      "title": "HR Generalist",
+      "organization": "Wipro",
+      "location": "Hyderabad, Telangana",
+      "sector": "Information Technology",
+      "start_date": "2024-02-15",
+      "end_date": "2024-04-10",
+      "salary": {
+        "basic": "₹5,50,000 per annum",
+        "allowances": ["Variable Pay", "Medical Insurance", "PF"],
+        "total": "₹5.5-10 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://wipro.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["MBA in HR", "2-5 years HR experience"],
+      "selection_process": ["HR Case Study", "Behavioral Interview", "Leadership Assessment"]
+    },
+    {
+      "id": "pvt_011",
+      "title": "Quality Assurance Engineer",
+      "organization": "Mahindra",
+      "location": "Mumbai, Maharashtra",
+      "sector": "Automotive",
+      "start_date": "2024-01-22",
+      "end_date": "2024-03-12",
+      "salary": {
+        "basic": "₹5,00,000 per annum",
+        "allowances": ["Performance Bonus", "Medical", "PF"],
+        "total": "₹5-9 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://mahindra.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech in any engineering", "1-4 years QA experience"],
+      "selection_process": ["Technical Assessment", "Quality Knowledge Test", "Interview"]
+    },
+    {
+      "id": "pvt_012",
+      "title": "Digital Marketing Specialist",
+      "organization": "Zomato",
+      "location": "Gurugram, Haryana",
+      "sector": "Food Delivery",
+      "start_date": "2024-02-08",
+      "end_date": "2024-03-30",
+      "salary": {
+        "basic": "₹6,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Food Credits"],
+        "total": "₹6-12 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://zomato.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate/MBA in Marketing", "2-4 years digital marketing experience"],
+      "selection_process": ["Portfolio Review", "Campaign Planning", "Interview"]
+    },
+    {
+      "id": "pvt_013",
+      "title": "Operations Manager",
+      "organization": "Amazon",
+      "location": "Bangalore, Karnataka",
+      "sector": "E-commerce",
+      "start_date": "2024-01-18",
+      "end_date": "2024-03-08",
+      "salary": {
+        "basic": "₹12,00,000 per annum",
+        "allowances": ["Stock Options", "Performance Bonus", "Health Insurance"],
+        "total": "₹12-22 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://amazon.jobs",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech/MBA", "3-7 years operations experience"],
+      "selection_process": ["Bar Raiser Interview", "Technical Assessment", "Leadership Principles"]
+    },
+    {
+      "id": "pvt_014",
+      "title": "Pharmacist",
+      "organization": "Apollo Hospitals",
+      "location": "Chennai, Tamil Nadu",
+      "sector": "Healthcare",
+      "start_date": "2024-02-20",
+      "end_date": "2024-04-15",
+      "salary": {
+        "basic": "₹3,50,000 per annum",
+        "allowances": ["Shift Allowance", "Medical Insurance", "PF"],
+        "total": "₹3.5-6 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://apollohospitals.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["B.Pharm/D.Pharm", "Pharmacy Council registration"],
+      "selection_process": ["Written Test", "Practical Test", "Interview"]
+    },
+    {
+      "id": "pvt_015",
+      "title": "Civil Engineer",
+      "organization": "L&T Construction",
+      "location": "Pune, Maharashtra",
+      "sector": "Construction",
+      "start_date": "2024-01-25",
+      "end_date": "2024-03-20",
+      "salary": {
+        "basic": "₹5,50,000 per annum",
+        "allowances": ["Site Allowance", "Travel", "Medical Insurance"],
+        "total": "₹5.5-10 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://larsentoubro.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech Civil Engineering", "0-3 years experience"],
+      "selection_process": ["Technical Test", "Site Visit", "Interview"]
+    },
+    {
+      "id": "pvt_016",
+      "title": "Graphic Designer",
+      "organization": "Ogilvy",
+      "location": "Mumbai, Maharashtra",
+      "sector": "Advertising",
+      "start_date": "2024-02-03",
+      "end_date": "2024-03-25",
+      "salary": {
+        "basic": "₹4,50,000 per annum",
+        "allowances": ["Creative Bonus", "Health Insurance", "Flexible Hours"],
+        "total": "₹4.5-8 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://ogilvy.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate in Design/Fine Arts", "1-3 years design experience"],
+      "selection_process": ["Portfolio Review", "Design Test", "Creative Interview"]
+    },
+    {
+      "id": "pvt_017",
+      "title": "Research Analyst",
+      "organization": "CRISIL",
+      "location": "Mumbai, Maharashtra",
+      "sector": "Financial Services",
+      "start_date": "2024-01-30",
+      "end_date": "2024-03-22",
+      "salary": {
+        "basic": "₹6,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Learning Budget"],
+        "total": "₹6-12 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://crisil.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["CA/CFA/MBA Finance", "2-4 years research experience"],
+      "selection_process": ["Financial Modeling Test", "Research Presentation", "Interview"]
+    },
+    {
+      "id": "pvt_018",
+      "title": "Customer Success Manager",
+      "organization": "Freshworks",
+      "location": "Chennai, Tamil Nadu",
+      "sector": "Software",
+      "start_date": "2024-02-12",
+      "end_date": "2024-04-02",
+      "salary": {
+        "basic": "₹8,00,000 per annum",
+        "allowances": ["Variable Pay", "Stock Options", "Health Insurance"],
+        "total": "₹8-15 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://freshworks.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["Graduate/MBA", "3-6 years customer-facing experience"],
+      "selection_process": ["Customer Scenario Test", "Presentation", "Cultural Fit Interview"]
+    },
+    {
+      "id": "pvt_019",
+      "title": "Supply Chain Analyst",
+      "organization": "Unilever",
+      "location": "Bangalore, Karnataka",
+      "sector": "FMCG",
+      "start_date": "2024-01-26",
+      "end_date": "2024-03-18",
+      "salary": {
+        "basic": "₹7,50,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Learning Budget"],
+        "total": "₹7.5-13 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://unilever.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech/MBA", "2-4 years supply chain experience"],
+      "selection_process": ["Case Study", "Data Analysis Test", "Panel Interview"]
+    },
+    {
+      "id": "pvt_020",
+      "title": "Frontend Developer",
+      "organization": "Swiggy",
+      "location": "Bangalore, Karnataka",
+      "sector": "Food Delivery",
+      "start_date": "2024-02-18",
+      "end_date": "2024-04-08",
+      "salary": {
+        "basic": "₹9,00,000 per annum",
+        "allowances": ["Performance Bonus", "Health Insurance", "Food Credits"],
+        "total": "₹9-18 LPA"
+      },
+      "application_fee": "Free",
+      "apply_url": "https://swiggy.com/careers",
+      "how_to_video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "eligibility": ["BTech CS/IT", "2-5 years frontend development experience"],
+      "selection_process": ["Coding Test", "System Design", "Technical Interview", "Culture Fit"]
+    }
+  ]
+}
