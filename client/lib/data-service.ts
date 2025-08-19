@@ -272,7 +272,7 @@ export const useDataStore = create<DataStore>()(
       extendedInterests: extendedInterestDataset,
       currentUser: null,
       currentLanguage: "en",
-      darkMode: false,
+      darkMode: false, // Default to Light Mode
       isLoading: false,
       businessIdeasPage: 1,
       businessIdeasPerPage: 6,
