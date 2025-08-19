@@ -1,0 +1,544 @@
+{
+  "business_ideas": [
+    {
+      "id": "ai_agency",
+      "title": "AI Automation Agency",
+      "category": "Technology",
+      "description": "Help businesses automate processes using AI tools and custom solutions",
+      "investment_range": "₹5-25 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "6-12 months",
+      "steps": [
+        "Learn AI tools (ChatGPT, Claude, Automation platforms)",
+        "Build portfolio with demo automation projects",
+        "Create service packages for different industries",
+        "Develop sales and marketing strategy",
+        "Onboard first clients and scale operations"
+      ],
+      "documents_needed": ["Business Registration", "Service Agreement Templates", "GST Registration"],
+      "trending": true
+    },
+    {
+      "id": "cybersecurity_services",
+      "title": "Cybersecurity Consulting",
+      "category": "Technology",
+      "description": "Provide cybersecurity audits, training, and managed security services to SMEs",
+      "investment_range": "₹10-40 Lakhs",
+      "roi_potential": "150-400%",
+      "timeline": "8-15 months",
+      "steps": [
+        "Obtain cybersecurity certifications (CEH, CISSP)",
+        "Set up security testing lab and tools",
+        "Develop service offerings and pricing",
+        "Build team of security experts",
+        "Market to small and medium enterprises"
+      ],
+      "documents_needed": ["IT Services License", "Data Protection Compliance", "Professional Certifications"],
+      "trending": true
+    },
+    {
+      "id": "renewable_epc",
+      "title": "Renewable Energy EPC",
+      "category": "Clean Energy",
+      "description": "Engineering, Procurement, and Construction services for solar and wind projects",
+      "investment_range": "₹50L-2Cr",
+      "roi_potential": "100-300%",
+      "timeline": "12-24 months",
+      "steps": [
+        "Obtain electrical contractor license",
+        "Partner with equipment manufacturers",
+        "Build technical team and project management capabilities",
+        "Develop relationships with financial institutions",
+        "Execute pilot projects and scale operations"
+      ],
+      "documents_needed": ["Electrical Contractor License", "Environmental Clearances", "Project Financing"],
+      "trending": true
+    },
+    {
+      "id": "biotech_diagnostics",
+      "title": "Biotech Diagnostics Lab",
+      "category": "Healthcare",
+      "description": "Specialized diagnostic testing services using advanced biotechnology",
+      "investment_range": "₹1-5Cr",
+      "roi_potential": "150-400%",
+      "timeline": "18-30 months",
+      "steps": [
+        "Obtain necessary medical licenses and accreditations",
+        "Set up laboratory with advanced equipment",
+        "Hire qualified lab technicians and pathologists",
+        "Develop partnerships with hospitals and clinics",
+        "Implement quality management systems"
+      ],
+      "documents_needed": ["Clinical Lab License", "Medical Device Approvals", "Quality Certifications"],
+      "trending": true
+    },
+    {
+      "id": "drone_surveying",
+      "title": "Drone Surveying Services",
+      "category": "Technology",
+      "description": "Aerial surveying and mapping services for construction, agriculture, and mining",
+      "investment_range": "₹15-60 Lakhs",
+      "roi_potential": "200-600%",
+      "timeline": "6-12 months",
+      "steps": [
+        "Obtain drone pilot license and DGCA approvals",
+        "Purchase professional drone equipment",
+        "Learn surveying software and data analysis",
+        "Build portfolio with sample projects",
+        "Market to construction and agricultural sectors"
+      ],
+      "documents_needed": ["Drone Pilot License", "DGCA Permissions", "Survey Equipment Certification"],
+      "trending": true
+    },
+    {
+      "id": "agritech_hydroponics",
+      "title": "AgriTech Hydroponics Farm",
+      "category": "Agriculture",
+      "description": "Soil-less farming using hydroponic systems for high-value crops",
+      "investment_range": "₹20L-1Cr",
+      "roi_potential": "150-500%",
+      "timeline": "8-18 months",
+      "steps": [
+        "Learn hydroponic farming techniques",
+        "Set up controlled environment growing facility",
+        "Source hydroponic equipment and nutrients",
+        "Develop crop production and harvesting systems",
+        "Create direct sales and B2B distribution channels"
+      ],
+      "documents_needed": ["Agricultural License", "Food Safety Certification", "Organic Certification"],
+      "trending": true
+    },
+    {
+      "id": "3d_printing_studio",
+      "title": "3D Printing Studio",
+      "category": "Manufacturing",
+      "description": "Custom 3D printing services for prototyping, medical devices, and consumer products",
+      "investment_range": "₹8-35 Lakhs",
+      "roi_potential": "200-400%",
+      "timeline": "4-10 months",
+      "steps": [
+        "Purchase industrial 3D printers and materials",
+        "Learn 3D design software and printing techniques",
+        "Develop service offerings for different industries",
+        "Build online presence and portfolio",
+        "Partner with designers and engineering firms"
+      ],
+      "documents_needed": ["Manufacturing License", "Quality Certifications", "Safety Compliance"],
+      "trending": true
+    },
+    {
+      "id": "cloud_kitchen",
+      "title": "Cloud Kitchen Network",
+      "category": "Food & Beverage",
+      "description": "Delivery-only restaurant operations with multiple virtual brands",
+      "investment_range": "₹10-50 Lakhs",
+      "roi_potential": "100-300%",
+      "timeline": "3-8 months",
+      "steps": [
+        "Research food delivery market and customer preferences",
+        "Set up commercial kitchen with delivery infrastructure",
+        "Develop multiple virtual restaurant brands",
+        "Partner with food delivery platforms",
+        "Implement efficient operations and quality control"
+      ],
+      "documents_needed": ["FSSAI License", "Fire Safety Certificate", "Municipal Permissions"],
+      "trending": true
+    },
+    {
+      "id": "niche_ecommerce",
+      "title": "Niche E-commerce Store",
+      "category": "Retail",
+      "description": "Specialized online store focusing on specific product categories or demographics",
+      "investment_range": "₹3-20 Lakhs",
+      "roi_potential": "150-500%",
+      "timeline": "2-6 months",
+      "steps": [
+        "Identify profitable niche market and products",
+        "Set up e-commerce website and payment systems",
+        "Source products and manage inventory",
+        "Develop digital marketing and SEO strategy",
+        "Build customer service and fulfillment operations"
+      ],
+      "documents_needed": ["E-commerce License", "GST Registration", "Import/Export License if needed"],
+      "trending": true
+    },
+    {
+      "id": "digital_media_studio",
+      "title": "Digital Media Production Studio",
+      "category": "Creative",
+      "description": "Video production, podcast recording, and content creation services",
+      "investment_range": "₹12-45 Lakhs",
+      "roi_potential": "200-600%",
+      "timeline": "4-10 months",
+      "steps": [
+        "Set up professional recording and editing studio",
+        "Purchase cameras, audio equipment, and editing software",
+        "Build portfolio with sample projects",
+        "Develop service packages for different client types",
+        "Market to businesses, influencers, and content creators"
+      ],
+      "documents_needed": ["Business Registration", "Copyright Clearances", "Equipment Insurance"],
+      "trending": true
+    },
+    {
+      "id": "edtech_platform",
+      "title": "EdTech Learning Platform",
+      "category": "Education",
+      "description": "Online learning platform with interactive courses and skill development",
+      "investment_range": "₹15-80 Lakhs",
+      "roi_potential": "300-1000%",
+      "timeline": "8-18 months",
+      "steps": [
+        "Develop learning management system platform",
+        "Create curriculum and course content",
+        "Recruit subject matter experts and instructors",
+        "Implement payment and certification systems",
+        "Launch marketing campaigns and scale user base"
+      ],
+      "documents_needed": ["Educational Services License", "Content Copyright", "Payment Gateway License"],
+      "trending": true
+    },
+    {
+      "id": "telemedicine",
+      "title": "Telemedicine Platform",
+      "category": "Healthcare",
+      "description": "Online healthcare consultation and remote patient monitoring services",
+      "investment_range": "₹25L-1.5Cr",
+      "roi_potential": "200-500%",
+      "timeline": "12-24 months",
+      "steps": [
+        "Obtain telemedicine licenses and regulatory approvals",
+        "Develop secure healthcare platform",
+        "Recruit licensed doctors and healthcare professionals",
+        "Implement patient data security and HIPAA compliance",
+        "Launch pilot programs and scale operations"
+      ],
+      "documents_needed": ["Telemedicine License", "Medical Data Protection", "Healthcare Accreditation"],
+      "trending": true
+    },
+    {
+      "id": "ev_charging",
+      "title": "EV Charging Network",
+      "category": "Clean Energy",
+      "description": "Electric vehicle charging station installation and operation",
+      "investment_range": "₹30L-2Cr",
+      "roi_potential": "150-400%",
+      "timeline": "10-20 months",
+      "steps": [
+        "Research optimal charging station locations",
+        "Obtain electrical and municipal permits",
+        "Install charging infrastructure and payment systems",
+        "Develop mobile app and customer service",
+        "Expand network and add value-added services"
+      ],
+      "documents_needed": ["Electrical Installation License", "Municipal Permits", "Environmental Clearance"],
+      "trending": true
+    },
+    {
+      "id": "blockchain_consulting",
+      "title": "Blockchain Development Services",
+      "category": "Technology",
+      "description": "Smart contract development and blockchain implementation consulting",
+      "investment_range": "₹8-40 Lakhs",
+      "roi_potential": "250-700%",
+      "timeline": "6-15 months",
+      "steps": [
+        "Master blockchain development platforms",
+        "Build team of blockchain developers",
+        "Create demo projects and case studies",
+        "Develop service offerings for different industries",
+        "Market to enterprises and startups"
+      ],
+      "documents_needed": ["IT Services License", "Intellectual Property Protection", "Service Agreements"],
+      "trending": true
+    },
+    {
+      "id": "smart_home",
+      "title": "Smart Home Automation",
+      "category": "Technology",
+      "description": "Design and installation of home automation systems and IoT devices",
+      "investment_range": "₹10-35 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "4-12 months",
+      "steps": [
+        "Learn smart home technologies and protocols",
+        "Partner with device manufacturers and suppliers",
+        "Develop installation and support capabilities",
+        "Create packages for different home sizes and budgets",
+        "Build relationships with builders and interior designers"
+      ],
+      "documents_needed": ["Electrical Contractor License", "Technology Certifications", "Installation Insurance"],
+      "trending": true
+    },
+    {
+      "id": "waste_management",
+      "title": "Smart Waste Management",
+      "category": "Environment",
+      "description": "Technology-enabled waste collection, sorting, and recycling services",
+      "investment_range": "₹25L-1Cr",
+      "roi_potential": "150-350%",
+      "timeline": "8-18 months",
+      "steps": [
+        "Develop smart waste collection and sorting systems",
+        "Obtain waste management licenses and permits",
+        "Set up recycling and processing facilities",
+        "Partner with municipal corporations and businesses",
+        "Implement route optimization and tracking technology"
+      ],
+      "documents_needed": ["Waste Management License", "Environmental Clearance", "Municipal Contracts"],
+      "trending": true
+    },
+    {
+      "id": "logistics_tech",
+      "title": "Last-Mile Delivery Platform",
+      "category": "Logistics",
+      "description": "Technology platform connecting businesses with local delivery partners",
+      "investment_range": "₹20-80 Lakhs",
+      "roi_potential": "200-600%",
+      "timeline": "6-15 months",
+      "steps": [
+        "Develop logistics management platform",
+        "Recruit and onboard delivery partners",
+        "Implement real-time tracking and optimization",
+        "Partner with e-commerce and local businesses",
+        "Scale operations to multiple cities"
+      ],
+      "documents_needed": ["Transport License", "Technology Platform Registration", "Insurance Coverage"],
+      "trending": true
+    },
+    {
+      "id": "fintech_payments",
+      "title": "FinTech Payment Solutions",
+      "category": "Financial Services",
+      "description": "Digital payment and financial services for underserved markets",
+      "investment_range": "₹50L-3Cr",
+      "roi_potential": "300-800%",
+      "timeline": "12-24 months",
+      "steps": [
+        "Obtain payment aggregator and financial licenses",
+        "Develop secure payment platform and mobile app",
+        "Partner with banks and financial institutions",
+        "Implement compliance and risk management systems",
+        "Launch pilot programs and scale user base"
+      ],
+      "documents_needed": ["Payment Aggregator License", "RBI Approvals", "Cybersecurity Compliance"],
+      "trending": true
+    },
+    {
+      "id": "mental_health",
+      "title": "Mental Health & Wellness Platform",
+      "category": "Healthcare",
+      "description": "Digital mental health support and therapy services",
+      "investment_range": "₹15-60 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "8-16 months",
+      "steps": [
+        "Develop secure therapy and counseling platform",
+        "Recruit licensed therapists and counselors",
+        "Implement patient privacy and data protection",
+        "Create wellness content and self-help tools",
+        "Market to individuals and corporate wellness programs"
+      ],
+      "documents_needed": ["Healthcare Platform License", "Mental Health Professional Registration", "Data Protection Compliance"],
+      "trending": true
+    },
+    {
+      "id": "elderly_care",
+      "title": "Elder Care Technology Services",
+      "category": "Healthcare",
+      "description": "Technology-enabled home care and monitoring services for elderly",
+      "investment_range": "₹20-75 Lakhs",
+      "roi_potential": "180-400%",
+      "timeline": "10-18 months",
+      "steps": [
+        "Develop health monitoring and emergency response systems",
+        "Train caregivers and healthcare assistants",
+        "Partner with healthcare providers and insurance companies",
+        "Implement family communication and tracking features",
+        "Scale services to multiple cities and demographics"
+      ],
+      "documents_needed": ["Healthcare Services License", "Caregiver Certification", "Medical Device Approvals"],
+      "trending": true
+    },
+    {
+      "id": "pet_services",
+      "title": "Pet Care Services Platform",
+      "category": "Lifestyle",
+      "description": "Comprehensive pet care including grooming, boarding, and veterinary services",
+      "investment_range": "₹12-40 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "4-12 months",
+      "steps": [
+        "Set up pet care facility and grooming equipment",
+        "Hire trained pet care professionals and veterinarians",
+        "Develop online booking and customer management system",
+        "Create service packages for different pet types",
+        "Build customer base through marketing and referrals"
+      ],
+      "documents_needed": ["Veterinary License", "Animal Welfare Compliance", "Business Registration"],
+      "trending": true
+    },
+    {
+      "id": "fitness_tech",
+      "title": "Fitness Technology Platform",
+      "category": "Health & Fitness",
+      "description": "AI-powered fitness coaching and nutrition planning platform",
+      "investment_range": "₹18-70 Lakhs",
+      "roi_potential": "250-600%",
+      "timeline": "8-16 months",
+      "steps": [
+        "Develop AI-powered fitness and nutrition platform",
+        "Partner with certified trainers and nutritionists",
+        "Create wearable device integration and tracking",
+        "Build community features and social motivation",
+        "Launch subscription-based service model"
+      ],
+      "documents_needed": ["Health Services Registration", "Data Privacy Compliance", "Fitness Professional Certification"],
+      "trending": true
+    },
+    {
+      "id": "travel_tech",
+      "title": "Travel Technology Solutions",
+      "category": "Travel & Tourism",
+      "description": "Smart travel planning and local experience discovery platform",
+      "investment_range": "₹15-55 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "6-14 months",
+      "steps": [
+        "Develop travel planning and booking platform",
+        "Partner with local tour operators and service providers",
+        "Implement AI-powered recommendation systems",
+        "Create customer review and rating features",
+        "Expand to multiple destinations and travel segments"
+      ],
+      "documents_needed": ["Travel Agency License", "Tourism Board Registration", "Payment Processing License"],
+      "trending": true
+    },
+    {
+      "id": "legal_tech",
+      "title": "Legal Technology Services",
+      "category": "Professional Services",
+      "description": "Online legal consultations and document automation platform",
+      "investment_range": "₹12-50 Lakhs",
+      "roi_potential": "300-700%",
+      "timeline": "6-15 months",
+      "steps": [
+        "Develop legal consultation and document platform",
+        "Recruit licensed lawyers and legal experts",
+        "Create automated legal document generation",
+        "Implement secure client communication systems",
+        "Market to individuals and small businesses"
+      ],
+      "documents_needed": ["Legal Practice License", "Bar Council Registration", "Client Data Protection"],
+      "trending": true
+    },
+    {
+      "id": "renewable_consulting",
+      "title": "Renewable Energy Consulting",
+      "category": "Clean Energy",
+      "description": "Energy efficiency audits and renewable energy project development",
+      "investment_range": "₹8-30 Lakhs",
+      "roi_potential": "200-500%",
+      "timeline": "4-10 months",
+      "steps": [
+        "Obtain energy auditor certification",
+        "Develop energy assessment tools and methodologies",
+        "Build relationships with equipment manufacturers",
+        "Create service packages for different client types",
+        "Market to commercial and industrial clients"
+      ],
+      "documents_needed": ["Energy Auditor Certification", "Engineering Consultant License", "Environmental Compliance"],
+      "trending": true
+    },
+    {
+      "id": "data_analytics",
+      "title": "Business Data Analytics Services",
+      "category": "Technology",
+      "description": "Data analysis and business intelligence services for SMEs",
+      "investment_range": "₹6-25 Lakhs",
+      "roi_potential": "300-800%",
+      "timeline": "3-8 months",
+      "steps": [
+        "Master data analytics tools and platforms",
+        "Build team of data scientists and analysts",
+        "Create demo projects and case studies",
+        "Develop service offerings for different industries",
+        "Market data-driven insights to businesses"
+      ],
+      "documents_needed": ["IT Services License", "Data Protection Compliance", "Professional Service Agreement"],
+      "trending": true
+    },
+    {
+      "id": "virtual_events",
+      "title": "Virtual Event Platform",
+      "category": "Technology",
+      "description": "Comprehensive virtual and hybrid event management solutions",
+      "investment_range": "₹10-45 Lakhs",
+      "roi_potential": "250-600%",
+      "timeline": "5-12 months",
+      "steps": [
+        "Develop virtual event platform with interactive features",
+        "Create event management and production capabilities",
+        "Partner with audio-visual and streaming services",
+        "Build portfolio with successful virtual events",
+        "Market to corporations, associations, and event organizers"
+      ],
+      "documents_needed": ["Event Management License", "Technology Platform Registration", "Broadcasting Permissions"],
+      "trending": true
+    },
+    {
+      "id": "sustainable_fashion",
+      "title": "Sustainable Fashion Brand",
+      "category": "Fashion & Lifestyle",
+      "description": "Eco-friendly clothing and accessories with sustainable manufacturing",
+      "investment_range": "₹15-60 Lakhs",
+      "roi_potential": "150-400%",
+      "timeline": "8-18 months",
+      "steps": [
+        "Research sustainable materials and manufacturing processes",
+        "Develop fashion designs and product line",
+        "Set up sustainable supply chain and production",
+        "Create brand identity and online presence",
+        "Launch direct-to-consumer and retail partnerships"
+      ],
+      "documents_needed": ["Fashion Brand Registration", "Textile Manufacturing License", "Sustainability Certifications"],
+      "trending": true
+    },
+    {
+      "id": "food_delivery_automation",
+      "title": "Automated Food Delivery System",
+      "category": "Food & Technology",
+      "description": "Robotic and drone-based food delivery solutions",
+      "investment_range": "₹40L-2Cr",
+      "roi_potential": "200-600%",
+      "timeline": "12-24 months",
+      "steps": [
+        "Develop or partner for delivery automation technology",
+        "Obtain regulatory approvals for autonomous delivery",
+        "Set up pilot delivery routes and testing",
+        "Partner with restaurants and food delivery platforms",
+        "Scale operations and expand delivery coverage"
+      ],
+      "documents_needed": ["Autonomous Vehicle License", "DGCA Drone Permissions", "Food Delivery License"],
+      "trending": true
+    },
+    {
+      "id": "urban_farming",
+      "title": "Vertical Urban Farming",
+      "category": "Agriculture",
+      "description": "Indoor vertical farming systems for urban fresh produce supply",
+      "investment_range": "₹25L-1.5Cr",
+      "roi_potential": "200-500%",
+      "timeline": "10-20 months",
+      "steps": [
+        "Set up controlled environment vertical farming facility",
+        "Install LED lighting and hydroponic systems",
+        "Develop crop rotation and harvest optimization",
+        "Create direct sales channels to restaurants and retailers",
+        "Expand to multiple urban locations"
+      ],
+      "documents_needed": ["Agricultural License", "Food Safety Certification", "Urban Farming Permits"],
+      "trending": true
+    }
+  ]
+}
