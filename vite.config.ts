@@ -5,6 +5,7 @@ import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/builder-vibe-oasis/' : '/',
   server: {
     host: "::",
     port: 8080,
@@ -15,6 +16,8 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    sourcemap: mode !== 'production',
+    minify: mode === 'production',
   },
   plugins: [react(), expressPlugin()],
   resolve: {
