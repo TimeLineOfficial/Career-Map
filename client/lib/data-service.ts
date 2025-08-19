@@ -291,7 +291,7 @@ export const useDataStore = create<DataStore>()(
           set({
             careerMapData: data,
             currentLanguage: data.site.languages[0] || "en",
-            darkMode: data.site.design.dark_mode,
+            darkMode: false, // Always default to Light Mode regardless of JSON data
             isLoading: false,
             paginatedBusinessIdeas: initialBusinessIdeas,
             hasMoreBusinessIdeas: (data.business_ideas?.length || 0) > 6,
