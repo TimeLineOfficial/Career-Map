@@ -1,11 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Import mobile-first optimizations */
 @import "./styles/mobile-optimizations.css";
 @import "./styles/responsive-career-map.css";
 @import "./styles/career-map-buttons.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   /**
