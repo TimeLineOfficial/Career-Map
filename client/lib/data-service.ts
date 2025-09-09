@@ -291,16 +291,13 @@ export const useDataStore = create<DataStore>()(
           set({
             careerMapData: data,
             currentLanguage: data.site.languages[0] || "en",
-            darkMode: data.site.design.dark_mode,
             isLoading: false,
             paginatedBusinessIdeas: initialBusinessIdeas,
             hasMoreBusinessIdeas: (data.business_ideas?.length || 0) > 6,
           });
 
-          // Apply theme
-          if (data.site.design.dark_mode) {
-            document.documentElement.classList.add("dark");
-          }
+          // Ensure light mode is default on initial load
+          document.documentElement.classList.remove("dark");
 
           console.log("CareerMap data loaded successfully");
         } catch (error) {
