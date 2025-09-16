@@ -590,6 +590,60 @@ export default function InteractiveCareerMap() {
                         })()}
                       </div>
                     )}
+
+                    {/* Expanded details when user clicks Learn More */}
+                    {expandedNode && (() => {
+                      const details = filteredNodes.find(n => n.id === expandedNode);
+                      if (!details) return null;
+                      const videos = getYouTubeLectures(details.title || details.id || "");
+                      return (
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div>
+                                  <h3 className="font-bold text-lg">{details.title} - Details</h3>
+                                  <p className="text-sm text-muted-foreground">{details.description}</p>
+                                </div>
+                                <div>
+                                  <Button size="sm" variant="outline" onClick={() => setExpandedNode(null)}>Close</Button>
+                                </div>
+                              </div>
+
+                              <div className="grid md:grid-cols-3 gap-4">
+                                <div>
+                                  <h4 className="font-medium">Salary</h4>
+                                  <div className="font-medium">{details.salary}</div>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Growth</h4>
+                                  <div className="font-medium">{details.growth}</div>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Actions</h4>
+                                  <div className="flex flex-col gap-2 mt-2">
+                                    <Button onClick={() => navigate('/jobs/by-goal', { state: { preselectedCareerId: details.id, preselectedCareerTitle: details.title } })}>Get Roadmap</Button>
+                                    <Button variant="outline" onClick={() => window.open(videos[0]?.url || '#', '_blank')}>Watch Tutorial</Button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-4">
+                                <h4 className="font-medium mb-2">Video Tutorials</h4>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {videos.map((v, i) => (
+                                    <a key={i} href={v.url} target="_blank" rel="noopener noreferrer" className="block p-3 border rounded hover:shadow">
+                                      <div className="font-semibold">{v.title}</div>
+                                      <div className="text-sm text-muted-foreground">{v.channel} • {v.duration}</div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </CardContent>
               </Card>
