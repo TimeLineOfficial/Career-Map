@@ -37,11 +37,13 @@ import {
 } from "lucide-react";
 
 export default function InteractiveCareerMap() {
-  const { careerMapData } = useDataStore();
+  const { careerMapData, getYouTubeLectures } = useDataStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedField, setSelectedField] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [expandedNode, setExpandedNode] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const careerFields = [
     {
