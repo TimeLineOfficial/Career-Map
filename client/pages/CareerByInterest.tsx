@@ -116,6 +116,8 @@ export default function CareerByInterest() {
   const [currentView, setCurrentView] = useState<"subjects" | "interests">(
     "subjects",
   );
+  // New sort option for results
+  const [sortBy, setSortBy] = useState<"match" | "salary" | "trending" | "work_life" | "social_status">("match");
 
   const allExtendedInterests = getExtendedInterests();
   const trendingInterests = getTrendingInterests();
