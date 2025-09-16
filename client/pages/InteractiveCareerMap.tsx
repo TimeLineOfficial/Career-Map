@@ -557,10 +557,31 @@ export default function InteractiveCareerMap() {
                                     </div>
                                   </div>
                                   <div>
-                                    <Button size="sm" className="w-full">
-                                      <Target className="h-3 w-3 mr-1" />
-                                      Explore
-                                    </Button>
+                                    <div className="flex flex-col gap-2">
+                                      <Button
+                                        size="sm"
+                                        className="w-full"
+                                        onClick={() => {
+                                          // Navigate to By Goal with the career preselected
+                                          navigate("/jobs/by-goal", {
+                                            state: { preselectedCareerId: node.id, preselectedCareerTitle: node.title },
+                                          });
+                                        }}
+                                      >
+                                        <Target className="h-3 w-3 mr-1" />
+                                        Get Roadmap
+                                      </Button>
+
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="w-full"
+                                        onClick={() => setExpandedNode(node.id)}
+                                      >
+                                        <BookOpen className="h-3 w-3 mr-1" />
+                                        Learn More
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               </CardContent>
