@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDataStore } from "../lib/data-service";
 import { Button } from "../components/ui/button";
 import {
@@ -518,6 +518,23 @@ export default function CareerByInterest() {
               <Button onClick={clearSelection} variant="outline">
                 Start Over
               </Button>
+            </div>
+          </div>
+
+          {/* Sorting Controls */}
+          <div className="flex items-center justify-end mt-4 mb-6">
+            <div className="w-48">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="match">Best Match</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                  <SelectItem value="trending">Trending</SelectItem>
+                  <SelectItem value="work_life">Work-Life</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
