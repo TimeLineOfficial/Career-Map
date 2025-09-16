@@ -459,6 +459,33 @@ export default function CareerByGoal() {
     setShowAdvancedMapping(false);
   };
 
+  const navigateBack = () => {
+    // Navigate one step back based on currentStep
+    switch (currentStep) {
+      case "results":
+        setCurrentStep(
+          selectedOptions.stage === "working_professional" ? "personalization" : "personalization",
+        );
+        break;
+      case "personalization":
+        if (selectedOptions.course) setCurrentStep("course");
+        else if (selectedOptions.stream) setCurrentStep("stream");
+        else setCurrentStep("stage");
+        break;
+      case "course":
+        setCurrentStep("stream");
+        break;
+      case "stream":
+        setCurrentStep("stage");
+        break;
+      case "stage":
+        setCurrentStep("goal");
+        break;
+      default:
+        setCurrentStep("goal");
+    }
+  };
+
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-8 space-x-2 overflow-x-auto pb-2">
       {(
