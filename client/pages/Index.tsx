@@ -231,6 +231,10 @@ export default function Index() {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-career-primary to-career-secondary hover:opacity-90 text-lg px-8 py-6"
+                onClick={() => {
+                  const el = document.getElementById("career-sections");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
               >
                 <MapPin className="h-5 w-5 mr-2" />
                 Start Career Mapping
