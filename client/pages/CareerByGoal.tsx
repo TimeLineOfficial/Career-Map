@@ -329,12 +329,28 @@ export default function CareerByGoal() {
   };
 
   const handleStageSelect = (stageId: string) => {
+    // Update selected stage and reset downstream selections
     setSelectedOptions((prev) => ({
       ...prev,
       stage: stageId,
       stream: "",
       course: "",
     }));
+
+    // If user is in 10th or below, skip stream/course and go straight to results
+    if (stageId === "class_10_below") {
+      // generate results using the selected goal and this stage
+      setTimeout(() => {
+        const selectedGoal = careerGoals.find((g) => g.id === selectedOptions.goal);
+        const goal = selectedGoal?.title || selectedOptions.course || selectedOptions.stream;
+        const paths = generateCareerPath(stageId, goal);
+        setCareerPaths(paths);
+        setCurrentStep("results");
+      }, 0);
+      return;
+    }
+
+    // For other stages, continue the normal flow to stream selection
     setCurrentStep("stream");
   };
 
