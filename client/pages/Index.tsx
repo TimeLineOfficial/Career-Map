@@ -285,7 +285,7 @@ export default function Index() {
       </section>
 
       {/* Jobs Section */}
-      <section className="py-24 bg-muted/20">
+      <section id="career-sections" className="py-24 bg-muted/20">
         <div className="container px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-4 mb-16">
