@@ -312,6 +312,7 @@ export default function InteractiveCareerMap() {
                       Search Careers
                     </label>
                     <Input
+                      id="search-careers"
                       placeholder="e.g., Software Engineer, Doctor"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
