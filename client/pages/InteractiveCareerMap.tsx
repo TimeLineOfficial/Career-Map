@@ -35,6 +35,7 @@ import {
   Building,
   GraduationCap,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function InteractiveCareerMap() {
   const { careerMapData, getYouTubeLectures } = useDataStore();
