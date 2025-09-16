@@ -704,7 +704,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("goal")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Goal Selection
           </Button>
         </div>
@@ -756,7 +756,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stage")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Education Level
           </Button>
         </div>
@@ -806,7 +806,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stream")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Stream Selection
           </Button>
         </div>
