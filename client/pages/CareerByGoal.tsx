@@ -357,6 +357,19 @@ export default function CareerByGoal() {
   const handleStreamSelect = (stream: string) => {
     setSelectedOptions((prev) => ({ ...prev, stream, course: "" }));
 
+    // If the user selected 11th-12th, skip course selection and show results
+    if (selectedOptions.stage === "class_11_12") {
+      // Generate results for 11th-12th based on chosen stream
+      setTimeout(() => {
+        const selectedGoal = careerGoals.find((g) => g.id === selectedOptions.goal);
+        const goal = selectedGoal?.title || stream;
+        const paths = generateCareerPath(selectedOptions.stage || "class_11_12", goal);
+        setCareerPaths(paths);
+        setCurrentStep("results");
+      }, 0);
+      return;
+    }
+
     // For working professionals, go to personalization directly
     if (selectedOptions.stage === "working_professional") {
       setCurrentStep("personalization");
