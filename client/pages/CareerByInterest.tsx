@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDataStore } from "../lib/data-service";
 import { Button } from "../components/ui/button";
 import {
@@ -116,6 +116,29 @@ export default function CareerByInterest() {
   const [currentView, setCurrentView] = useState<"subjects" | "interests">(
     "subjects",
   );
+  // New sort option for results
+  const [sortBy, setSortBy] = useState<"match" | "salary" | "trending" | "work_life" | "social_status">("match");
+
+  const sortedMatches = useMemo(() => {
+    const arr = [...careerMatches];
+    const parseSalary = (s: string) => {
+      if (!s) return 0;
+      const nums = s.replace(/[^0-9\-\.]/g, "").split("-").map(Number);
+      return nums[0] || 0;
+    };
+
+    switch (sortBy) {
+      case "salary":
+        return arr.sort((a, b) => parseSalary(b.salary_range) - parseSalary(a.salary_range));
+      case "trending":
+        return arr.sort((a, b) => (b.trending === true ? 1 : 0) - (a.trending === true ? 1 : 0) || b.match_score - a.match_score);
+      case "work_life":
+        // If work_life score exists, otherwise fallback to match_score
+        return arr.sort((a, b) => (b.work_life_score || 0) - (a.work_life_score || 0) || b.match_score - a.match_score);
+      default:
+        return arr.sort((a, b) => b.match_score - a.match_score);
+    }
+  }, [careerMatches, sortBy]);
 
   const allExtendedInterests = getExtendedInterests();
   const trendingInterests = getTrendingInterests();
@@ -519,8 +542,25 @@ export default function CareerByInterest() {
             </div>
           </div>
 
+          {/* Sorting Controls */}
+          <div className="flex items-center justify-end mt-4 mb-6">
+            <div className="w-48">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="match">Best Match</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                  <SelectItem value="trending">Trending</SelectItem>
+                  <SelectItem value="work_life">Work-Life</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {careerMatches.map((match, index) => (
+            {sortedMatches.map((match, index) => (
               <CareerMatchCard key={index} match={match} index={index} />
             ))}
           </div>

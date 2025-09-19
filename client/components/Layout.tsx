@@ -28,6 +28,17 @@ import {
   User,
 } from "lucide-react";
 import EnhancedNavigation from "./EnhancedNavigation";
+import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -53,6 +64,7 @@ export default function Layout({ children }: LayoutProps) {
   } = useDataStore();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
   const location = useLocation();
 
   const languages = getLanguageData();
@@ -90,6 +102,15 @@ export default function Layout({ children }: LayoutProps) {
       description: "Latest job openings",
     },
   ];
+
+  useEffect(() => {
+    if (localStorage.getItem("savePromptSeen")) return;
+    const timer = setTimeout(() => {
+      setShowSavePrompt(true);
+      localStorage.setItem("savePromptSeen", "1");
+    }, 180000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
     <>
@@ -307,6 +328,38 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1">{children}</main>
+
+      <AlertDialog open={showSavePrompt} onOpenChange={setShowSavePrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Save your progress?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You’ve been exploring for a while. Save your selections and progress so you can continue later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Later</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                try {
+                  const state = useDataStore.getState();
+                  localStorage.setItem("careermap_progress_snapshot", JSON.stringify({
+                    currentLanguage: state.currentLanguage,
+                    darkMode: state.darkMode,
+                    currentUser: state.currentUser,
+                  }));
+                  toast({ title: "Progress saved", description: "Your progress is saved on this device." });
+                } catch (e) {
+                  console.error(e);
+                }
+                setShowSavePrompt(false);
+              }}
+            >
+              Save Progress
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Footer */}
       <footer className="border-t bg-muted/10">

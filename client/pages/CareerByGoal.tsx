@@ -329,17 +329,46 @@ export default function CareerByGoal() {
   };
 
   const handleStageSelect = (stageId: string) => {
+    // Update selected stage and reset downstream selections
     setSelectedOptions((prev) => ({
       ...prev,
       stage: stageId,
       stream: "",
       course: "",
     }));
+
+    // If user is in 10th or below, skip stream/course and go straight to results
+    if (stageId === "class_10_below") {
+      // generate results using the selected goal and this stage
+      setTimeout(() => {
+        const selectedGoal = careerGoals.find((g) => g.id === selectedOptions.goal);
+        const goal = selectedGoal?.title || selectedOptions.course || selectedOptions.stream;
+        const paths = generateCareerPath(stageId, goal);
+        setCareerPaths(paths);
+        setCurrentStep("results");
+      }, 0);
+      return;
+    }
+
+    // For other stages, continue the normal flow to stream selection
     setCurrentStep("stream");
   };
 
   const handleStreamSelect = (stream: string) => {
     setSelectedOptions((prev) => ({ ...prev, stream, course: "" }));
+
+    // If the user selected 11th-12th, skip course selection and show results
+    if (selectedOptions.stage === "class_11_12") {
+      // Generate results for 11th-12th based on chosen stream
+      setTimeout(() => {
+        const selectedGoal = careerGoals.find((g) => g.id === selectedOptions.goal);
+        const goal = selectedGoal?.title || stream;
+        const paths = generateCareerPath(selectedOptions.stage || "class_11_12", goal);
+        setCareerPaths(paths);
+        setCurrentStep("results");
+      }, 0);
+      return;
+    }
 
     // For working professionals, go to personalization directly
     if (selectedOptions.stage === "working_professional") {
@@ -428,6 +457,33 @@ export default function CareerByGoal() {
     setCareerPaths([]);
     setCareerSwitchPaths([]);
     setShowAdvancedMapping(false);
+  };
+
+  const navigateBack = () => {
+    // Navigate one step back based on currentStep
+    switch (currentStep) {
+      case "results":
+        setCurrentStep(
+          selectedOptions.stage === "working_professional" ? "personalization" : "personalization",
+        );
+        break;
+      case "personalization":
+        if (selectedOptions.course) setCurrentStep("course");
+        else if (selectedOptions.stream) setCurrentStep("stream");
+        else setCurrentStep("stage");
+        break;
+      case "course":
+        setCurrentStep("stream");
+        break;
+      case "stream":
+        setCurrentStep("stage");
+        break;
+      case "stage":
+        setCurrentStep("goal");
+        break;
+      default:
+        setCurrentStep("goal");
+    }
   };
 
   const StepIndicator = () => (
@@ -648,7 +704,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("goal")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Goal Selection
           </Button>
         </div>
@@ -700,7 +756,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stage")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Education Level
           </Button>
         </div>
@@ -750,7 +806,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stream")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Stream Selection
           </Button>
         </div>
