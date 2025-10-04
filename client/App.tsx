@@ -35,6 +35,19 @@ export default function App() {
     initializePerformanceOptimizations();
   }, []);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === "t" || e.key === "T")) {
+        e.preventDefault();
+        sonnerToast("Notifications", {
+          description: "Press Alt+T any time to show a test notification.",
+        });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
