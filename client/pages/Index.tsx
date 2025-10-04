@@ -197,30 +197,31 @@ export default function Index() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-loc="home-page">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-career-primary/5 via-transparent to-career-secondary/5"></div>
-        <div className="container relative px-4 py-24 lg:py-32">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20" data-loc="hero-section">
+        <div className="absolute inset-0 bg-gradient-to-r from-career-primary/5 via-transparent to-career-secondary/5" data-loc="hero-overlay"></div>
+        <div className="container relative px-4 py-24 lg:py-32" data-loc="hero-container">
+          <div className="max-w-4xl mx-auto text-center space-y-8" data-loc="hero-content">
             <div className="space-y-4">
               <Badge
                 variant="secondary"
                 className="px-4 py-2 text-sm font-medium"
+                data-loc="hero-badge"
               >
                 <Zap className="h-4 w-4 mr-2" />
                 Your Complete Career & Business Roadmap
               </Badge>
 
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight" data-loc="hero-heading">
                 Navigate Your
-                <span className="bg-gradient-to-r from-career-primary via-career-secondary to-career-accent bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-career-primary via-career-secondary to-career-accent bg-clip-text text-transparent" data-loc="hero-highlight">
                   {" "}
                   Career Journey
                 </span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed" data-loc="hero-subtitle">
                 From school to success - discover your perfect career path,
                 explore business opportunities, and get step-by-step guidance to
                 achieve your professional dreams.
@@ -231,27 +232,28 @@ export default function Index() {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-career-primary to-career-secondary hover:opacity-90 text-lg px-8 py-6"
+                data-loc="cta-start-mapping"
               >
                 <MapPin className="h-5 w-5 mr-2" />
                 Start Career Mapping
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
 
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6" data-loc="cta-watch-demo">
                 <Play className="h-5 w-5 mr-2" />
                 Watch Demo
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12">
-              <div className="text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12" data-loc="hero-stats">
+              <div className="text-center" data-loc="stat-jobs">
                 <div className="text-3xl md:text-4xl font-bold text-career-primary">
                   {animatedNumbers.jobsListed.toLocaleString()}+
                 </div>
                 <div className="text-sm text-muted-foreground">Jobs Listed</div>
               </div>
-              <div className="text-center">
+              <div className="text-center" data-loc="stat-business">
                 <div className="text-3xl md:text-4xl font-bold text-career-secondary">
                   {animatedNumbers.businessIdeas}+
                 </div>
@@ -259,7 +261,7 @@ export default function Index() {
                   Business Ideas
                 </div>
               </div>
-              <div className="text-center">
+              <div className="text-center" data-loc="stat-success">
                 <div className="text-3xl md:text-4xl font-bold text-career-accent">
                   {animatedNumbers.successStories.toLocaleString()}+
                 </div>
@@ -267,7 +269,7 @@ export default function Index() {
                   Success Stories
                 </div>
               </div>
-              <div className="text-center">
+              <div className="text-center" data-loc="stat-students">
                 <div className="text-3xl md:text-4xl font-bold text-career-primary">
                   {animatedNumbers.students.toLocaleString()}+
                 </div>
