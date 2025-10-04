@@ -64,6 +64,7 @@ export default function App() {
               <Route path="/jobs/by-interest" element={<CareerByInterest />} />
               <Route path="/jobs/vacancies" element={<LatestVacancies />} />
               <Route path="/latest-jobs" element={<LatestJobs />} />
+              <Route path="/jobs/latest" element={<LatestJobs />} />
 
               {/* Business routes */}
               <Route path="/business" element={<BusinessLanding />} />

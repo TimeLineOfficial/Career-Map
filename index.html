@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href="/" />
     <title>CareerMap - Your Complete Career &amp; Business Roadmap</title>
     <meta
       name="description"
@@ -26,6 +27,28 @@
           );
         }
       }(window.location))
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": "Sample Job - Software Engineer",
+        "description": "Develop and maintain web applications.",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": "CareerMap"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          }
+        },
+        "employmentType": "FULL_TIME",
+        "datePosted": "2024-01-01"
+      }
     </script>
   </head>
 

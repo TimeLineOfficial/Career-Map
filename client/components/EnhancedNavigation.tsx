@@ -97,7 +97,7 @@ export default function EnhancedNavigation() {
       id: "vacancies",
       label: "Vacancies",
       icon: Search,
-      href: "/vacancies",
+      href: "/jobs/latest",
       subItems: [
         {
           label: "Government Jobs",
@@ -146,6 +146,9 @@ export default function EnhancedNavigation() {
           >
             <Link
               to={item.href}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), (window.location.href = item.href))}
               data-loc={`nav-link-${item.id}`}
               onClick={() => hasDropdown && handleClick(item.id)}
               className={`
@@ -177,6 +180,9 @@ export default function EnhancedNavigation() {
                     <Link
                       key={index}
                       to={subItem.href}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), (window.location.href = subItem.href))}
                       data-loc={`nav-dropdown-link-${item.id}-${index}`}
                       className="block px-3 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
                       onClick={() => setActiveDropdown(null)}
