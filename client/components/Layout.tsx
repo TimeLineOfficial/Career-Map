@@ -128,23 +128,23 @@ export default function Layout({ children }: LayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-loc="app-root">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between px-4">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" data-loc="header">
+        <div className="container flex h-16 items-center justify-between px-4" data-loc="header-container">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2" data-loc="logo-link">
             <div className="relative">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-career-primary to-career-secondary flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-career-primary to-career-secondary flex items-center justify-center" data-loc="logo-icon">
                 <MapPin className="h-5 w-5 text-white" />
               </div>
-              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-career-accent"></div>
+              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-career-accent" data-loc="logo-accent-dot"></div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground">
+            <div className="flex flex-col" data-loc="logo-text">
+              <span className="text-lg font-bold text-foreground" data-loc="site-title">
                 {siteTitle}
               </span>
-              <span className="text-xs text-muted-foreground leading-none">
+              <span className="text-xs text-muted-foreground leading-none" data-loc="site-tagline">
                 {siteTagline}
               </span>
             </div>
@@ -154,11 +154,11 @@ export default function Layout({ children }: LayoutProps) {
           <EnhancedNavigation />
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2" data-loc="header-actions">
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2" data-loc="language-selector-button">
                   <Globe className="h-4 w-4" />
                   <span className="text-lg">{selectedLanguage.flag}</span>
                   <span className="hidden lg:inline">
@@ -186,6 +186,7 @@ export default function Layout({ children }: LayoutProps) {
               size="sm"
               onClick={toggleDarkMode}
               className="gap-2"
+              data-loc="theme-toggle-button"
             >
               {darkMode ? (
                 <Sun className="h-4 w-4" />
@@ -198,29 +199,29 @@ export default function Layout({ children }: LayoutProps) {
             </Button>
 
             {/* User Account */}
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2" data-loc="account-button">
               <User className="h-4 w-4" />
               <span className="hidden lg:inline">Account</span>
             </Button>
 
             {/* Bookmarks */}
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2" data-loc="saved-button">
               <Bookmark className="h-4 w-4" />
               <span className="hidden lg:inline">Saved</span>
             </Button>
           </div>
 
           {/* Mobile Menu */}
-          <div className="md:hidden">
+          <div className="md:hidden" data-loc="mobile-menu">
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" data-loc="mobile-menu-trigger">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent data-loc="mobile-menu-content">
                 <SheetHeader>
-                  <SheetTitle className="text-left">
+                  <SheetTitle className="text-left" data-loc="mobile-menu-title">
                     <div className="flex items-center gap-2">
                       <div className="relative">
                         <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-career-primary to-career-secondary flex items-center justify-center">
@@ -233,7 +234,7 @@ export default function Layout({ children }: LayoutProps) {
                   </SheetTitle>
                 </SheetHeader>
                 <div className="mt-6 space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2" data-loc="mobile-nav">
                     <NavLinks mobile />
                   </div>
 
@@ -244,6 +245,7 @@ export default function Layout({ children }: LayoutProps) {
                         <Button
                           variant="ghost"
                           className="w-full justify-start gap-3"
+                          data-loc="mobile-language-selector"
                         >
                           <Globe className="h-5 w-5" />
                           <span className="text-lg">
@@ -271,6 +273,7 @@ export default function Layout({ children }: LayoutProps) {
                       variant="ghost"
                       onClick={toggleDarkMode}
                       className="w-full justify-start gap-3"
+                      data-loc="mobile-theme-toggle"
                     >
                       {darkMode ? (
                         <Sun className="h-5 w-5" />
