@@ -335,6 +335,12 @@ export default function CareerByGoal() {
       stream: "",
       course: "",
     }));
+    // Flow rules
+    if (stageId === "class_10_below") {
+      setCurrentStep("results");
+      setTimeout(() => generateResults(), 0);
+      return;
+    }
     setCurrentStep("stream");
   };
 
