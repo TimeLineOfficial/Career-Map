@@ -46,12 +46,11 @@ const getLanguageData = () => [
 export default function Layout({ children }: LayoutProps) {
   const {
     careerMapData,
-    currentLanguage,
     darkMode,
-    setLanguage,
     toggleDarkMode,
     getText,
   } = useDataStore();
+  const { getCurrentLanguage, changeLanguage } = useI18n();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
