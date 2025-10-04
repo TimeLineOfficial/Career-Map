@@ -56,8 +56,7 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
 
   const languages = getLanguageData();
-  const selectedLanguage =
-    languages.find((lang) => lang.code === currentLanguage) || languages[0];
+  const selectedLanguage = getCurrentLanguage();
 
   // Site title and tagline from data
   const siteTitle = careerMapData?.site.name || "CareerMap";
