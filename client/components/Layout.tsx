@@ -170,7 +170,7 @@ export default function Layout({ children }: LayoutProps) {
                 {languages.map((lang) => (
                   <DropdownMenuItem
                     key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
+                    onClick={() => changeLanguage(lang.code as any)}
                     className="gap-2 cursor-pointer"
                   >
                     <span className="text-lg">{lang.flag}</span>
@@ -258,7 +258,7 @@ export default function Layout({ children }: LayoutProps) {
                         {languages.map((lang) => (
                           <DropdownMenuItem
                             key={lang.code}
-                            onClick={() => setLanguage(lang.code)}
+                            onClick={() => changeLanguage(lang.code as any)}
                             className="gap-2 cursor-pointer"
                           >
                             <span className="text-lg">{lang.flag}</span>
