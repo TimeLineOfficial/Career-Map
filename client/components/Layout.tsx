@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useDataStore } from "@/lib/data-service";
+import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
