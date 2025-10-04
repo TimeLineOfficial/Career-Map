@@ -347,6 +347,12 @@ export default function CareerByGoal() {
   const handleStreamSelect = (stream: string) => {
     setSelectedOptions((prev) => ({ ...prev, stream, course: "" }));
 
+    // Flow rules
+    if (selectedOptions.stage === "class_11_12") {
+      setCurrentStep("results");
+      setTimeout(() => generateResults(), 0);
+      return;
+    }
     // For working professionals, go to personalization directly
     if (selectedOptions.stage === "working_professional") {
       setCurrentStep("personalization");
