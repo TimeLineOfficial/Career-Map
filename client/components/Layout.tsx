@@ -287,6 +287,7 @@ export default function Layout({ children }: LayoutProps) {
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3"
+                      data-loc="mobile-account-button"
                     >
                       <User className="h-5 w-5" />
                       Account
@@ -296,6 +297,7 @@ export default function Layout({ children }: LayoutProps) {
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3"
+                      data-loc="mobile-saved-button"
                     >
                       <Bookmark className="h-5 w-5" />
                       Saved Items
