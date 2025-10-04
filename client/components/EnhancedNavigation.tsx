@@ -131,7 +131,7 @@ export default function EnhancedNavigation() {
   };
 
   return (
-    <nav className="hidden md:flex items-center gap-1">
+    <nav className="hidden md:flex items-center gap-1" data-loc="desktop-nav">
       {navigationItems.map((item) => {
         const isActive = location.pathname.startsWith(item.href);
         const hasDropdown = item.subItems && item.subItems.length > 0;
@@ -140,11 +140,13 @@ export default function EnhancedNavigation() {
           <div
             key={item.id}
             className="relative"
+            data-loc={`nav-item-${item.id}`}
             onMouseEnter={() => handleMouseEnter(item.id)}
             onMouseLeave={handleMouseLeave}
           >
             <Link
               to={item.href}
+              data-loc={`nav-link-${item.id}`}
               onClick={() => hasDropdown && handleClick(item.id)}
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
@@ -169,12 +171,13 @@ export default function EnhancedNavigation() {
 
             {/* Dropdown Menu */}
             {hasDropdown && activeDropdown === item.id && (
-              <div className="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[100]">
+              <div className="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[100]" data-loc={`nav-dropdown-${item.id}`}>
                 <div className="p-2">
                   {item.subItems?.map((subItem, index) => (
                     <Link
                       key={index}
                       to={subItem.href}
+                      data-loc={`nav-dropdown-link-${item.id}-${index}`}
                       className="block px-3 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
                       onClick={() => setActiveDropdown(null)}
                     >
