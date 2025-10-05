@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-  { code: 'bn', name: 'বা���লা', flag: '🇧🇩' },
+  { code: 'bn', name: 'বাংলা', flag: '🇧🇩' },
   { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
   { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
   { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
