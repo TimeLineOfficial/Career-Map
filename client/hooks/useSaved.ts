@@ -35,7 +35,7 @@ function getSavedItems(type: keyof SavedItems): SavedItem[] {
 }
 
 // Save items to localStorage
-function setSavedItems(type: keyof SavedItems, items: SavedItem[]): void {
+function setSavedItemsToStorage(type: keyof SavedItems, items: SavedItem[]): void {
   try {
     localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(items));
   } catch (error) {
@@ -92,7 +92,7 @@ export function useSaved(type?: keyof SavedItems) {
     setSavedItems(prev => {
       const updated = prev[itemType].filter(item => item.id !== id);
       const newItems = [newItem, ...updated];
-      setSavedItems(itemType, newItems);
+      setSavedItemsToStorage(itemType, newItems);
       return {
         ...prev,
         [itemType]: newItems,
@@ -104,7 +104,7 @@ export function useSaved(type?: keyof SavedItems) {
   const removeSavedItem = useCallback((itemType: keyof SavedItems, id: string) => {
     setSavedItems(prev => {
       const updated = prev[itemType].filter(item => item.id !== id);
-      setSavedItems(itemType, updated);
+      setSavedItemsToStorage(itemType, updated);
       return {
         ...prev,
         [itemType]: updated,
@@ -151,7 +151,7 @@ export function useSaved(type?: keyof SavedItems) {
   // Clear all saved items of a type
   const clearSaved = useCallback((itemType: keyof SavedItems) => {
     setSavedItems(prev => {
-      setSavedItems(itemType, []);
+      setSavedItemsToStorage(itemType, []);
       return {
         ...prev,
         [itemType]: [],
@@ -300,10 +300,10 @@ export const savedUtils = {
     Object.entries(STORAGE_KEYS).forEach(([type, key]) => {
       const items = getSavedItems(type as keyof SavedItems);
       const filtered = items.filter(item => item.savedAt > cutoffTime);
-      
+
       if (filtered.length < items.length) {
         removed += items.length - filtered.length;
-        setSavedItems(type as keyof SavedItems, filtered);
+        setSavedItemsToStorage(type as keyof SavedItems, filtered);
       }
     });
 
