@@ -813,7 +813,7 @@ export class JobFetchService {
     // This would implement the actual scheduled fetching
     // For now, we'll just update the store with mock data
     const jobs = await this.fetchJobsFromSources();
-    useDataStore.setState({ jobs });
+    useDataStore.setState({ jobs: jobs as unknown as JobPosting[] });
   }
 }
 
