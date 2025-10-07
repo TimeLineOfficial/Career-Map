@@ -10,11 +10,12 @@ export interface IndianSubject {
     | "Vocational"
     | "Co-curricular"
     | "Lab"
-    | "Practical";
+    | "Practical"
+    | "Specialized";
   boards: string[];
   career_paths: string[];
   related_skills: string[];
-  difficulty: "Easy" | "Medium" | "Hard";
+  difficulty: "Easy" | "Medium" | "Hard" | "Very Hard";
   trending: boolean;
   description: string;
   job_prospects: string[];
