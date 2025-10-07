@@ -314,13 +314,15 @@ class AuthService {
 // Create singleton instance
 const authService = new AuthService();
 
+import React, { useEffect, useState } from 'react';
+
 // React hook for auth state
 export function useAuth() {
-  const [state, setState] = React.useState(authService.getState());
+  const [state, setState] = useState(authService.getState());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = authService.subscribe(setState);
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   return {
