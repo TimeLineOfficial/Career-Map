@@ -246,9 +246,6 @@ interface DataStore {
   searchJobs: (query: string) => JobPosting[];
   autoFetchJobs: () => Promise<void>;
 
-  // Business Ideas
-  loadMoreBusinessIdeas: () => void;
-
   // Advanced Career Mapping
   getCareerSwitchPaths: (currentField: string, targetField: string) => any[];
   getCareerNotes: (careerPath: string) => any;
