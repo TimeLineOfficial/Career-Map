@@ -194,7 +194,7 @@ export function useSaved(type?: keyof SavedItems) {
                     mergedItems.push(item);
                   }
                 });
-                setSavedItems(key as keyof SavedItems, mergedItems);
+                setSavedItemsToStorage(key as keyof SavedItems, mergedItems);
                 return {
                   ...prev,
                   [key]: mergedItems,
