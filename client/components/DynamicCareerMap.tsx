@@ -72,9 +72,9 @@ export default function DynamicCareerMap({
         difficulty: "Medium",
         importance: "Critical",
         resources: [
-          { title: "NCERT Physics Solutions", type: "link" },
-          { title: "Chemistry Khan Academy", type: "video" },
-          { title: "Mathematics for JEE", type: "course" },
+          { title: "NCERT Physics Solutions", type: "link" as const },
+          { title: "Chemistry Khan Academy", type: "video" as const },
+          { title: "Mathematics for JEE", type: "course" as const },
         ],
         nextSteps: [
           "JEE Main preparation",
@@ -110,9 +110,9 @@ export default function DynamicCareerMap({
           "Distance Learning Programs",
         ],
         resources: [
-          { title: "JEE Main Previous Papers", type: "link" },
-          { title: "Physics Wallah JEE", type: "video" },
-          { title: "Unacademy JEE Course", type: "course" },
+          { title: "JEE Main Previous Papers", type: "link" as const },
+          { title: "Physics Wallah JEE", type: "video" as const },
+          { title: "Unacademy JEE Course", type: "course" as const },
         ],
         nextSteps: [
           "College selection",
@@ -146,9 +146,9 @@ export default function DynamicCareerMap({
           "AI & Machine Learning",
         ],
         resources: [
-          { title: "Engineering Branch Guide", type: "link" },
-          { title: "Career in Engineering", type: "video" },
-          { title: "Industry Trends Report", type: "link" },
+          { title: "Engineering Branch Guide", type: "link" as const },
+          { title: "Career in Engineering", type: "video" as const },
+          { title: "Industry Trends Report", type: "link" as const },
         ],
         nextSteps: [
           "Academic excellence",
@@ -178,9 +178,9 @@ export default function DynamicCareerMap({
           "Technical Certifications",
         ],
         resources: [
-          { title: "GitHub for Engineers", type: "course" },
-          { title: "Project Ideas Repository", type: "link" },
-          { title: "Technical Interview Prep", type: "video" },
+          { title: "GitHub for Engineers", type: "course" as const },
+          { title: "Project Ideas Repository", type: "link" as const },
+          { title: "Technical Interview Prep", type: "video" as const },
         ],
         nextSteps: [
           "Internship applications",
@@ -205,9 +205,9 @@ export default function DynamicCareerMap({
           "Civil Services (IES/UPSC)",
         ],
         resources: [
-          { title: "Placement Preparation Guide", type: "course" },
-          { title: "Resume Building Workshop", type: "video" },
-          { title: "Salary Negotiation Tips", type: "link" },
+          { title: "Placement Preparation Guide", type: "course" as const },
+          { title: "Resume Building Workshop", type: "video" as const },
+          { title: "Salary Negotiation Tips", type: "link" as const },
         ],
       },
     ],
@@ -227,9 +227,9 @@ export default function DynamicCareerMap({
         difficulty: "Hard",
         importance: "Critical",
         resources: [
-          { title: "NCERT Biology Complete", type: "link" },
-          { title: "Chemistry for NEET", type: "video" },
-          { title: "Physics Simplified", type: "course" },
+          { title: "NCERT Biology Complete", type: "link" as const },
+          { title: "Chemistry for NEET", type: "video" as const },
+          { title: "Physics Simplified", type: "course" as const },
         ],
         nextSteps: [
           "NEET preparation strategy",
@@ -259,9 +259,9 @@ export default function DynamicCareerMap({
           "Two Year Integrated Program",
         ],
         resources: [
-          { title: "NEET Previous 20 Years", type: "link" },
-          { title: "Biology Video Lectures", type: "video" },
-          { title: "NEET Mock Test Series", type: "course" },
+          { title: "NEET Previous 20 Years", type: "link" as const },
+          { title: "Biology Video Lectures", type: "video" as const },
+          { title: "NEET Mock Test Series", type: "course" as const },
         ],
         nextSteps: [
           "College selection",
@@ -289,9 +289,9 @@ export default function DynamicCareerMap({
           "International Medical Colleges",
         ],
         resources: [
-          { title: "Medical Textbooks Guide", type: "link" },
-          { title: "Clinical Skills Videos", type: "video" },
-          { title: "Medical Ethics Course", type: "course" },
+          { title: "Medical Textbooks Guide", type: "link" as const },
+          { title: "Clinical Skills Videos", type: "video" as const },
+          { title: "Medical Ethics Course", type: "course" as const },
         ],
         nextSteps: [
           "Internship completion",
@@ -320,9 +320,9 @@ export default function DynamicCareerMap({
           "Medical PG Entrance (NEET PG)",
         ],
         resources: [
-          { title: "Medical Registration Process", type: "link" },
-          { title: "Setting Up Practice", type: "video" },
-          { title: "Medical Law & Ethics", type: "course" },
+          { title: "Medical Registration Process", type: "link" as const },
+          { title: "Setting Up Practice", type: "video" as const },
+          { title: "Medical Law & Ethics", type: "course" as const },
         ],
         nextSteps: [
           "Specialization decision",
@@ -353,9 +353,9 @@ export default function DynamicCareerMap({
           "Fellowship in Sub-specialties",
         ],
         resources: [
-          { title: "PG Medical Entrance Prep", type: "course" },
-          { title: "Specialty Selection Guide", type: "link" },
-          { title: "Medical Career Progression", type: "video" },
+          { title: "PG Medical Entrance Prep", type: "course" as const },
+          { title: "Specialty Selection Guide", type: "link" as const },
+          { title: "Medical Career Progression", type: "video" as const },
         ],
       },
     ],
@@ -376,9 +376,9 @@ export default function DynamicCareerMap({
         difficulty: "Medium",
         importance: "High",
         resources: [
-          { title: "Commerce NCERT Solutions", type: "link" },
-          { title: "Business Studies Videos", type: "video" },
-          { title: "Economics Simplified", type: "course" },
+          { title: "Commerce NCERT Solutions", type: "link" as const },
+          { title: "Business Studies Videos", type: "video" as const },
+          { title: "Economics Simplified", type: "course" as const },
         ],
         nextSteps: [
           "Bachelor degree selection",
@@ -407,9 +407,9 @@ export default function DynamicCareerMap({
           "CMA Foundation + BCom",
         ],
         resources: [
-          { title: "Commerce Career Guide", type: "link" },
-          { title: "Professional Course Overview", type: "video" },
-          { title: "Skill Development Programs", type: "course" },
+          { title: "Commerce Career Guide", type: "link" as const },
+          { title: "Professional Course Overview", type: "video" as const },
+          { title: "Skill Development Programs", type: "course" as const },
         ],
         nextSteps: [
           "Professional course planning",
@@ -439,9 +439,9 @@ export default function DynamicCareerMap({
           "Digital Marketing Certification",
         ],
         resources: [
-          { title: "CA Course Structure", type: "link" },
-          { title: "Professional Exam Strategies", type: "video" },
-          { title: "Industry Internship Guide", type: "course" },
+          { title: "CA Course Structure", type: "link" as const },
+          { title: "Professional Exam Strategies", type: "video" as const },
+          { title: "Industry Internship Guide", type: "course" as const },
         ],
         nextSteps: [
           "Job market entry",
@@ -470,9 +470,9 @@ export default function DynamicCareerMap({
           "Government Job Preparation",
         ],
         resources: [
-          { title: "MBA Entrance Preparation", type: "course" },
-          { title: "Corporate Interview Skills", type: "video" },
-          { title: "Salary Negotiation Guide", type: "link" },
+          { title: "MBA Entrance Preparation", type: "course" as const },
+          { title: "Corporate Interview Skills", type: "video" as const },
+          { title: "Salary Negotiation Guide", type: "link" as const },
         ],
         nextSteps: [
           "MBA admission",
@@ -498,9 +498,9 @@ export default function DynamicCareerMap({
         difficulty: "Medium",
         importance: "High",
         resources: [
-          { title: "Creative Arts Portfolio Guide", type: "link" },
-          { title: "Digital Design Tools", type: "video" },
-          { title: "Art History & Appreciation", type: "course" },
+          { title: "Creative Arts Portfolio Guide", type: "link" as const },
+          { title: "Digital Design Tools", type: "video" as const },
+          { title: "Art History & Appreciation", type: "course" as const },
         ],
         nextSteps: [
           "Portfolio preparation",
@@ -529,9 +529,9 @@ export default function DynamicCareerMap({
           "Film & Television Studies",
         ],
         resources: [
-          { title: "Creative Career Pathways", type: "link" },
-          { title: "Industry Trends in Arts", type: "video" },
-          { title: "Professional Development Course", type: "course" },
+          { title: "Creative Career Pathways", type: "link" as const },
+          { title: "Industry Trends in Arts", type: "video" as const },
+          { title: "Professional Development Course", type: "course" as const },
         ],
         nextSteps: [
           "Skill enhancement",
@@ -560,9 +560,9 @@ export default function DynamicCareerMap({
           "Writing & Content Strategy",
         ],
         resources: [
-          { title: "Industry Software Training", type: "course" },
-          { title: "Freelancing Guide for Creatives", type: "link" },
-          { title: "Building Creative Business", type: "video" },
+          { title: "Industry Software Training", type: "course" as const },
+          { title: "Freelancing Guide for Creatives", type: "link" as const },
+          { title: "Building Creative Business", type: "video" as const },
         ],
         nextSteps: [
           "Portfolio building",
@@ -588,9 +588,9 @@ export default function DynamicCareerMap({
         difficulty: "Easy",
         importance: "Critical",
         resources: [
-          { title: "Skill Gap Analysis Tool", type: "link" },
-          { title: "Tech Career Transition Guide", type: "video" },
-          { title: "Industry Research Methods", type: "course" },
+          { title: "Skill Gap Analysis Tool", type: "link" as const },
+          { title: "Tech Career Transition Guide", type: "video" as const },
+          { title: "Industry Research Methods", type: "course" as const },
         ],
         nextSteps: [
           "Learning path design",
@@ -619,9 +619,9 @@ export default function DynamicCareerMap({
           "Cybersecurity Fundamentals",
         ],
         resources: [
-          { title: "Coding Bootcamp Programs", type: "course" },
-          { title: "Free Programming Resources", type: "link" },
-          { title: "Career Transition Success Stories", type: "video" },
+          { title: "Coding Bootcamp Programs", type: "course" as const },
+          { title: "Free Programming Resources", type: "link" as const },
+          { title: "Career Transition Success Stories", type: "video" as const },
         ],
         nextSteps: [
           "Project portfolio",
@@ -651,9 +651,9 @@ export default function DynamicCareerMap({
           "Direct Company Applications",
         ],
         resources: [
-          { title: "Tech Portfolio Examples", type: "link" },
-          { title: "Interview Preparation Guide", type: "course" },
-          { title: "Salary Negotiation for Career Switchers", type: "video" },
+          { title: "Tech Portfolio Examples", type: "link" as const },
+          { title: "Interview Preparation Guide", type: "course" as const },
+          { title: "Salary Negotiation for Career Switchers", type: "video" as const },
         ],
       },
     ],
@@ -796,8 +796,8 @@ export default function DynamicCareerMap({
         difficulty: "Easy",
         importance: "Critical",
         resources: [
-          { title: "Career Assessment Tools", type: "link" },
-          { title: "Goal Setting Workshop", type: "video" },
+          { title: "Career Assessment Tools", type: "link" as const },
+          { title: "Goal Setting Workshop", type: "video" as const },
         ],
         nextSteps: ["Skill gap analysis", "Learning path design"],
       },
@@ -814,8 +814,8 @@ export default function DynamicCareerMap({
         difficulty: "Medium",
         importance: "High",
         resources: [
-          { title: "Learning Path Templates", type: "link" },
-          { title: "Study Planning Guide", type: "course" },
+          { title: "Learning Path Templates", type: "link" as const },
+          { title: "Study Planning Guide", type: "course" as const },
         ],
         nextSteps: ["Resource acquisition", "Learning commencement"],
       },
@@ -836,9 +836,9 @@ export default function DynamicCareerMap({
           "Practical Projects",
         ],
         resources: [
-          { title: "Online Learning Platforms", type: "link" },
-          { title: "Study Techniques Masterclass", type: "video" },
-          { title: "Project-Based Learning", type: "course" },
+          { title: "Online Learning Platforms", type: "link" as const },
+          { title: "Study Techniques Masterclass", type: "video" as const },
+          { title: "Project-Based Learning", type: "course" as const },
         ],
         nextSteps: ["Skill validation", "Opportunity application"],
       },
@@ -863,9 +863,9 @@ export default function DynamicCareerMap({
           "Entrepreneurship",
         ],
         resources: [
-          { title: "Job Search Strategies", type: "course" },
-          { title: "Interview Preparation", type: "video" },
-          { title: "Career Networking Guide", type: "link" },
+          { title: "Job Search Strategies", type: "course" as const },
+          { title: "Interview Preparation", type: "video" as const },
+          { title: "Career Networking Guide", type: "link" as const },
         ],
       },
     ];
