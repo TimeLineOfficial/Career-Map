@@ -199,10 +199,22 @@ export default function Index() {
   return (
     <div className="min-h-screen" data-loc="home-page">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20" data-loc="hero-section">
-        <div className="absolute inset-0 bg-gradient-to-r from-career-primary/5 via-transparent to-career-secondary/5" data-loc="hero-overlay"></div>
-        <div className="container relative px-4 py-24 lg:py-32" data-loc="hero-container">
-          <div className="max-w-4xl mx-auto text-center space-y-8" data-loc="hero-content">
+      <section
+        className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20"
+        data-loc="hero-section"
+      >
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-career-primary/5 via-transparent to-career-secondary/5"
+          data-loc="hero-overlay"
+        ></div>
+        <div
+          className="container relative px-4 py-24 lg:py-32"
+          data-loc="hero-container"
+        >
+          <div
+            className="max-w-4xl mx-auto text-center space-y-8"
+            data-loc="hero-content"
+          >
             <div className="space-y-4">
               <Badge
                 variant="secondary"
@@ -213,15 +225,24 @@ export default function Index() {
                 Your Complete Career & Business Roadmap
               </Badge>
 
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight" data-loc="hero-heading">
+              <h1
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+                data-loc="hero-heading"
+              >
                 Navigate Your
-                <span className="bg-gradient-to-r from-career-primary via-career-secondary to-career-accent bg-clip-text text-transparent" data-loc="hero-highlight">
+                <span
+                  className="bg-gradient-to-r from-career-primary via-career-secondary to-career-accent bg-clip-text text-transparent"
+                  data-loc="hero-highlight"
+                >
                   {" "}
                   Career Journey
                 </span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed" data-loc="hero-subtitle">
+              <p
+                className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                data-loc="hero-subtitle"
+              >
                 From school to success - discover your perfect career path,
                 explore business opportunities, and get step-by-step guidance to
                 achieve your professional dreams.
@@ -243,14 +264,22 @@ export default function Index() {
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
 
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6" data-loc="cta-watch-demo">
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 py-6"
+                data-loc="cta-watch-demo"
+              >
                 <Play className="h-5 w-5 mr-2" />
                 Watch Demo
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12" data-loc="hero-stats">
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12"
+              data-loc="hero-stats"
+            >
               <div className="text-center" data-loc="stat-jobs">
                 <div className="text-3xl md:text-4xl font-bold text-career-primary">
                   {animatedNumbers.jobsListed.toLocaleString()}+

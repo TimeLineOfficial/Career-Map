@@ -236,7 +236,10 @@ interface DataStore {
   getExtendedInterests: () => ExtendedInterest[];
   searchExtendedInterests: (query: string) => ExtendedInterest[];
   getTrendingInterests: () => ExtendedInterest[];
-  findAdvancedCareersByInterests: (interests: string[], preferredLevel?: string) => any[];
+  findAdvancedCareersByInterests: (
+    interests: string[],
+    preferredLevel?: string,
+  ) => any[];
 
   // Enhanced Job Functions
   getLatestJobs: (
@@ -426,23 +429,31 @@ export const useDataStore = create<DataStore>()(
         return getTrendingInterests();
       },
 
-      findAdvancedCareersByInterests: (interests: string[], preferredLevel?: string) => {
+      findAdvancedCareersByInterests: (
+        interests: string[],
+        preferredLevel?: string,
+      ) => {
         const extendedInterests = extendedInterestDataset;
 
-        const matchedCareers = interests.flatMap(interestName => {
-          const interest = extendedInterests.find(i =>
-            i.name.toLowerCase().includes(interestName.toLowerCase()) ||
-            i.keywords.some(k => k.toLowerCase().includes(interestName.toLowerCase()))
+        const matchedCareers = interests.flatMap((interestName) => {
+          const interest = extendedInterests.find(
+            (i) =>
+              i.name.toLowerCase().includes(interestName.toLowerCase()) ||
+              i.keywords.some((k) =>
+                k.toLowerCase().includes(interestName.toLowerCase()),
+              ),
           );
 
-          return interest ? interest.career_paths.map(path => ({
-            path,
-            interest: interest.name,
-            category: interest.category,
-            growth: interest.growth_potential,
-            salary: interest.salary_range,
-            education: interest.education_levels
-          })) : [];
+          return interest
+            ? interest.career_paths.map((path) => ({
+                path,
+                interest: interest.name,
+                category: interest.category,
+                growth: interest.growth_potential,
+                salary: interest.salary_range,
+                education: interest.education_levels,
+              }))
+            : [];
         });
 
         return matchedCareers.slice(0, 20); // Limit to top 20 matches

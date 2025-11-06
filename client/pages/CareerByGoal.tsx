@@ -451,7 +451,9 @@ export default function CareerByGoal() {
     switch (currentStep) {
       case "results":
         setCurrentStep(
-          selectedOptions.stage === "working_professional" ? "personalization" : "personalization",
+          selectedOptions.stage === "working_professional"
+            ? "personalization"
+            : "personalization",
         );
         break;
       case "personalization":
