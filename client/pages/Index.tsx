@@ -233,6 +233,10 @@ export default function Index() {
                 size="lg"
                 className="bg-gradient-to-r from-career-primary to-career-secondary hover:opacity-90 text-lg px-8 py-6"
                 data-loc="cta-start-mapping"
+                onClick={() => {
+                  const el = document.getElementById("career-sections");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
               >
                 <MapPin className="h-5 w-5 mr-2" />
                 Start Career Mapping
@@ -283,7 +287,7 @@ export default function Index() {
       </section>
 
       {/* Jobs Section */}
-      <section className="py-24 bg-muted/20">
+      <section id="career-sections" className="py-24 bg-muted/20">
         <div className="container px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-4 mb-16">

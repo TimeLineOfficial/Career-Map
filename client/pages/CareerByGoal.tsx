@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDataStore } from "../lib/data-service";
 import { Button } from "../components/ui/button";
 import {
@@ -329,6 +329,7 @@ export default function CareerByGoal() {
   };
 
   const handleStageSelect = (stageId: string) => {
+    // Update selected stage and reset downstream selections
     setSelectedOptions((prev) => ({
       ...prev,
       stage: stageId,
@@ -341,6 +342,8 @@ export default function CareerByGoal() {
       setTimeout(() => generateResults(), 0);
       return;
     }
+
+    // For other stages, continue the normal flow to stream selection
     setCurrentStep("stream");
   };
 
@@ -353,6 +356,7 @@ export default function CareerByGoal() {
       setTimeout(() => generateResults(), 0);
       return;
     }
+
     // For working professionals, go to personalization directly
     if (selectedOptions.stage === "working_professional") {
       setCurrentStep("personalization");
@@ -440,6 +444,33 @@ export default function CareerByGoal() {
     setCareerPaths([]);
     setCareerSwitchPaths([]);
     setShowAdvancedMapping(false);
+  };
+
+  const navigateBack = () => {
+    // Navigate one step back based on currentStep
+    switch (currentStep) {
+      case "results":
+        setCurrentStep(
+          selectedOptions.stage === "working_professional" ? "personalization" : "personalization",
+        );
+        break;
+      case "personalization":
+        if (selectedOptions.course) setCurrentStep("course");
+        else if (selectedOptions.stream) setCurrentStep("stream");
+        else setCurrentStep("stage");
+        break;
+      case "course":
+        setCurrentStep("stream");
+        break;
+      case "stream":
+        setCurrentStep("stage");
+        break;
+      case "stage":
+        setCurrentStep("goal");
+        break;
+      default:
+        setCurrentStep("goal");
+    }
   };
 
   const StepIndicator = () => (
@@ -660,7 +691,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("goal")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Goal Selection
           </Button>
         </div>
@@ -712,7 +743,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stage")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Education Level
           </Button>
         </div>
@@ -762,7 +793,7 @@ export default function CareerByGoal() {
         </div>
 
         <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stream")}>
+          <Button variant="outline" onClick={navigateBack}>
             Back to Stream Selection
           </Button>
         </div>

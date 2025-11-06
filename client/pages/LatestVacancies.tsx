@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useDataStore } from "@/lib/data-service";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,6 +47,9 @@ export default function LatestVacancies() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("deadline");
 
+  const { getLatestJobs } = useDataStore();
+  const [visibleCount, setVisibleCount] = useState(8);
+
   const sectors = [
     { value: "government", label: "Government Jobs" },
     { value: "private", label: "Private Sector" },
@@ -83,123 +87,11 @@ export default function LatestVacancies() {
     { value: "15+", label: "₹15+ LPA" },
   ];
 
-  const jobListings = [
-    {
-      id: 1,
-      title: "Software Engineer",
-      organization: "Indian Space Research Organisation (ISRO)",
-      type: "Government",
-      location: "Bangalore, Karnataka",
-      salary: "₹6.5 - ₹12 LPA",
-      inHandSalary: "₹55,000 - ₹85,000",
-      allowances: "₹15,000 - ₹25,000",
-      applicationStart: "2024-01-15",
-      applicationEnd: "2024-02-15",
-      examDate: "2024-03-20",
-      fee: "₹500 (Gen/OBC), ₹250 (SC/ST/PWD)",
-      eligibility: "B.Tech/B.E. in Computer Science/IT",
-      experience: "0-3 years",
-      vacancies: 45,
-      category: ["General", "OBC", "SC", "ST"],
-      status: "Active",
-      urgent: false,
-      featured: true,
-      applyLink: "https://isro.gov.in/careers",
-      tutorialLink: "https://youtube.com/watch?v=example1",
-    },
-    {
-      id: 2,
-      title: "Banking Associate",
-      organization: "State Bank of India",
-      type: "Banking",
-      location: "Multiple Locations",
-      salary: "₹4 - ₹8 LPA",
-      inHandSalary: "₹35,000 - ₹55,000",
-      allowances: "₹8,000 - ₹15,000",
-      applicationStart: "2024-01-10",
-      applicationEnd: "2024-02-05",
-      examDate: "2024-02-25",
-      fee: "₹750 (Gen/OBC), ₹100 (SC/ST/PWD)",
-      eligibility: "Graduation in any discipline",
-      experience: "0-2 years",
-      vacancies: 2000,
-      category: ["General", "OBC", "SC", "ST", "EWS"],
-      status: "Active",
-      urgent: true,
-      featured: false,
-      applyLink: "https://sbi.co.in/careers",
-      tutorialLink: "https://youtube.com/watch?v=example2",
-    },
-    {
-      id: 3,
-      title: "Assistant Commandant",
-      organization: "Central Reserve Police Force (CRPF)",
-      type: "Defence",
-      location: "All India",
-      salary: "₹9 - ₹18 LPA",
-      inHandSalary: "₹65,000 - ₹95,000",
-      allowances: "₹20,000 - ₹35,000",
-      applicationStart: "2024-01-20",
-      applicationEnd: "2024-02-20",
-      examDate: "2024-04-10",
-      fee: "₹200 (All Categories)",
-      eligibility: "Graduation + Physical Standards",
-      experience: "Fresh graduates welcome",
-      vacancies: 219,
-      category: ["General", "OBC", "SC", "ST"],
-      status: "Active",
-      urgent: false,
-      featured: true,
-      applyLink: "https://crpf.gov.in/recruitment",
-      tutorialLink: "https://youtube.com/watch?v=example3",
-    },
-    {
-      id: 4,
-      title: "Junior Engineer",
-      organization: "Indian Railways",
-      type: "Railway",
-      location: "Multiple Zones",
-      salary: "₹3.5 - ₹7 LPA",
-      inHandSalary: "₹30,000 - ₹50,000",
-      allowances: "₹10,000 - ₹18,000",
-      applicationStart: "2024-01-25",
-      applicationEnd: "2024-02-25",
-      examDate: "2024-03-30",
-      fee: "₹500 (Gen/OBC), ₹250 (SC/ST/PWD)",
-      eligibility: "Diploma/B.Tech in Engineering",
-      experience: "0-2 years",
-      vacancies: 13487,
-      category: ["General", "OBC", "SC", "ST", "EWS"],
-      status: "Active",
-      urgent: false,
-      featured: false,
-      applyLink: "https://rrbcdg.gov.in",
-      tutorialLink: "https://youtube.com/watch?v=example4",
-    },
-    {
-      id: 5,
-      title: "Data Analyst",
-      organization: "Tech Mahindra",
-      type: "Private",
-      location: "Pune, Maharashtra",
-      salary: "₹4.5 - ₹8 LPA",
-      inHandSalary: "₹35,000 - ₹60,000",
-      allowances: "₹5,000 - ₹12,000",
-      applicationStart: "2024-01-12",
-      applicationEnd: "2024-02-10",
-      examDate: "2024-02-18",
-      fee: "No Application Fee",
-      eligibility: "B.Tech/BCA/MCA with Analytics knowledge",
-      experience: "0-1 years",
-      vacancies: 150,
-      category: ["Open for all"],
-      status: "Active",
-      urgent: true,
-      featured: false,
-      applyLink: "https://careers.techmahindra.com",
-      tutorialLink: "https://youtube.com/watch?v=example5",
-    },
-  ];
+  // Use the shared job list from the store and paginate locally
+  const allJobs = getLatestJobs();
+  const jobListings = allJobs.slice(0, visibleCount);
+
+  const loadMore = () => setVisibleCount((c) => c + 8);
 
   const filteredJobs = jobListings.filter((job) => {
     if (

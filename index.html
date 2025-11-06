@@ -13,6 +13,7 @@
       name="keywords"
       content="career guidance, job search, business opportunities, career roadmap, professional development"
     />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- GitHub Pages SPA routing support -->
     <script type="text/javascript">
@@ -48,6 +49,28 @@
         },
         "employmentType": "FULL_TIME",
         "datePosted": "2024-01-01"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CareerMap",
+        "url": "https://careermap.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://careermap.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "CareerMap",
+        "url": "https://careermap.com",
+        "logo": "/logo.svg"
       }
     </script>
   </head>

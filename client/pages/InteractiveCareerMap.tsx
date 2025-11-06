@@ -35,13 +35,16 @@ import {
   Building,
   GraduationCap,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function InteractiveCareerMap() {
-  const { careerMapData } = useDataStore();
+  const { careerMapData, getYouTubeLectures } = useDataStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedField, setSelectedField] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [expandedNode, setExpandedNode] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const careerFields = [
     {
@@ -309,6 +312,7 @@ export default function InteractiveCareerMap() {
                       Search Careers
                     </label>
                     <Input
+                      id="search-careers"
                       placeholder="e.g., Software Engineer, Doctor"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -554,10 +558,31 @@ export default function InteractiveCareerMap() {
                                     </div>
                                   </div>
                                   <div>
-                                    <Button size="sm" className="w-full">
-                                      <Target className="h-3 w-3 mr-1" />
-                                      Explore
-                                    </Button>
+                                    <div className="flex flex-col gap-2">
+                                      <Button
+                                        size="sm"
+                                        className="w-full"
+                                        onClick={() => {
+                                          // Navigate to By Goal with the career preselected
+                                          navigate("/jobs/by-goal", {
+                                            state: { preselectedCareerId: node.id, preselectedCareerTitle: node.title },
+                                          });
+                                        }}
+                                      >
+                                        <Target className="h-3 w-3 mr-1" />
+                                        Get Roadmap
+                                      </Button>
+
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="w-full"
+                                        onClick={() => setExpandedNode(node.id)}
+                                      >
+                                        <BookOpen className="h-3 w-3 mr-1" />
+                                        Learn More
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               </CardContent>
@@ -566,6 +591,60 @@ export default function InteractiveCareerMap() {
                         })()}
                       </div>
                     )}
+
+                    {/* Expanded details when user clicks Learn More */}
+                    {expandedNode && (() => {
+                      const details = filteredNodes.find(n => n.id === expandedNode);
+                      if (!details) return null;
+                      const videos = getYouTubeLectures(details.title || details.id || "");
+                      return (
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div>
+                                  <h3 className="font-bold text-lg">{details.title} - Details</h3>
+                                  <p className="text-sm text-muted-foreground">{details.description}</p>
+                                </div>
+                                <div>
+                                  <Button size="sm" variant="outline" onClick={() => setExpandedNode(null)}>Close</Button>
+                                </div>
+                              </div>
+
+                              <div className="grid md:grid-cols-3 gap-4">
+                                <div>
+                                  <h4 className="font-medium">Salary</h4>
+                                  <div className="font-medium">{details.salary}</div>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Growth</h4>
+                                  <div className="font-medium">{details.growth}</div>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Actions</h4>
+                                  <div className="flex flex-col gap-2 mt-2">
+                                    <Button onClick={() => navigate('/jobs/by-goal', { state: { preselectedCareerId: details.id, preselectedCareerTitle: details.title } })}>Get Roadmap</Button>
+                                    <Button variant="outline" onClick={() => window.open(videos[0]?.url || '#', '_blank')}>Watch Tutorial</Button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-4">
+                                <h4 className="font-medium mb-2">Video Tutorials</h4>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {videos.map((v, i) => (
+                                    <a key={i} href={v.url} target="_blank" rel="noopener noreferrer" className="block p-3 border rounded hover:shadow">
+                                      <div className="font-semibold">{v.title}</div>
+                                      <div className="text-sm text-muted-foreground">{v.channel} • {v.duration}</div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </CardContent>
               </Card>
