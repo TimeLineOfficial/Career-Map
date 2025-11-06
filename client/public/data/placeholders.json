@@ -1,0 +1,235 @@
+{
+  "career_paths": {
+    "doctor": {
+      "title": "Medical Doctor Career Path",
+      "steps": [
+        "Complete 12th with PCB (Physics, Chemistry, Biology)",
+        "Clear NEET entrance exam with high score",
+        "Complete MBBS degree (5.5 years including internship)",
+        "Choose specialization through NEET PG",
+        "Complete MD/MS in chosen specialty",
+        "Start practice or join hospital"
+      ],
+      "notes": "Medical profession requires dedication, continuous learning, and strong academic performance. Edit this path based on your specific goals.",
+      "tags": ["placeholder", "medical", "healthcare", "science"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "8-10 years",
+      "difficulty": "Very High",
+      "salary_range": "₹8-50 LPA"
+    },
+    "engineer": {
+      "title": "Engineering Career Path",
+      "steps": [
+        "Complete 12th with PCM (Physics, Chemistry, Math)",
+        "Clear JEE Main/Advanced or state CET",
+        "Complete BTech/BE in chosen branch (4 years)",
+        "Gain practical experience through internships",
+        "Develop specialized skills and certifications",
+        "Join industry or pursue higher studies"
+      ],
+      "notes": "Engineering offers diverse opportunities in technology, innovation, and problem-solving. Customize this path for your engineering branch.",
+      "tags": ["placeholder", "engineering", "technology", "innovation"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "4-6 years",
+      "difficulty": "High",
+      "salary_range": "₹5-80 LPA"
+    },
+    "ca": {
+      "title": "Chartered Accountant Career Path",
+      "steps": [
+        "Complete 12th with Commerce background",
+        "Register for CA Foundation course",
+        "Clear CA Foundation exam",
+        "Complete CA Intermediate with articleship",
+        "Finish 3 years articleship training",
+        "Clear CA Final exam and start practice"
+      ],
+      "notes": "CA is a prestigious career in finance and accounting. Requires strong analytical skills and attention to detail. Customize based on your interests.",
+      "tags": ["placeholder", "finance", "accounting", "commerce"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "4-5 years",
+      "difficulty": "High",
+      "salary_range": "₹6-40 LPA"
+    },
+    "upsc": {
+      "title": "Civil Services (IAS/IPS) Career Path",
+      "steps": [
+        "Complete graduation in any discipline",
+        "Start UPSC preparation with coaching/self-study",
+        "Clear UPSC Prelims exam",
+        "Clear UPSC Mains exam",
+        "Succeed in UPSC Interview round",
+        "Complete training at respective academies"
+      ],
+      "notes": "Civil services offer opportunity to serve the nation. Requires dedication, current affairs knowledge, and strong communication skills.",
+      "tags": ["placeholder", "government", "civil services", "public service"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "2-4 years prep",
+      "difficulty": "Very High",
+      "salary_range": "₹56K-2.5L/month"
+    },
+    "designer": {
+      "title": "Design Professional Career Path",
+      "steps": [
+        "Complete 12th with Art/Science/Commerce",
+        "Pursue design degree (BFA/BDes/Diploma)",
+        "Build strong portfolio with diverse projects",
+        "Gain experience through internships",
+        "Specialize in chosen design field",
+        "Freelance or join design agencies"
+      ],
+      "notes": "Design career combines creativity with problem-solving. Build a strong portfolio and stay updated with design trends and tools.",
+      "tags": ["placeholder", "design", "creative", "visual arts"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "3-5 years",
+      "difficulty": "Medium",
+      "salary_range": "₹3-30 LPA"
+    },
+    "cyber_security": {
+      "title": "Cybersecurity Expert Career Path",
+      "steps": [
+        "Complete 12th with Science/Commerce",
+        "Pursue BTech in Computer Science or related field",
+        "Learn cybersecurity fundamentals and tools",
+        "Obtain industry certifications (CEH, CISSP)",
+        "Gain practical experience in SOC/security teams",
+        "Specialize in chosen security domain"
+      ],
+      "notes": "Cybersecurity is a rapidly growing field with high demand. Focus on continuous learning and hands-on practice with security tools.",
+      "tags": ["placeholder", "cybersecurity", "technology", "information security"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "4-6 years",
+      "difficulty": "High",
+      "salary_range": "₹8-60 LPA"
+    },
+    "biotech": {
+      "title": "Biotechnology Career Path",
+      "steps": [
+        "Complete 12th with PCB (Biology focus)",
+        "Pursue BTech/BSc in Biotechnology",
+        "Gain laboratory experience and research skills",
+        "Consider MSc/MTech for specialization",
+        "Work in biotech companies or research institutes",
+        "Pursue PhD for advanced research roles"
+      ],
+      "notes": "Biotechnology combines biology with technology to solve real-world problems. Great for those interested in life sciences and innovation.",
+      "tags": ["placeholder", "biotechnology", "life sciences", "research"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "4-8 years",
+      "difficulty": "High",
+      "salary_range": "₹4-25 LPA"
+    },
+    "mba": {
+      "title": "MBA & Management Career Path",
+      "steps": [
+        "Complete graduation in any discipline",
+        "Gain work experience (2-3 years preferred)",
+        "Prepare for MBA entrance exams (CAT/XAT/GMAT)",
+        "Complete MBA from reputed institution",
+        "Choose specialization (Finance/Marketing/Operations)",
+        "Join corporate roles or start own venture"
+      ],
+      "notes": "MBA opens doors to leadership roles across industries. Focus on developing business acumen and leadership skills throughout the journey.",
+      "tags": ["placeholder", "mba", "management", "business"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "3-5 years",
+      "difficulty": "Medium-High",
+      "salary_range": "₹10-80 LPA"
+    },
+    "law": {
+      "title": "Legal Professional Career Path",
+      "steps": [
+        "Complete 12th in any stream",
+        "Clear CLAT or other law entrance exams",
+        "Complete LLB (3 years) or BA LLB (5 years)",
+        "Register with Bar Council and start practice",
+        "Gain experience in chosen legal specialization",
+        "Consider judiciary exams or corporate law roles"
+      ],
+      "notes": "Law offers diverse career paths from litigation to corporate counsel. Develop strong analytical and communication skills.",
+      "tags": ["placeholder", "law", "legal", "judiciary"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "3-6 years",
+      "difficulty": "Medium-High",
+      "salary_range": "₹4-50 LPA"
+    },
+    "pharmacy": {
+      "title": "Pharmacy Professional Career Path",
+      "steps": [
+        "Complete 12th with PCM/PCB",
+        "Pursue D.Pharm (2 years) or B.Pharm (4 years)",
+        "Complete mandatory internship",
+        "Register with State Pharmacy Council",
+        "Choose between retail, clinical, or industrial pharmacy",
+        "Consider M.Pharm for specialized roles"
+      ],
+      "notes": "Pharmacy profession focuses on medication management and patient care. Good option for those interested in healthcare and chemistry.",
+      "tags": ["placeholder", "pharmacy", "healthcare", "medicine"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "2-4 years",
+      "difficulty": "Medium",
+      "salary_range": "₹3-20 LPA"
+    },
+    "railway": {
+      "title": "Railway Services Career Path",
+      "steps": [
+        "Complete 12th/Graduation based on target position",
+        "Prepare for Railway Recruitment Board (RRB) exams",
+        "Clear written examination and physical tests",
+        "Complete medical examination",
+        "Undergo training at Railway Training Institute",
+        "Join designated railway position and grow"
+      ],
+      "notes": "Railway jobs offer job security and growth opportunities. Preparation focus should be on current affairs, reasoning, and technical subjects.",
+      "tags": ["placeholder", "railway", "government", "transportation"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "1-3 years prep",
+      "difficulty": "Medium",
+      "salary_range": "₹18K-1.5L/month"
+    },
+    "police": {
+      "title": "Police Services Career Path",
+      "steps": [
+        "Complete 12th/Graduation based on target rank",
+        "Prepare for police recruitment exams",
+        "Clear written exam, physical tests, and medical",
+        "Complete police training at training academy",
+        "Join as Constable/Sub-Inspector/IPS officer",
+        "Gain experience and pursue promotions"
+      ],
+      "notes": "Police services offer opportunity to serve society and maintain law and order. Requires physical fitness and integrity.",
+      "tags": ["placeholder", "police", "law enforcement", "public service"],
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "timeline": "1-4 years prep",
+      "difficulty": "Medium-High",
+      "salary_range": "₹25K-2L/month"
+    }
+  },
+  "streams": {
+    "pcm": {
+      "name": "Physics, Chemistry, Mathematics",
+      "careers": ["engineer", "scientist", "pilot", "architect"],
+      "description": "Ideal for technical and engineering careers"
+    },
+    "pcb": {
+      "name": "Physics, Chemistry, Biology", 
+      "careers": ["doctor", "biotech", "pharmacy", "veterinarian"],
+      "description": "Perfect for medical and life sciences careers"
+    },
+    "pcmb": {
+      "name": "Physics, Chemistry, Math, Biology",
+      "careers": ["biotech", "bioinformatics", "environmental_science", "research"],
+      "description": "Versatile combination for interdisciplinary careers"
+    },
+    "commerce": {
+      "name": "Commerce with Accountancy",
+      "careers": ["ca", "cs", "mba", "banking"],
+      "description": "Foundation for business and finance careers"
+    },
+    "arts": {
+      "name": "Arts/Humanities",
+      "careers": ["upsc", "law", "designer", "journalist"],
+      "description": "Opens doors to diverse creative and service careers"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+/* Mobile Responsiveness for Career Map */
+
+/* Mobile-first approach for dynamic career map */
+@media (max-width: 768px) {
+  .career-map-container {
+    padding: 1rem;
+  }
+  
+  .career-step-card {
+    margin-left: 2rem;
+  }
+  
+  .career-step-number {
+    width: 3rem;
+    height: 3rem;
+    font-size: 0.875rem;
+  }
+  
+  .career-map-content {
+    padding: 1rem;
+  }
+  
+  .career-map-title {
+    font-size: 1.5rem;
+  }
+  
+  .career-options-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .career-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .career-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .career-step-card {
+    margin-left: 4rem;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 1025px) {
+  .career-options-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .career-step-card {
+    margin-left: 6rem;
+  }
+  
+  .career-map-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Interactive elements */
+.career-map-button {
+  transition: all 0.2s ease-in-out;
+  min-height: 44px; /* Touch-friendly */
+}
+
+.career-map-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.career-map-button:active {
+  transform: translateY(0);
+}
+
+/* Progress line animations */
+.career-progress-line {
+  background: linear-gradient(to bottom, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%);
+  background-size: 100% 200%;
+  animation: progressFlow 2s ease-in-out;
+}
+
+@keyframes progressFlow {
+  0% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
+/* Accessibility improvements */
+.career-map-focus:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+  .career-step-card {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+  
+  .career-map-title {
+    color: #f9fafb;
+  }
+}
+
+/* Print styles for career maps */
+@media print {
+  .career-map-container {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .career-map-button {
+    display: none;
+  }
+  
+  .career-step-number {
+    background: white !important;
+    border: 2px solid black !important;
+    color: black !important;
+  }
+}

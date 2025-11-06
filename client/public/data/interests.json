@@ -1,0 +1,180 @@
+{
+  "categories": {
+    "technology": {
+      "name": "Technology & Computing",
+      "icon": "💻",
+      "interests": [
+        { "id": "programming", "name": "Programming & Coding", "popularity": 95 },
+        { "id": "ai_ml", "name": "Artificial Intelligence & Machine Learning", "popularity": 92 },
+        { "id": "web_development", "name": "Web Development", "popularity": 88 },
+        { "id": "mobile_apps", "name": "Mobile App Development", "popularity": 85 },
+        { "id": "cybersecurity", "name": "Cybersecurity", "popularity": 82 },
+        { "id": "data_science", "name": "Data Science & Analytics", "popularity": 89 },
+        { "id": "blockchain", "name": "Blockchain & Cryptocurrency", "popularity": 78 },
+        { "id": "cloud_computing", "name": "Cloud Computing", "popularity": 80 },
+        { "id": "robotics", "name": "Robotics & Automation", "popularity": 75 },
+        { "id": "game_development", "name": "Game Development", "popularity": 72 }
+      ]
+    },
+    "healthcare": {
+      "name": "Healthcare & Medicine",
+      "icon": "🏥",
+      "interests": [
+        { "id": "medicine", "name": "Medicine & Surgery", "popularity": 90 },
+        { "id": "nursing", "name": "Nursing & Patient Care", "popularity": 78 },
+        { "id": "pharmacy", "name": "Pharmacy & Drug Development", "popularity": 75 },
+        { "id": "dentistry", "name": "Dentistry", "popularity": 70 },
+        { "id": "physiotherapy", "name": "Physiotherapy & Rehabilitation", "popularity": 68 },
+        { "id": "psychology", "name": "Psychology & Mental Health", "popularity": 85 },
+        { "id": "nutrition", "name": "Nutrition & Dietetics", "popularity": 72 },
+        { "id": "veterinary", "name": "Veterinary Science", "popularity": 65 },
+        { "id": "biotechnology", "name": "Biotechnology & Genetics", "popularity": 80 },
+        { "id": "medical_research", "name": "Medical Research", "popularity": 77 }
+      ]
+    },
+    "business": {
+      "name": "Business & Finance",
+      "icon": "💼",
+      "interests": [
+        { "id": "entrepreneurship", "name": "Entrepreneurship & Startups", "popularity": 88 },
+        { "id": "finance", "name": "Finance & Investment", "popularity": 85 },
+        { "id": "marketing", "name": "Marketing & Advertising", "popularity": 82 },
+        { "id": "management", "name": "Management & Leadership", "popularity": 80 },
+        { "id": "accounting", "name": "Accounting & Taxation", "popularity": 75 },
+        { "id": "banking", "name": "Banking & Insurance", "popularity": 72 },
+        { "id": "consulting", "name": "Business Consulting", "popularity": 78 },
+        { "id": "ecommerce", "name": "E-commerce & Digital Business", "popularity": 83 },
+        { "id": "real_estate", "name": "Real Estate", "popularity": 70 },
+        { "id": "import_export", "name": "Import/Export Trade", "popularity": 65 }
+      ]
+    },
+    "creative": {
+      "name": "Creative Arts & Design",
+      "icon": "🎨",
+      "interests": [
+        { "id": "graphic_design", "name": "Graphic Design", "popularity": 85 },
+        { "id": "animation", "name": "Animation & VFX", "popularity": 82 },
+        { "id": "photography", "name": "Photography", "popularity": 78 },
+        { "id": "fashion_design", "name": "Fashion Design", "popularity": 75 },
+        { "id": "interior_design", "name": "Interior Design", "popularity": 73 },
+        { "id": "music", "name": "Music & Sound", "popularity": 80 },
+        { "id": "writing", "name": "Writing & Content Creation", "popularity": 77 },
+        { "id": "filmmaking", "name": "Filmmaking & Video Production", "popularity": 74 },
+        { "id": "fine_arts", "name": "Fine Arts & Painting", "popularity": 68 },
+        { "id": "digital_art", "name": "Digital Art & Illustration", "popularity": 79 }
+      ]
+    },
+    "science": {
+      "name": "Science & Research",
+      "icon": "🔬",
+      "interests": [
+        { "id": "physics", "name": "Physics & Astronomy", "popularity": 82 },
+        { "id": "chemistry", "name": "Chemistry & Materials Science", "popularity": 78 },
+        { "id": "biology", "name": "Biology & Life Sciences", "popularity": 85 },
+        { "id": "mathematics", "name": "Mathematics & Statistics", "popularity": 80 },
+        { "id": "environmental_science", "name": "Environmental Science", "popularity": 75 },
+        { "id": "geology", "name": "Geology & Earth Sciences", "popularity": 65 },
+        { "id": "marine_biology", "name": "Marine Biology", "popularity": 68 },
+        { "id": "forensic_science", "name": "Forensic Science", "popularity": 72 },
+        { "id": "space_science", "name": "Space Science & Research", "popularity": 77 },
+        { "id": "agricultural_science", "name": "Agricultural Science", "popularity": 70 }
+      ]
+    },
+    "engineering": {
+      "name": "Engineering & Technology",
+      "icon": "⚙️",
+      "interests": [
+        { "id": "software_engineering", "name": "Software Engineering", "popularity": 92 },
+        { "id": "mechanical_engineering", "name": "Mechanical Engineering", "popularity": 85 },
+        { "id": "civil_engineering", "name": "Civil Engineering", "popularity": 82 },
+        { "id": "electrical_engineering", "name": "Electrical Engineering", "popularity": 80 },
+        { "id": "electronics", "name": "Electronics & Communication", "popularity": 83 },
+        { "id": "aerospace", "name": "Aerospace Engineering", "popularity": 75 },
+        { "id": "chemical_engineering", "name": "Chemical Engineering", "popularity": 72 },
+        { "id": "biomedical_engineering", "name": "Biomedical Engineering", "popularity": 78 },
+        { "id": "environmental_engineering", "name": "Environmental Engineering", "popularity": 70 },
+        { "id": "automotive", "name": "Automotive Engineering", "popularity": 73 }
+      ]
+    },
+    "social_sciences": {
+      "name": "Social Sciences & Humanities",
+      "icon": "📚",
+      "interests": [
+        { "id": "law", "name": "Law & Legal Studies", "popularity": 83 },
+        { "id": "political_science", "name": "Political Science & Governance", "popularity": 75 },
+        { "id": "sociology", "name": "Sociology & Social Work", "popularity": 72 },
+        { "id": "history", "name": "History & Archaeology", "popularity": 68 },
+        { "id": "philosophy", "name": "Philosophy & Ethics", "popularity": 65 },
+        { "id": "economics", "name": "Economics & Policy", "popularity": 78 },
+        { "id": "international_relations", "name": "International Relations", "popularity": 70 },
+        { "id": "anthropology", "name": "Anthropology", "popularity": 62 },
+        { "id": "linguistics", "name": "Linguistics & Languages", "popularity": 67 },
+        { "id": "geography", "name": "Geography & Urban Planning", "popularity": 69 }
+      ]
+    },
+    "media": {
+      "name": "Media & Communication",
+      "icon": "📺",
+      "interests": [
+        { "id": "journalism", "name": "Journalism & News", "popularity": 78 },
+        { "id": "public_relations", "name": "Public Relations", "popularity": 72 },
+        { "id": "broadcasting", "name": "Broadcasting & Radio", "popularity": 68 },
+        { "id": "digital_marketing", "name": "Digital Marketing & SEO", "popularity": 85 },
+        { "id": "social_media", "name": "Social Media Management", "popularity": 82 },
+        { "id": "event_management", "name": "Event Management", "popularity": 75 },
+        { "id": "corporate_communication", "name": "Corporate Communication", "popularity": 70 },
+        { "id": "content_strategy", "name": "Content Strategy", "popularity": 79 },
+        { "id": "brand_management", "name": "Brand Management", "popularity": 76 },
+        { "id": "advertising", "name": "Advertising & Creative", "popularity": 73 }
+      ]
+    },
+    "education": {
+      "name": "Education & Training",
+      "icon": "🎓",
+      "interests": [
+        { "id": "teaching", "name": "Teaching & Academics", "popularity": 80 },
+        { "id": "educational_technology", "name": "Educational Technology", "popularity": 75 },
+        { "id": "curriculum_development", "name": "Curriculum Development", "popularity": 68 },
+        { "id": "special_education", "name": "Special Education", "popularity": 70 },
+        { "id": "adult_education", "name": "Adult Education & Training", "popularity": 65 },
+        { "id": "educational_administration", "name": "Educational Administration", "popularity": 62 },
+        { "id": "library_science", "name": "Library & Information Science", "popularity": 60 },
+        { "id": "educational_counseling", "name": "Educational Counseling", "popularity": 72 },
+        { "id": "research_methodology", "name": "Research Methodology", "popularity": 67 },
+        { "id": "online_education", "name": "Online Education & E-learning", "popularity": 78 }
+      ]
+    },
+    "sports": {
+      "name": "Sports & Fitness",
+      "icon": "🏃‍♂️",
+      "interests": [
+        { "id": "professional_sports", "name": "Professional Sports", "popularity": 85 },
+        { "id": "fitness_training", "name": "Fitness Training & Coaching", "popularity": 82 },
+        { "id": "sports_management", "name": "Sports Management", "popularity": 75 },
+        { "id": "sports_medicine", "name": "Sports Medicine & Physiotherapy", "popularity": 78 },
+        { "id": "yoga_meditation", "name": "Yoga & Meditation", "popularity": 73 },
+        { "id": "nutrition_fitness", "name": "Sports Nutrition", "popularity": 70 },
+        { "id": "sports_journalism", "name": "Sports Journalism", "popularity": 68 },
+        { "id": "adventure_sports", "name": "Adventure Sports", "popularity": 72 },
+        { "id": "sports_psychology", "name": "Sports Psychology", "popularity": 65 },
+        { "id": "referee_official", "name": "Sports Official & Referee", "popularity": 58 }
+      ]
+    },
+    "agriculture": {
+      "name": "Agriculture & Environment",
+      "icon": "🌱",
+      "interests": [
+        { "id": "sustainable_farming", "name": "Sustainable Farming", "popularity": 78 },
+        { "id": "organic_agriculture", "name": "Organic Agriculture", "popularity": 75 },
+        { "id": "agricultural_technology", "name": "Agricultural Technology", "popularity": 72 },
+        { "id": "horticulture", "name": "Horticulture & Gardening", "popularity": 70 },
+        { "id": "forestry", "name": "Forestry & Conservation", "popularity": 68 },
+        { "id": "animal_husbandry", "name": "Animal Husbandry", "popularity": 65 },
+        { "id": "food_technology", "name": "Food Technology & Processing", "popularity": 73 },
+        { "id": "agricultural_economics", "name": "Agricultural Economics", "popularity": 62 },
+        { "id": "rural_development", "name": "Rural Development", "popularity": 67 },
+        { "id": "environmental_conservation", "name": "Environmental Conservation", "popularity": 76 }
+      ]
+    }
+  }
+}

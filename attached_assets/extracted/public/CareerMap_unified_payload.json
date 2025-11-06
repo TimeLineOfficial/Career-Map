@@ -1,0 +1,989 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generated_at": "2025-08-15T21:09:33.967270Z",
+    "source": "CareerMap unified training payload",
+    "notes": [
+      "This single file contains everything needed by Builder/your app to seed data, render UI, and enforce correct career paths.",
+      "All IDs are stable strings. You can load this into a DB, or keep as JSON and consume directly."
+    ]
+  },
+  "site": {
+    "name": "CareerMap.com",
+    "tagline": "Your Complete Career & Business Roadmap",
+    "design": {
+      "theme": "modern",
+      "dark_mode": true,
+      "mobile_first": true,
+      "animation": "smooth",
+      "map_colors_by_stage": true
+    },
+    "languages": [
+      "en",
+      "hi",
+      "bn",
+      "te",
+      "ta",
+      "mr"
+    ],
+    "auth": {
+      "providers": [
+        "google",
+        "facebook",
+        "phone"
+      ],
+      "require_login_to_save": false,
+      "save_prompt_after_seconds": 180
+    },
+    "monetization": {
+      "ads": {
+        "enabled": true,
+        "slots": [
+          "top",
+          "in_article",
+          "sidebar",
+          "footer"
+        ]
+      },
+      "premium_notes": {
+        "enabled": true,
+        "payment_method": "upi",
+        "deliverable": "instant_pdf_download"
+      }
+    },
+    "admin": {
+      "login": {
+        "username": "Himesh Singh",
+        "password": "Himesh@147Singh2"
+      },
+      "warnings": [
+        "Replace credentials in production. Store secrets server-side only."
+      ]
+    },
+    "performance": {
+      "targets": {
+        "lighthouse": {
+          "perf": 90,
+          "a11y": 90,
+          "best": 90,
+          "seo": 90
+        }
+      },
+      "optimizations": [
+        "lazy_load_lists",
+        "defer_noncritical_js",
+        "preload_fonts",
+        "svg_icons",
+        "responsive_images"
+      ]
+    },
+    "seo": {
+      "enable_schema": true,
+      "schemas": [
+        "JobPosting",
+        "Course",
+        "VideoObject",
+        "Article",
+        "Organization",
+        "BreadcrumbList"
+      ],
+      "meta_defaults": {
+        "title_suffix": " | CareerMap",
+        "og_image": "/og-default.png"
+      },
+      "sitemaps": [
+        "jobs",
+        "business",
+        "articles"
+      ]
+    },
+    "navigation": {
+      "items": [
+        "home",
+        "explore",
+        "guides",
+        "saved",
+        "settings"
+      ]
+    },
+    "ui_text": {
+      "btn_find_matches": {
+        "en": "Find Career Matches",
+        "hi": "कैरियर मिलान खोजें",
+        "bn": "ক্যারিয়ার মিল খুঁজুন",
+        "te": "కెరీర్ సరిపోలికలు కనుగొనండి",
+        "ta": "தொழில் பொருத்தங்களை காண்க",
+        "mr": "करिअर जुळणी शोधा"
+      },
+      "btn_load_more": {
+        "en": "Load More Ideas",
+        "hi": "और विचार लोड करें",
+        "bn": "আরও আইডিয়া লোড করুন",
+        "te": "మరిన్ని ఐడియాలను లోడ్ చేయండి",
+        "ta": "மேலும் ஐடியாக்களை ஏற்றவும்",
+        "mr": "अधिक कल्पना लोड करा"
+      },
+      "label_saved": {
+        "en": "Saved",
+        "hi": "सहेजे गए",
+        "bn": "সংরক্ষিত",
+        "te": "సేవ్ చేసినవి",
+        "ta": "சேமிக்கப்பட்டவை",
+        "mr": "जतन केलेले"
+      }
+    }
+  },
+  "stages": [
+    {
+      "id": "school_10",
+      "label": "Class 10 or below",
+      "color": "#1E88E5"
+    },
+    {
+      "id": "school_11_12_pcm",
+      "label": "Class 11–12 (PCM)",
+      "color": "#43A047"
+    },
+    {
+      "id": "school_11_12_pcb",
+      "label": "Class 11–12 (PCB)",
+      "color": "#8E24AA"
+    },
+    {
+      "id": "school_11_12_pcmb",
+      "label": "Class 11–12 (PCMB)",
+      "color": "#6D4C41"
+    },
+    {
+      "id": "school_11_12_arts",
+      "label": "Class 11–12 (Arts/Humanities)",
+      "color": "#F4511E"
+    },
+    {
+      "id": "school_11_12_commerce",
+      "label": "Class 11–12 (Commerce)",
+      "color": "#00897B"
+    },
+    {
+      "id": "ug_engineering",
+      "label": "Undergraduate Engineering",
+      "color": "#3949AB"
+    },
+    {
+      "id": "ug_medical",
+      "label": "Undergraduate Medical",
+      "color": "#C2185B"
+    },
+    {
+      "id": "ug_science",
+      "label": "Undergraduate Science",
+      "color": "#039BE5"
+    },
+    {
+      "id": "ug_arts",
+      "label": "Undergraduate Arts",
+      "color": "#7CB342"
+    },
+    {
+      "id": "ug_commerce",
+      "label": "Undergraduate Commerce",
+      "color": "#00796B"
+    },
+    {
+      "id": "pg",
+      "label": "Postgraduate",
+      "color": "#5E35B1"
+    },
+    {
+      "id": "doctorate",
+      "label": "PhD/Doctorate",
+      "color": "#546E7A"
+    },
+    {
+      "id": "exam_prep",
+      "label": "Competitive Exams",
+      "color": "#FDD835"
+    },
+    {
+      "id": "jobs_business",
+      "label": "Jobs and Business",
+      "color": "#212121"
+    }
+  ],
+  "interests": [
+    {
+      "id": "bio_med",
+      "category": "Science",
+      "name": "Biology & Medicine"
+    },
+    {
+      "id": "chemistry",
+      "category": "Science",
+      "name": "Chemistry"
+    },
+    {
+      "id": "physics",
+      "category": "Science",
+      "name": "Physics"
+    },
+    {
+      "id": "math",
+      "category": "Science",
+      "name": "Mathematics"
+    },
+    {
+      "id": "cs",
+      "category": "Technology",
+      "name": "Computer Science"
+    },
+    {
+      "id": "data",
+      "category": "Technology",
+      "name": "Data & AI"
+    },
+    {
+      "id": "civil",
+      "category": "Engineering",
+      "name": "Civil Engineering"
+    },
+    {
+      "id": "mech",
+      "category": "Engineering",
+      "name": "Mechanical Engineering"
+    },
+    {
+      "id": "electrical",
+      "category": "Engineering",
+      "name": "Electrical/Electronics"
+    },
+    {
+      "id": "finance",
+      "category": "Commerce",
+      "name": "Accounting & Finance"
+    },
+    {
+      "id": "marketing",
+      "category": "Commerce",
+      "name": "Marketing & Sales"
+    },
+    {
+      "id": "law",
+      "category": "Humanities",
+      "name": "Law & Legal Studies"
+    },
+    {
+      "id": "journalism",
+      "category": "Humanities",
+      "name": "Journalism & Mass Comm"
+    },
+    {
+      "id": "design",
+      "category": "Arts",
+      "name": "Design & UI/UX"
+    },
+    {
+      "id": "sports",
+      "category": "Physical Education",
+      "name": "Sports Science"
+    },
+    {
+      "id": "agri",
+      "category": "Applied Sciences",
+      "name": "Agriculture"
+    },
+    {
+      "id": "pharmacy",
+      "category": "Applied Sciences",
+      "name": "Pharmacy"
+    },
+    {
+      "id": "nursing",
+      "category": "Healthcare",
+      "name": "Nursing"
+    },
+    {
+      "id": "defense",
+      "category": "Government",
+      "name": "Defense/Police"
+    },
+    {
+      "id": "railways",
+      "category": "Government",
+      "name": "Railways"
+    },
+    {
+      "id": "economics",
+      "category": "Social Science",
+      "name": "Economics"
+    },
+    {
+      "id": "psychology",
+      "category": "Social Science",
+      "name": "Psychology"
+    },
+    {
+      "id": "architecture",
+      "category": "Design",
+      "name": "Architecture"
+    }
+  ],
+  "courses": [
+    {
+      "id": "mbbs",
+      "level": "UG",
+      "name": "MBBS",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet"
+      ]
+    },
+    {
+      "id": "bds",
+      "level": "UG",
+      "name": "BDS",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet"
+      ]
+    },
+    {
+      "id": "bhms",
+      "level": "UG",
+      "name": "BHMS",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet"
+      ]
+    },
+    {
+      "id": "bams",
+      "level": "UG",
+      "name": "BAMS",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet"
+      ]
+    },
+    {
+      "id": "bsc_nursing",
+      "level": "UG",
+      "name": "B.Sc Nursing",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet"
+      ]
+    },
+    {
+      "id": "bpharm",
+      "level": "UG",
+      "name": "B.Pharm",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "neet",
+        "cuet"
+      ]
+    },
+    {
+      "id": "btech_cs",
+      "level": "UG",
+      "name": "B.Tech Computer Science",
+      "requires_stage": "school_11_12_pcm",
+      "entrance": [
+        "jee_main",
+        "cuet"
+      ]
+    },
+    {
+      "id": "btech_me",
+      "level": "UG",
+      "name": "B.Tech Mechanical",
+      "requires_stage": "school_11_12_pcm",
+      "entrance": [
+        "jee_main"
+      ]
+    },
+    {
+      "id": "bsc_bio",
+      "level": "UG",
+      "name": "B.Sc Biology",
+      "requires_stage": "school_11_12_pcb",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "bsc_stats",
+      "level": "UG",
+      "name": "B.Sc Statistics",
+      "requires_stage": "school_11_12_pcm",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "bca",
+      "level": "UG",
+      "name": "BCA",
+      "requires_stage": "school_11_12_pcm",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "bcom",
+      "level": "UG",
+      "name": "B.Com",
+      "requires_stage": "school_11_12_commerce",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "bba",
+      "level": "UG",
+      "name": "BBA",
+      "requires_stage": "school_11_12_commerce",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "ba_llb",
+      "level": "Integrated",
+      "name": "BA LLB",
+      "requires_stage": "school_11_12_arts",
+      "entrance": [
+        "clat"
+      ]
+    },
+    {
+      "id": "ba_journalism",
+      "level": "UG",
+      "name": "BA Journalism",
+      "requires_stage": "school_11_12_arts",
+      "entrance": [
+        "cuet"
+      ]
+    },
+    {
+      "id": "bdes",
+      "level": "UG",
+      "name": "B.Des",
+      "requires_stage": "school_11_12_arts",
+      "entrance": [
+        "nift_nid",
+        "cuet"
+      ]
+    },
+    {
+      "id": "ca_program",
+      "level": "Professional",
+      "name": "Chartered Accountancy",
+      "requires_stage": "school_11_12_commerce",
+      "entrance": [
+        "ca_found"
+      ]
+    },
+    {
+      "id": "cma_program",
+      "level": "Professional",
+      "name": "Cost & Management Accountancy",
+      "requires_stage": "school_11_12_commerce",
+      "entrance": [
+        "cma_found"
+      ]
+    },
+    {
+      "id": "cs_program",
+      "level": "Professional",
+      "name": "Company Secretary",
+      "requires_stage": "school_11_12_commerce",
+      "entrance": [
+        "cs_found"
+      ]
+    }
+  ],
+  "exams": [
+    {
+      "id": "neet",
+      "name": "NEET UG",
+      "unlocks": [
+        "mbbs",
+        "bds",
+        "bhms",
+        "bams",
+        "bsc_nursing",
+        "bpharm"
+      ]
+    },
+    {
+      "id": "jee_main",
+      "name": "JEE Main",
+      "unlocks": [
+        "btech_cs",
+        "btech_me"
+      ]
+    },
+    {
+      "id": "clat",
+      "name": "CLAT",
+      "unlocks": [
+        "ba_llb"
+      ]
+    },
+    {
+      "id": "cuet",
+      "name": "CUET UG",
+      "unlocks": [
+        "bsc_bio",
+        "bsc_stats",
+        "bpharm",
+        "bca",
+        "bcom",
+        "bba",
+        "ba_journalism",
+        "bdes"
+      ]
+    },
+    {
+      "id": "ca_found",
+      "name": "CA Foundation",
+      "unlocks": [
+        "ca_program"
+      ]
+    },
+    {
+      "id": "cma_found",
+      "name": "CMA Foundation",
+      "unlocks": [
+        "cma_program"
+      ]
+    },
+    {
+      "id": "cs_found",
+      "name": "CS Foundation",
+      "unlocks": [
+        "cs_program"
+      ]
+    },
+    {
+      "id": "nift_nid",
+      "name": "Design Aptitude Tests (NIFT/NID)",
+      "unlocks": [
+        "bdes"
+      ]
+    }
+  ],
+  "careers": [
+    {
+      "id": "doctor",
+      "title": "Doctor",
+      "preferred_stream": "school_11_12_pcb",
+      "primary_courses": [
+        "mbbs",
+        "bds",
+        "bhms",
+        "bams"
+      ]
+    },
+    {
+      "id": "software_engineer",
+      "title": "Software Engineer",
+      "preferred_stream": "school_11_12_pcm",
+      "primary_courses": [
+        "btech_cs",
+        "bca"
+      ]
+    },
+    {
+      "id": "civil_services",
+      "title": "IAS/IPS/IFS",
+      "preferred_stream": "school_11_12_arts",
+      "primary_courses": [
+        "ba_journalism"
+      ]
+    },
+    {
+      "id": "chartered_accountant",
+      "title": "Chartered Accountant",
+      "preferred_stream": "school_11_12_commerce",
+      "primary_courses": [
+        "ca_program"
+      ]
+    },
+    {
+      "id": "data_scientist",
+      "title": "Data Scientist",
+      "preferred_stream": "school_11_12_pcm",
+      "primary_courses": [
+        "bsc_stats",
+        "btech_cs"
+      ]
+    },
+    {
+      "id": "nurse",
+      "title": "Nurse",
+      "preferred_stream": "school_11_12_pcb",
+      "primary_courses": [
+        "bsc_nursing"
+      ]
+    },
+    {
+      "id": "lawyer",
+      "title": "Lawyer",
+      "preferred_stream": "school_11_12_arts",
+      "primary_courses": [
+        "ba_llb"
+      ]
+    },
+    {
+      "id": "journalist",
+      "title": "Journalist",
+      "preferred_stream": "school_11_12_arts",
+      "primary_courses": [
+        "ba_journalism"
+      ]
+    },
+    {
+      "id": "pharmacist",
+      "title": "Pharmacist",
+      "preferred_stream": "school_11_12_pcb",
+      "primary_courses": [
+        "bpharm"
+      ]
+    },
+    {
+      "id": "police_officer",
+      "title": "Police / Defense",
+      "preferred_stream": "any",
+      "primary_courses": []
+    }
+  ],
+  "rules": [
+    {
+      "from_stage": "school_10",
+      "goal": "doctor",
+      "recommendation": "Choose PCB in 11–12 to study Biology, Physics, Chemistry.",
+      "next_stage": "school_11_12_pcb",
+      "guard": "must_equal_stream"
+    },
+    {
+      "from_stage": "school_11_12_pcb",
+      "goal": "doctor",
+      "recommendation": "Prepare for and attempt NEET UG.",
+      "next_stage": "exam_prep",
+      "exams": [
+        "neet"
+      ]
+    },
+    {
+      "from_stage": "exam_prep",
+      "goal": "doctor",
+      "recommendation": "On qualifying NEET, enroll in MBBS (or BDS/BAMS/BHMS as per rank).",
+      "next_stage": "ug_medical",
+      "courses": [
+        "mbbs",
+        "bds",
+        "bams",
+        "bhms"
+      ]
+    },
+    {
+      "from_stage": "ug_medical",
+      "goal": "doctor",
+      "recommendation": "Complete MBBS internship; prepare for PG (NEET PG) and choose specialization.",
+      "next_stage": "pg"
+    },
+    {
+      "from_stage": "school_10",
+      "goal": "software_engineer",
+      "recommendation": "Choose PCM in 11–12 to keep engineering and CS options open.",
+      "next_stage": "school_11_12_pcm"
+    },
+    {
+      "from_stage": "school_11_12_pcm",
+      "goal": "software_engineer",
+      "recommendation": "Attempt JEE Main for B.Tech or CUET for BCA.",
+      "next_stage": "exam_prep",
+      "exams": [
+        "jee_main",
+        "cuet"
+      ]
+    },
+    {
+      "from_stage": "exam_prep",
+      "goal": "software_engineer",
+      "recommendation": "Pursue B.Tech CSE or BCA.",
+      "next_stage": "ug_engineering",
+      "courses": [
+        "btech_cs",
+        "bca"
+      ]
+    },
+    {
+      "from_stage": "school_10",
+      "goal": "chartered_accountant",
+      "recommendation": "Choose Commerce in 11–12 to build fundamentals in Accounts, Economics, Business Studies.",
+      "next_stage": "school_11_12_commerce"
+    },
+    {
+      "from_stage": "school_11_12_commerce",
+      "goal": "chartered_accountant",
+      "recommendation": "Register and prepare for CA Foundation.",
+      "next_stage": "exam_prep",
+      "exams": [
+        "ca_found"
+      ]
+    },
+    {
+      "from_stage": "exam_prep",
+      "goal": "chartered_accountant",
+      "recommendation": "Progress through Intermediate, Articleship, and Final.",
+      "next_stage": "jobs_business"
+    },
+    {
+      "from_stage": "school_10",
+      "goal": "nurse",
+      "recommendation": "Choose PCB in 11–12.",
+      "next_stage": "school_11_12_pcb"
+    },
+    {
+      "from_stage": "school_11_12_pcb",
+      "goal": "nurse",
+      "recommendation": "Attempt NEET or state exams for B.Sc Nursing.",
+      "next_stage": "exam_prep",
+      "exams": [
+        "neet"
+      ]
+    },
+    {
+      "from_stage": "exam_prep",
+      "goal": "nurse",
+      "recommendation": "Enroll in B.Sc Nursing.",
+      "next_stage": "ug_medical",
+      "courses": [
+        "bsc_nursing"
+      ]
+    },
+    {
+      "from_stage": "school_10",
+      "goal": "lawyer",
+      "recommendation": "Choose Arts/Humanities in 11–12.",
+      "next_stage": "school_11_12_arts"
+    },
+    {
+      "from_stage": "school_11_12_arts",
+      "goal": "lawyer",
+      "recommendation": "Attempt CLAT for BA LLB.",
+      "next_stage": "exam_prep",
+      "exams": [
+        "clat"
+      ]
+    },
+    {
+      "from_stage": "exam_prep",
+      "goal": "lawyer",
+      "recommendation": "Enroll in BA LLB.",
+      "next_stage": "ug_arts",
+      "courses": [
+        "ba_llb"
+      ]
+    }
+  ],
+  "business_ideas": [
+    {
+      "id": "diag_centre",
+      "category": "Healthcare",
+      "name": "Diagnostic Centre",
+      "min_capital_inr": 1500000,
+      "documents": [
+        "Trade License",
+        "Biomedical Waste Authorization",
+        "Lab Registration"
+      ]
+    },
+    {
+      "id": "pharmacy_store",
+      "category": "Healthcare",
+      "name": "Retail Pharmacy",
+      "min_capital_inr": 600000,
+      "documents": [
+        "Drug License",
+        "GST",
+        "Shop Act"
+      ]
+    },
+    {
+      "id": "coaching_center",
+      "category": "Education",
+      "name": "Coaching Institute",
+      "min_capital_inr": 200000,
+      "documents": [
+        "Shop Act",
+        "GST if turnover exceeds threshold"
+      ]
+    },
+    {
+      "id": "ecom_private_label",
+      "category": "E-commerce",
+      "name": "Private Label Store",
+      "min_capital_inr": 300000,
+      "documents": [
+        "GST",
+        "Trademark (optional)"
+      ]
+    },
+    {
+      "id": "uiux_agency",
+      "category": "Services",
+      "name": "UI/UX Design Studio",
+      "min_capital_inr": 150000,
+      "documents": [
+        "GST (optional)",
+        "MSME"
+      ]
+    },
+    {
+      "id": "cloud_kitchen",
+      "category": "Food",
+      "name": "Cloud Kitchen",
+      "min_capital_inr": 400000,
+      "documents": [
+        "FSSAI",
+        "Trade License",
+        "Fire NOC"
+      ]
+    }
+  ],
+  "job_sources": [
+    {
+      "id": "ssc",
+      "type": "gov",
+      "strategy": "rss_or_scrape",
+      "url": "https://ssc.nic.in/"
+    },
+    {
+      "id": "upsc",
+      "type": "gov",
+      "strategy": "rss_or_scrape",
+      "url": "https://upsc.gov.in/"
+    },
+    {
+      "id": "railways_rrb",
+      "type": "gov",
+      "strategy": "scrape",
+      "url": "https://indianrailways.gov.in/"
+    },
+    {
+      "id": "state_up_police",
+      "type": "gov",
+      "strategy": "scrape",
+      "url": "http://uppbpb.gov.in/"
+    },
+    {
+      "id": "employment_news",
+      "type": "gov",
+      "strategy": "scrape",
+      "url": "http://www.employmentnews.gov.in/"
+    },
+    {
+      "id": "linkedin_public",
+      "type": "private",
+      "strategy": "search_or_scrape",
+      "url": "https://www.linkedin.com/jobs/"
+    },
+    {
+      "id": "indeed_in",
+      "type": "private",
+      "strategy": "search_or_scrape",
+      "url": "https://in.indeed.com/"
+    },
+    {
+      "id": "company_careers_generic",
+      "type": "private",
+      "strategy": "site_list_scrape",
+      "url": "various"
+    }
+  ],
+  "job_schema": {
+    "fields": [
+      "id",
+      "source_id",
+      "title",
+      "org",
+      "location",
+      "salary_min",
+      "salary_max",
+      "salary_notes",
+      "allowances",
+      "start_date",
+      "end_date",
+      "fee_general",
+      "fee_sc",
+      "fee_st",
+      "fee_obc",
+      "fee_ews",
+      "apply_url",
+      "howto_url",
+      "pdf_url",
+      "created_at",
+      "sector",
+      "education_required",
+      "experience"
+    ],
+    "filters": [
+      "sector",
+      "state",
+      "salary_range",
+      "posted_since",
+      "education_required"
+    ]
+  },
+  "ui_contracts": {
+    "map_layout": {
+      "type": "radial",
+      "spacing": "even_360",
+      "draggable": true,
+      "pinch_zoom_mobile": true
+    },
+    "buttons": {
+      "find_matches": {
+        "id": "btn_find_matches",
+        "action": "compute_interest_matches"
+      },
+      "load_more_ideas": {
+        "id": "btn_load_more_ideas",
+        "action": "paginate_business"
+      }
+    },
+    "saved": {
+      "sections": [
+        "career_maps",
+        "interests",
+        "business_ideas",
+        "jobs"
+      ],
+      "autosave": true
+    }
+  },
+  "interest_to_stream": {
+    "bio_med": "school_11_12_pcb",
+    "pharmacy": "school_11_12_pcb",
+    "nursing": "school_11_12_pcb",
+    "physics": "school_11_12_pcm",
+    "math": "school_11_12_pcm",
+    "data": "school_11_12_pcm",
+    "cs": "school_11_12_pcm",
+    "electrical": "school_11_12_pcm",
+    "finance": "school_11_12_commerce",
+    "marketing": "school_11_12_commerce",
+    "law": "school_11_12_arts",
+    "journalism": "school_11_12_arts",
+    "design": "school_11_12_arts",
+    "agri": "school_11_12_pcm",
+    "civil": "school_11_12_pcm",
+    "mech": "school_11_12_pcm",
+    "economics": "school_11_12_commerce",
+    "psychology": "school_11_12_arts"
+  }
+}

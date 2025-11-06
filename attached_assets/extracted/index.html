@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href="/" />
+    <title>CareerMap - Your Complete Career &amp; Business Roadmap</title>
+    <meta
+      name="description"
+      content="Navigate your professional journey with CareerMap. Interactive career guidance, business opportunities, and step-by-step roadmaps from school to success."
+    />
+    <meta
+      name="keywords"
+      content="career guidance, job search, business opportunities, career roadmap, professional development"
+    />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- GitHub Pages SPA routing support -->
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      (function (l) {
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash,
+          );
+        }
+      })(window.location);
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": "Sample Job - Software Engineer",
+        "description": "Develop and maintain web applications.",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": "CareerMap"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          }
+        },
+        "employmentType": "FULL_TIME",
+        "datePosted": "2024-01-01"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CareerMap",
+        "url": "https://careermap.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://careermap.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "CareerMap",
+        "url": "https://careermap.com",
+        "logo": "/logo.svg"
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="module" src="/client/main.tsx"></script>
+  </body>
+</html>

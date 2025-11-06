@@ -1,0 +1,193 @@
+You are an expert React/Tailwind frontend architect.
+I’ve uploaded my Builder AI–generated website code for CareerMap.com.
+It currently has hundreds of files, folders, and subfolders that make it hard to maintain or connect with the backend.
+
+Your task is to merge, simplify, and refactor the project into a smaller and cleaner file structure without changing a single function or breaking any existing functionality.
+
+🎯 Primary Goal
+
+Make the frontend lightweight and easy to manage while keeping every visual and functional behavior exactly the same.
+After merging, all components, transitions, routes, and user interactions must work perfectly and smoothly as before.
+
+⚙️ Rules for Refactoring
+1. Code Consolidation
+
+Merge related component files into one file per section/page.
+
+Suggested structure:
+
+/src
+ ├── App.js
+ ├── Layout.js
+ ├── HomePage.js
+ ├── CareerPage.js
+ ├── BusinessPage.js
+ ├── VacancyPage.js
+ ├── DocsPage.js
+ ├── InteractiveMap.js
+ ├── utils.js
+ ├── index.css
+ └── index.js
+
+
+Combine all small reusable components (buttons, inputs, cards, modals) into the file where they are most used.
+
+Example: move CareerCard, GoalSelector, InterestFilter → inside CareerPage.js.
+
+Keep Navbar and Footer in a single shared file called Layout.js.
+
+2. Preserve Every Function
+
+Before merging or removing any import:
+
+Trace all function calls and make sure they still execute after merging.
+
+Double-check key features:
+
+By Goal, By Interest, Vacancy navigation
+
+Interactive career map
+
+Smooth scrolling & animations
+
+Mobile responsiveness
+
+Language, Account, Favorites, Save Progress buttons
+
+Sort filters in By Interest
+
+“Apply Now” links and redirect
+
+Popup modals and their close buttons
+
+Light and dark mode toggling
+
+Do not delete or rename any functions or variables that are called globally.
+
+If any function names conflict after merging, rename them using this pattern:
+<OldFileName>_<FunctionName>() to avoid overwriting.
+
+3. Performance Optimization
+
+After merging:
+
+Optimize imports (remove duplicates, unused packages, and redundant CSS files).
+
+Add lazy loading for heavy sections (Interactive Map, Business Ideas, Vacancy List).
+
+Ensure smooth scrolling transitions (use scroll-behavior: smooth).
+
+Check that pressing Back or clicking Logo does not reload the page.
+
+4. Styling and CSS
+
+Merge all CSS or Tailwind styles into one stylesheet (index.css).
+
+Keep Tailwind classes inline where possible.
+
+Make Light Mode default, but preserve Dark Mode toggle if it exists.
+
+Ensure text visibility in both themes.
+
+5. Routing
+
+Keep all route definitions (react-router-dom or equivalent) inside App.js.
+
+Make sure internal navigation between:
+
+Home
+
+Jobs
+
+Business
+
+Documentation
+
+Premium Notes
+continues working exactly as before.
+
+6. Data and State Management
+
+Keep all state variables (career data, vacancies, user preferences) functional.
+
+If using Context API or Redux:
+
+Do not break the provider/consumer logic when moving components.
+
+Ensure localStorage or sessionStorage used for saved user progress continues working.
+
+7. Testing and Verification
+
+After merging:
+
+Run the project locally using npm start.
+
+Verify that:
+
+Every button, dropdown, link, and animation works.
+
+Career Map loads correctly (no blank screens).
+
+Page loads are fast and scroll smooth.
+
+Mobile view works properly.
+
+Ensure build passes successfully with npm run build.
+
+8. Output Requirements
+
+After successful merging:
+
+Provide me with:
+
+A new file structure tree of the simplified project.
+
+A brief summary of all changes made.
+
+The complete updated merged code (ready for backend integration).
+
+9. Do Not Break or Remove
+
+Existing animations or transitions from Builder AI.
+
+Any meta tags or schema data related to SEO.
+
+The site’s responsiveness or layout symmetry.
+
+🧠 Context
+
+Tech stack: React + Tailwind (Builder AI base).
+
+Hosting: GitHub Pages / Vercel.
+
+Objective: Keep same UI/UX, just reduce file count and make it backend-ready.
+
+🚀 Final Expected Result
+
+A fully working, smooth, responsive, light-mode–default version of my site with fewer source files, same look and behavior, and no broken logic.
+After merging, I should be able to easily connect backend APIs and deploy the project without the blank white screen problem.
+
+🧩 Example Completion
+
+Replit should:
+
+Show me the new file directory structure.
+
+Ensure the merged project runs perfectly (npm run build succeeds).
+
+Provide complete updated code files.
+
+Confirm that all merged files compile and load in the same way as the original site.
+
+End of Prompt.
+
+✅ Pro Tip:
+After you paste this prompt:
+
+Wait for Replit AI to finish merging & optimizing.
+
+Then type:
+
+“Show me the new project file tree and highlight which files/functions were merged.”
+
+That helps you confirm nothing got lost or renamed incorrectly.
