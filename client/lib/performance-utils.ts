@@ -296,9 +296,6 @@ export const optimizeImageQuality = () => {
 
 // Initialize all performance optimizations
 export const initializePerformanceOptimizations = () => {
-  // Preload critical fonts
-  preloadResource("/fonts/inter.woff2", "font");
-
   // Load fonts
   loadFonts();
 
