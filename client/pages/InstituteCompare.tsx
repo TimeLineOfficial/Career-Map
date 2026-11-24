@@ -287,15 +287,15 @@ export default function InstituteCompare() {
                         className={`p-2.5 rounded-lg border font-bold text-xs inline-flex items-center gap-1.5 ${
                           isAudited
                             ? "bg-blue-50 dark:bg-blue-950/30 border-blue-300 dark:border-blue-800 text-blue-900 dark:text-blue-200"
-                            : "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300"
+                            : "bg-orange-50 dark:bg-orange-950/25 border-orange-300 dark:border-orange-800 text-orange-950 dark:text-orange-200"
                         }`}
                       >
                         {isAudited ? (
                           <FileCheck className="h-4 w-4 text-blue-600 flex-shrink-0" />
                         ) : (
-                          <XCircle className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                          <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
                         )}
-                        <span>{isAudited ? "AUDIT VERIFIED" : "AUDIT PENDING"}</span>
+                        <span>{isAudited ? "AUDIT VERIFIED" : "CAMPUS DETAIL: UNVERIFIED"}</span>
                       </div>
                       <div className="text-[11px] text-muted-foreground mt-1">
                         {isAudited

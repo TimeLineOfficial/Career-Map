@@ -58,6 +58,7 @@ export default function InstitutesDirectory() {
   const [auditOnly, setAuditOnly] = useState<boolean>(false);
   const [maxFee, setMaxFee] = useState<number>(0);
   const [sortBy, setSortBy] = useState<"rank" | "fee_low" | "placement" | "rating">("rank");
+  const [visibleCount, setVisibleCount] = useState<number>(9);
 
   // Comparison State (Array of selected institute IDs)
   const [comparedInstitutes, setComparedInstitutes] = useState<string[]>([]);
@@ -166,8 +167,8 @@ export default function InstitutesDirectory() {
         }}
       />
 
-      {/* Hero Section with Map Theme Styling */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white py-14 px-4 overflow-hidden shadow-md">
+      {/* Hero Section with Map Theme Styling (Compact Header) */}
+      <section className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white py-8 md:py-10 px-4 overflow-hidden shadow-md">
         {/* Subtle decorative roadmap paths */}
         <div className="absolute inset-0 opacity-15 pointer-events-none overflow-hidden">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -188,17 +189,17 @@ export default function InstitutesDirectory() {
           </svg>
         </div>
 
-        <div className="container max-w-7xl mx-auto relative z-10 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-3 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold backdrop-blur-sm">
-                <Compass className="h-3.5 w-3.5 text-amber-300 animate-spin-slow" />
+        <div className="container max-w-7xl mx-auto relative z-10 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold backdrop-blur-sm">
+                <Compass className="h-3.5 w-3.5 text-amber-300" />
                 <span>India's 100% Transparent School & College Navigation Map</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-                Career MAP: <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-blue-200 to-emerald-300">Schools & Colleges Explorer</span>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+                Schools & Colleges Explorer
               </h1>
-              <p className="text-sm sm:text-base text-blue-100/90 leading-relaxed max-w-2xl">
+              <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed max-w-2xl">
                 Explore every school and college with <strong className="text-white">Verified Placement Records</strong> (cross-checked directly with employer HRs) and <strong className="text-white">On-Site Campus Audits</strong> (physical inspections & random student interviews).
               </p>
             </div>
@@ -594,7 +595,7 @@ export default function InstitutesDirectory() {
 
         {/* Institutions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredInstitutes.map((inst) => {
+          {filteredInstitutes.slice(0, visibleCount).map((inst) => {
             const isCompared = comparedInstitutes.includes(inst.id);
             const isPlacementVerified = inst.placement.status === "verified";
             const isAuditVerified = inst.audit.status === "verified";
@@ -602,7 +603,8 @@ export default function InstitutesDirectory() {
             return (
               <Card
                 key={inst.id}
-                className={`overflow-hidden border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative flex flex-col justify-between ${
+                onClick={() => setSelectedInstituteForDetail(inst)}
+                className={`cursor-pointer overflow-hidden border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative flex flex-col justify-between ${
                   isCompared ? "ring-2 ring-blue-600 border-blue-600" : "border-slate-200 dark:border-slate-800"
                 }`}
               >
@@ -650,11 +652,16 @@ export default function InstitutesDirectory() {
                   <div className="space-y-1.5">
                     {/* Placement Tag */}
                     <div
-                      className={`p-2 rounded-lg border flex items-center justify-between ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPlacementVerifyInst(inst);
+                      }}
+                      className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer hover:opacity-95 transition-opacity ${
                         isPlacementVerified
                           ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200"
                           : "bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200"
                       }`}
+                      title="Click to view corporate verification procedure"
                     >
                       <div className="flex items-center gap-1.5 font-bold">
                         {isPlacementVerified ? (
@@ -673,22 +680,27 @@ export default function InstitutesDirectory() {
 
                     {/* Physical Audit Tag */}
                     <div
-                      className={`p-2 rounded-lg border flex items-center justify-between ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAuditModalInst(inst);
+                      }}
+                      className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer hover:opacity-95 transition-opacity ${
                         isAuditVerified
                           ? "bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-800 text-blue-900 dark:text-blue-200"
-                          : "bg-slate-50 dark:bg-slate-950/20 border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-300"
+                          : "bg-orange-50 dark:bg-orange-950/25 border-orange-300 dark:border-orange-800 text-orange-950 dark:text-orange-200"
                       }`}
+                      title="Click to view campus audit procedure"
                     >
                       <div className="flex items-center gap-1.5 font-bold">
                         {isAuditVerified ? (
                           <FileCheck className="h-4 w-4 text-blue-600 flex-shrink-0" />
                         ) : (
-                          <Compass className="h-4 w-4 text-slate-500 flex-shrink-0" />
+                          <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
                         )}
-                        <span>{isAuditVerified ? "AUDIT VERIFIED" : "AUDIT PENDING"}</span>
+                        <span>{isAuditVerified ? "AUDIT VERIFIED" : "CAMPUS DETAIL: UNVERIFIED"}</span>
                       </div>
                       <span className="text-[10px] font-semibold">
-                        {isAuditVerified ? `${inst.audit.randomStudentInterviewCount} Students Sampled` : "Self-Reported"}
+                        {isAuditVerified ? `${inst.audit.randomStudentInterviewCount} Students Sampled` : "Click to Audit"}
                       </span>
                     </div>
                   </div>
@@ -724,7 +736,10 @@ export default function InstitutesDirectory() {
                         variant="default"
                         size="sm"
                         className="flex-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                        onClick={() => setSelectedInstituteForDetail(inst)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedInstituteForDetail(inst);
+                        }}
                       >
                         Explore Profile
                       </Button>
@@ -732,7 +747,10 @@ export default function InstitutesDirectory() {
                         variant={isCompared ? "destructive" : "outline"}
                         size="sm"
                         className="text-xs"
-                        onClick={() => toggleCompare(inst)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCompare(inst);
+                        }}
                       >
                         {isCompared ? "Remove" : "+ Compare"}
                       </Button>
@@ -741,7 +759,10 @@ export default function InstitutesDirectory() {
                     <div className="flex items-center justify-between pt-1 text-[11px]">
                       <button
                         type="button"
-                        onClick={() => setApplyModalInst(inst)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setApplyModalInst(inst);
+                        }}
                         className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                       >
                         Direct Apply →
@@ -749,6 +770,7 @@ export default function InstitutesDirectory() {
                       <div className="flex items-center gap-2">
                         <a
                           href={`tel:${inst.contact.phone}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="text-muted-foreground hover:text-blue-600"
                           title="Call Institute"
                         >
@@ -758,6 +780,7 @@ export default function InstitutesDirectory() {
                           href={`https://wa.me/${inst.contact.whatsapp.replace(/[^0-9]/g, "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="text-muted-foreground hover:text-emerald-600"
                           title="WhatsApp Institute"
                         >
@@ -767,6 +790,7 @@ export default function InstitutesDirectory() {
                           href={inst.website}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="text-muted-foreground hover:text-foreground"
                           title="Visit Official Website"
                         >
@@ -780,6 +804,20 @@ export default function InstitutesDirectory() {
             );
           })}
         </div>
+
+        {/* Load More Pagination */}
+        {visibleCount < filteredInstitutes.length && (
+          <div className="text-center py-8">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setVisibleCount((prev) => prev + 9)}
+              className="text-xs font-bold px-8 h-11 border-blue-500/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 shadow-sm"
+            >
+              Load More Institutes ({filteredInstitutes.length - visibleCount} more available)
+            </Button>
+          </div>
+        )}
       </section>
 
       {/* Floating Side-by-Side Comparison Dock */}

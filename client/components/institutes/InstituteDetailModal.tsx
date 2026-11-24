@@ -129,11 +129,13 @@ export default function InstituteDetailModal({
             <div className="flex flex-col gap-2 min-w-[220px]">
               {/* Placement Badge */}
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold backdrop-blur-md ${
+                onClick={() => onOpenPlacementVerification(institute)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold backdrop-blur-md cursor-pointer hover:opacity-95 transition-opacity ${
                   isPlacementVerified
                     ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-200"
                     : "bg-amber-500/20 border-amber-400/50 text-amber-200"
                 }`}
+                title="Click to view corporate verification procedure"
               >
                 {isPlacementVerified ? (
                   <ShieldCheck className="h-4 w-4 text-emerald-300 flex-shrink-0" />
@@ -145,32 +147,34 @@ export default function InstituteDetailModal({
                     {isPlacementVerified ? "Verified Placement" : "Unverified Placement"}
                   </div>
                   <div className="text-[10px] opacity-80">
-                    {isPlacementVerified ? "Cross-Checked With Employers" : "Self-Reported Claim"}
+                    {isPlacementVerified ? "Cross-Checked With Employers" : "Self-Reported Claim (Click to Verify)"}
                   </div>
                 </div>
               </div>
 
               {/* Physical Audit Badge */}
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold backdrop-blur-md ${
+                onClick={() => onOpenAuditBooking(institute)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold backdrop-blur-md cursor-pointer hover:opacity-95 transition-opacity ${
                   isAuditVerified
                     ? "bg-blue-500/20 border-blue-400/50 text-blue-200"
-                    : "bg-slate-500/20 border-slate-400/50 text-slate-200"
+                    : "bg-orange-500/25 border-orange-400/60 text-orange-200"
                 }`}
+                title="Click to view campus audit procedure"
               >
                 {isAuditVerified ? (
                   <FileCheck className="h-4 w-4 text-blue-300 flex-shrink-0" />
                 ) : (
-                  <Compass className="h-4 w-4 text-slate-300 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-orange-300 flex-shrink-0" />
                 )}
                 <div>
                   <div className="uppercase tracking-wide font-bold">
-                    {isAuditVerified ? "Campus Audit Verified" : "Audit Pending"}
+                    {isAuditVerified ? "Campus Audit Verified" : "Campus Detail: Unverified"}
                   </div>
                   <div className="text-[10px] opacity-80">
                     {isAuditVerified
                       ? `Inspected by Team (${institute.audit.lastAuditDate || "Recent"})`
-                      : "Awaiting On-Site Visit"}
+                      : "Awaiting On-Site Visit (Click to Audit)"}
                   </div>
                 </div>
               </div>

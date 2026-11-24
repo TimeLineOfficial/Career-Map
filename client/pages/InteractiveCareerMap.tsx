@@ -55,8 +55,8 @@ export default function InteractiveCareerMap() {
       color: "from-red-500 to-pink-500",
     },
     {
-      value: "business",
-      label: "Business & Finance",
+      value: "commerce",
+      label: "Commerce & Banking",
       color: "from-yellow-500 to-orange-500",
     },
     {
@@ -68,11 +68,6 @@ export default function InteractiveCareerMap() {
       value: "education",
       label: "Education & Research",
       color: "from-green-500 to-emerald-500",
-    },
-    {
-      value: "government",
-      label: "Government & Public Service",
-      color: "from-career-primary to-purple-600",
     },
   ];
 

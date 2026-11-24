@@ -13,8 +13,6 @@ import {
   ArrowRight,
   Target,
   Heart,
-  Search,
-  Lightbulb,
   TrendingUp,
   Users,
   MapPin,
@@ -22,37 +20,38 @@ import {
   GraduationCap,
   Building,
   Zap,
-  Star,
-  Play,
-  Download,
-  Bell,
   Scale,
   ShieldCheck,
+  FileCheck,
+  Compass,
 } from "lucide-react";
+import { useDataStore } from "@/lib/data-service";
+import { loadInstitutes } from "@/lib/institutes-dataset";
 
 export default function Index() {
+  const { getText } = useDataStore();
   const [animatedNumbers, setAnimatedNumbers] = useState({
     jobsListed: 0,
-    businessIdeas: 0,
+    institutesMapped: 0,
     successStories: 0,
     students: 0,
   });
 
   useEffect(() => {
     const targets = {
-      jobsListed: 15000,
-      businessIdeas: 500,
-      successStories: 2500,
-      students: 50000,
+      jobsListed: 4125,
+      institutesMapped: 500,
+      successStories: 687,
+      students: 13750,
     };
 
-    const duration = 2000; // 2 seconds
-    const interval = 50; // Update every 50ms
+    const duration = 1500;
+    const interval = 40;
     const steps = duration / interval;
 
     const increments = {
       jobsListed: targets.jobsListed / steps,
-      businessIdeas: targets.businessIdeas / steps,
+      institutesMapped: targets.institutesMapped / steps,
       successStories: targets.successStories / steps,
       students: targets.students / steps,
     };
@@ -65,9 +64,9 @@ export default function Index() {
           Math.floor(increments.jobsListed * currentStep),
           targets.jobsListed,
         ),
-        businessIdeas: Math.min(
-          Math.floor(increments.businessIdeas * currentStep),
-          targets.businessIdeas,
+        institutesMapped: Math.min(
+          Math.floor(increments.institutesMapped * currentStep),
+          targets.institutesMapped,
         ),
         successStories: Math.min(
           Math.floor(increments.successStories * currentStep),
@@ -87,114 +86,104 @@ export default function Index() {
     return () => clearInterval(timer);
   }, []);
 
-  const jobsFeatures = [
+  const coreFeatures = [
+    {
+      icon: Building,
+      title: "Schools & Colleges Directory",
+      description:
+        "500+ verified institutes with corporate-checked placements and on-site audit dossiers.",
+      color: "from-blue-600 to-indigo-600",
+      href: "/institutes",
+      badge: "Verified Data",
+    },
+    {
+      icon: Scale,
+      title: "Side-by-Side Compare",
+      description:
+        "Compare packages, advantages, real student reviews, and verified fees between colleges.",
+      color: "from-indigo-600 to-purple-600",
+      href: "/compare",
+      badge: "Decision Engine",
+    },
     {
       icon: Target,
-      title: "By Goal",
+      title: "By Career Goal",
       description:
-        "Interactive career roadmap from your current stage to dream job",
-      color: "from-career-primary to-purple-600",
+        "Personalized milestone roadmap from Class 8/10th or 12th directly to your dream career.",
+      color: "from-purple-600 to-pink-600",
       href: "/jobs/by-goal",
-      badge: "Interactive",
+      badge: "Roadmap",
     },
     {
       icon: Heart,
-      title: "By Interest",
+      title: "By Subject & Interest",
       description:
-        "Discover careers based on your passions and subjects you love",
+        "Discover emerging careers matching Indian school/college subjects you actually enjoy.",
       color: "from-pink-500 to-rose-500",
       href: "/jobs/by-interest",
-      badge: "Personalized",
-    },
-    {
-      icon: Search,
-      title: "Latest Vacancies",
-      description:
-        "Real-time government and private job openings with application guides",
-      color: "from-career-secondary to-green-600",
-      href: "/jobs/vacancies",
-      badge: "Live Updates",
-    },
-  ];
-
-  const businessFeatures = [
-    {
-      icon: Lightbulb,
-      title: "Business Ideas",
-      description:
-        "Categorized business opportunities with complete startup guides",
-      color: "from-yellow-500 to-orange-500",
-      href: "/business/ideas",
-    },
-    {
-      icon: Building,
-      title: "Documentation Help",
-      description:
-        "Required permits, licenses, and legal documentation guidance",
-      color: "from-blue-500 to-indigo-500",
-      href: "/business/documentation",
-    },
-    {
-      icon: TrendingUp,
-      title: "ROI Calculator",
-      description:
-        "Investment requirements and projected returns for each business",
-      color: "from-career-secondary to-teal-500",
-      href: "/business/calculator",
+      badge: "Passion Driven",
     },
   ];
 
   const trendingJobs = [
     {
-      title: "Software Developer",
+      title: "Software Engineer / AI Developer",
       category: "Technology",
-      applications: "2.5K+",
-      deadline: "15 Dec",
+      package: "₹8 - 45 LPA",
+      growth: "High Growth",
     },
     {
-      title: "Digital Marketing",
-      category: "Marketing",
-      applications: "1.8K+",
-      deadline: "20 Dec",
+      title: "Chartered Accountant / Financial Analyst",
+      category: "Commerce",
+      package: "₹7 - 35 LPA",
+      growth: "High Demand",
     },
     {
-      title: "Data Analyst",
-      category: "Analytics",
-      applications: "3.2K+",
-      deadline: "18 Dec",
+      title: "Medical Specialist / Clinical Researcher",
+      category: "Health Sciences",
+      package: "₹10 - 50 LPA",
+      growth: "Evergreen",
     },
     {
-      title: "Content Creator",
-      category: "Creative",
-      applications: "950+",
-      deadline: "25 Dec",
+      title: "Design & Product Specialist",
+      category: "Creative Arts",
+      package: "₹6 - 28 LPA",
+      growth: "Rapid Expansion",
     },
   ];
 
-  const trendingBusiness = [
+  const topInstitutes = [
     {
-      title: "E-commerce Store",
-      category: "Retail",
-      investment: "₹50K-2L",
-      roi: "25-40%",
+      name: "IIT Bombay",
+      city: "Mumbai, Maharashtra",
+      type: "College",
+      avgPackage: "₹21.8 LPA",
+      placementStatus: "VERIFIED PLACEMENT",
+      auditStatus: "AUDIT VERIFIED",
     },
     {
-      title: "Food Delivery",
-      category: "Food & Beverage",
-      investment: "₹1L-5L",
-      roi: "20-35%",
+      name: "AIIMS New Delhi",
+      city: "New Delhi, Delhi NCR",
+      type: "College",
+      avgPackage: "₹18.5 LPA",
+      placementStatus: "VERIFIED PLACEMENT",
+      auditStatus: "AUDIT VERIFIED",
     },
     {
-      title: "Digital Agency",
-      category: "Services",
-      investment: "₹25K-1L",
-      roi: "30-50%",
+      name: "DPS R.K. Puram",
+      city: "New Delhi, Delhi NCR",
+      type: "School",
+      avgPackage: "99.2% Board Pass",
+      placementStatus: "VERIFIED RECORD",
+      auditStatus: "AUDIT VERIFIED",
     },
     {
-      title: "Ed-Tech Platform",
-      category: "Education",
-      investment: "₹2L-10L",
-      roi: "40-60%",
+      name: "BITS Pilani",
+      city: "Pilani, Rajasthan",
+      type: "College",
+      avgPackage: "₹19.2 LPA",
+      placementStatus: "VERIFIED PLACEMENT",
+      auditStatus: "AUDIT VERIFIED",
     },
   ];
 
@@ -202,353 +191,280 @@ export default function Index() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-career-primary/5 via-transparent to-career-secondary/5"></div>
-        <div className="container relative px-4 py-24 lg:py-32">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <Badge
-                variant="secondary"
-                className="px-4 py-2 text-sm font-medium"
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                Your Complete Career & Business Roadmap
-              </Badge>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        
+        {/* Subtle Map Grid Pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 10px 10px, currentColor 1.5px, transparent 0)`,
+            backgroundSize: "28px 28px",
+          }}
+        />
 
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                Navigate Your
-                <span className="bg-gradient-to-r from-career-primary via-career-secondary to-career-accent bg-clip-text text-transparent">
-                  {" "}
-                  Career Journey
-                </span>
-              </h1>
+        <div className="container relative px-4 py-16 md:py-24 max-w-5xl mx-auto text-center space-y-6">
+          <Badge
+            variant="secondary"
+            className="px-3.5 py-1.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 inline-flex items-center gap-1.5"
+          >
+            <Compass className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+            {getText("site_tagline")}
+          </Badge>
 
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                From school to success - discover your perfect career path,
-                explore business opportunities, and get step-by-step guidance to
-                achieve your professional dreams.
-              </p>
-            </div>
+          {/* Clean, Refined Hero Heading */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+            <span>{getText("hero_title_1")} </span>
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              {getText("hero_title_2")}
+            </span>
+          </h1>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/institutes">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-90 text-base px-7 py-6 shadow-lg shadow-blue-500/20 text-white font-bold"
-                >
-                  <Building className="h-5 w-5 mr-2" />
-                  Schools & Colleges Map
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
+          {/* Clear Subtitle */}
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {getText("hero_subtitle")}
+          </p>
 
-              <Link to="/compare">
-                <Button variant="outline" size="lg" className="text-base px-7 py-6 gap-2">
-                  <Scale className="h-5 w-5 text-indigo-600" />
-                  Compare Institutes
-                </Button>
-              </Link>
-
-              <Link to="/career-map">
-                <Button variant="secondary" size="lg" className="text-base px-7 py-6 gap-2">
-                  <MapPin className="h-5 w-5 text-career-primary" />
-                  Career Roadmap
-                </Button>
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-career-primary">
-                  {animatedNumbers.jobsListed.toLocaleString()}+
-                </div>
-                <div className="text-sm text-muted-foreground">Jobs Listed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-career-secondary">
-                  {animatedNumbers.businessIdeas}+
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Business Ideas
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-career-accent">
-                  {animatedNumbers.successStories.toLocaleString()}+
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Success Stories
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-career-primary">
-                  {animatedNumbers.students.toLocaleString()}+
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Students Guided
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Jobs Section */}
-      <section className="py-24 bg-muted/20">
-        <div className="container px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center space-y-4 mb-16">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Briefcase className="h-8 w-8 text-career-primary" />
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  Career Guidance
-                </h2>
-              </div>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Three powerful ways to discover and plan your ideal career path
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {jobsFeatures.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 transition-opacity`}
-                  ></div>
-
-                  <CardHeader className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white`}
-                      >
-                        <feature.icon className="h-6 w-6" />
-                      </div>
-                      {feature.badge && (
-                        <Badge variant="secondary" className="text-xs">
-                          {feature.badge}
-                        </Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-career-primary transition-colors">
-                      {feature.title}
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="relative">
-                    <Link to={feature.href}>
-                      <Button className="w-full group/btn" variant="outline">
-                        Explore Now
-                        <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Business Section */}
-      <section className="py-24">
-        <div className="container px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center space-y-4 mb-16">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Building className="h-8 w-8 text-career-secondary" />
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  Business Opportunities
-                </h2>
-              </div>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Start your entrepreneurial journey with complete guidance and
-                support
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {businessFeatures.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 transition-opacity`}
-                  ></div>
-
-                  <CardHeader className="relative">
-                    <div
-                      className={`p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white w-fit mb-4`}
-                    >
-                      <feature.icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-career-secondary transition-colors">
-                      {feature.title}
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="relative">
-                    <Link to={feature.href}>
-                      <Button className="w-full group/btn" variant="outline">
-                        Learn More
-                        <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trending Section */}
-      <section className="py-24 bg-muted/20">
-        <div className="container px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                What's Trending
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Most popular opportunities right now
-              </p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Trending Jobs */}
-              <div>
-                <div className="flex items-center gap-2 mb-6">
-                  <TrendingUp className="h-6 w-6 text-career-primary" />
-                  <h3 className="text-2xl font-bold">Trending Jobs</h3>
-                </div>
-                <div className="space-y-4">
-                  {trendingJobs.map((job, index) => (
-                    <Card
-                      key={index}
-                      className="hover:shadow-md transition-shadow"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-semibold">{job.title}</h4>
-                              <Badge variant="outline" className="text-xs">
-                                {job.category}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {job.applications}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Bell className="h-3 w-3" />
-                                Deadline: {job.deadline}
-                              </span>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="ghost">
-                            <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                <Link to="/jobs/vacancies">
-                  <Button variant="outline" className="w-full mt-4">
-                    View All Jobs
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Trending Business */}
-              <div>
-                <div className="flex items-center gap-2 mb-6">
-                  <Star className="h-6 w-6 text-career-secondary" />
-                  <h3 className="text-2xl font-bold">Trending Business</h3>
-                </div>
-                <div className="space-y-4">
-                  {trendingBusiness.map((business, index) => (
-                    <Card
-                      key={index}
-                      className="hover:shadow-md transition-shadow"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-semibold">
-                                {business.title}
-                              </h4>
-                              <Badge variant="outline" className="text-xs">
-                                {business.category}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span>Investment: {business.investment}</span>
-                              <span>ROI: {business.roi}</span>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="ghost">
-                            <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                <Link to="/business">
-                  <Button variant="outline" className="w-full mt-4">
-                    Explore Business Ideas
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-career-primary to-career-secondary">
-        <div className="container px-4">
-          <div className="max-w-4xl mx-auto text-center text-white space-y-8">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Ready to Transform Your Future?
-            </h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Join thousands of students and professionals who have already
-              found their path to success. Start your journey today and unlock
-              unlimited possibilities.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Elevated Call-to-Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <Link to="/institutes">
               <Button
                 size="lg"
-                variant="secondary"
-                className="text-lg px-8 py-6"
+                className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm px-6 h-12 shadow-lg shadow-blue-500/25 gap-2"
               >
-                <GraduationCap className="h-5 w-5 mr-2" />
-                Start Free Assessment
+                <Building className="h-4 w-4" />
+                {getText("btn_explore_institutes")}
+                <ArrowRight className="h-4 w-4" />
               </Button>
+            </Link>
+
+            <Link to="/compare">
               <Button
-                size="lg"
                 variant="outline"
-                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-career-primary"
+                size="lg"
+                className="text-sm font-semibold px-6 h-12 gap-2 border-indigo-400/40 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-foreground"
               >
-                <Download className="h-5 w-5 mr-2" />
-                Download Career Guide
+                <Scale className="h-4 w-4 text-indigo-600" />
+                {getText("btn_compare_institutes")}
               </Button>
+            </Link>
+
+            <Link to="/career-map">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="text-sm font-semibold px-5 h-12 gap-2"
+              >
+                <MapPin className="h-4 w-4 text-career-primary" />
+                {getText("btn_career_roadmap")}
+              </Button>
+            </Link>
+          </div>
+
+          {/* Key Trust Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-10 border-t border-border/50 max-w-3xl mx-auto">
+            <div className="text-center p-3">
+              <div className="text-2xl md:text-3xl font-extrabold text-blue-600 dark:text-blue-400">
+                {animatedNumbers.jobsListed.toLocaleString()}+
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">{getText("stat_jobs")}</div>
             </div>
+            <div className="text-center p-3">
+              <div className="text-2xl md:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">
+                {animatedNumbers.institutesMapped}+
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">{getText("stat_institutes")}</div>
+            </div>
+            <div className="text-center p-3">
+              <div className="text-2xl md:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                {animatedNumbers.successStories.toLocaleString()}+
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">{getText("stat_success")}</div>
+            </div>
+            <div className="text-center p-3">
+              <div className="text-2xl md:text-3xl font-extrabold text-purple-600 dark:text-purple-400">
+                {animatedNumbers.students.toLocaleString()}+
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">{getText("stat_students")}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Guided Exploration Cards */}
+      <section className="py-16 bg-muted/20">
+        <div className="container px-4 max-w-6xl mx-auto">
+          <div className="text-center space-y-2 mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+              Map Your Education & Career
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+              Select verified schools & colleges and explore milestone-based career trajectories.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {coreFeatures.map((feature, index) => (
+              <Card
+                key={index}
+                className="group relative overflow-hidden border border-border/70 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between"
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity`}
+                />
+
+                <CardHeader className="relative p-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={`p-2.5 rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-md`}
+                    >
+                      <feature.icon className="h-5 w-5" />
+                    </div>
+                    <Badge variant="secondary" className="text-[10px] font-semibold">
+                      {feature.badge}
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-base font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className="text-xs leading-relaxed text-muted-foreground">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="relative p-5 pt-0">
+                  <Link to={feature.href}>
+                    <Button className="w-full text-xs h-9" variant="outline">
+                      Explore Now
+                      <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Highlighted Registry: Verified Institutes & Career Pathways */}
+      <section className="py-16">
+        <div className="container px-4 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Column 1: Top Verified Institutes */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                  <h3 className="text-lg font-bold text-foreground">Verified Institutes</h3>
+                </div>
+                <Link to="/institutes" className="text-xs font-semibold text-blue-600 hover:underline">
+                  View All ({animatedNumbers.institutesMapped}+) →
+                </Link>
+              </div>
+
+              <div className="space-y-3">
+                {topInstitutes.map((inst, index) => (
+                  <Card key={index} className="border border-border/80 hover:shadow-md transition-shadow">
+                    <CardContent className="p-3.5 flex items-center justify-between text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-foreground">{inst.name}</span>
+                          <Badge variant="outline" className="text-[10px] px-1 py-0">
+                            {inst.type}
+                          </Badge>
+                        </div>
+                        <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-blue-500" />
+                          <span>{inst.city}</span>
+                          <span className="ml-1 text-foreground font-medium">• {inst.avgPackage}</span>
+                        </div>
+                        <div className="flex gap-1.5 pt-0.5">
+                          <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] py-0">
+                            {inst.placementStatus}
+                          </Badge>
+                          <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] py-0">
+                            {inst.auditStatus}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Link to="/institutes">
+                        <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Column 2: In-Demand Career Tracks */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                  <h3 className="text-lg font-bold text-foreground">Trending Career Paths</h3>
+                </div>
+                <Link to="/jobs/by-goal" className="text-xs font-semibold text-blue-600 hover:underline">
+                  Plan Roadmap →
+                </Link>
+              </div>
+
+              <div className="space-y-3">
+                {trendingJobs.map((job, index) => (
+                  <Card key={index} className="border border-border/80 hover:shadow-md transition-shadow">
+                    <CardContent className="p-3.5 flex items-center justify-between text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-foreground">{job.title}</span>
+                        </div>
+                        <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+                          <span>{job.category}</span>
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                            Pkg: {job.package}
+                          </span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                          {job.growth}
+                        </Badge>
+                      </div>
+                      <Link to="/jobs/by-interest">
+                        <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Verification Direct Call-to-Action */}
+      <section className="py-14 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white">
+        <div className="container px-4 max-w-4xl mx-auto text-center space-y-4">
+          <Badge className="bg-white/20 text-white text-xs backdrop-blur-md">
+            Official Anti-Manipulation Guarantee
+          </Badge>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            Are You an Institute Dean or Corporate Recruiter?
+          </h2>
+          <p className="text-sm opacity-90 max-w-xl mx-auto leading-relaxed">
+            Verify student placement packages directly from corporate HR, or request an on-site physical campus audit for your school or college.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
+            <Link to="/institutes">
+              <Button size="sm" variant="secondary" className="font-bold text-xs h-10 px-5">
+                <ShieldCheck className="h-4 w-4 mr-1.5 text-blue-700" />
+                Submit Verification Request
+              </Button>
+            </Link>
+            <a href="mailto:career.mapofficials@gmail.com">
+              <Button size="sm" variant="outline" className="font-semibold text-xs h-10 px-5 text-white border-white/50 hover:bg-white/20">
+                Contact: career.mapofficials@gmail.com
+              </Button>
+            </a>
           </div>
         </div>
       </section>

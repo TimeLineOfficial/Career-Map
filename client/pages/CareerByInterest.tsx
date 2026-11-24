@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDataStore } from "../lib/data-service";
+import InterestDetailModal from "../components/InterestDetailModal";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -116,11 +117,32 @@ export default function CareerByInterest() {
   const [currentView, setCurrentView] = useState<"subjects" | "interests">(
     "subjects",
   );
+  const [selectedDetailItem, setSelectedDetailItem] = useState<
+    IndianSubject | ExtendedInterest | null
+  >(null);
 
   const allExtendedInterests = getExtendedInterests();
   const trendingInterests = getTrendingInterests();
   const trendingSubjects = getTrendingSubjects();
   const uniqueCategories = getUniqueCategories();
+
+  const filteredInterests = useMemo(() => {
+    let list = allExtendedInterests;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (i) =>
+          i.name.toLowerCase().includes(q) ||
+          i.category.toLowerCase().includes(q) ||
+          i.keywords.some((k) => k.toLowerCase().includes(q)) ||
+          i.career_paths.some((c) => c.toLowerCase().includes(q)),
+      );
+    }
+    if (selectedCategory !== "all") {
+      list = list.filter((i) => i.category === selectedCategory);
+    }
+    return list;
+  }, [allExtendedInterests, searchQuery, selectedCategory]);
 
   // Filter subjects based on search, category, level, and type
   useEffect(() => {
@@ -359,6 +381,112 @@ export default function CareerByInterest() {
               </div>
             </div>
           )}
+
+          <div className="mt-3 pt-2.5 border-t flex items-center justify-between gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs h-7 px-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 gap-1 font-semibold"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedDetailItem(subject);
+              }}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              More Details
+            </Button>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              {isSelected ? "Selected ✓" : "Click to select"}
+            </span>
+          </div>
+
+          {isSelected && (
+            <div className="absolute top-2 right-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const InterestCard = ({
+    interest,
+    isSelected,
+    onClick,
+  }: {
+    interest: ExtendedInterest;
+    isSelected: boolean;
+    onClick: () => void;
+  }) => {
+    const IconComponent =
+      categoryIcons[interest.category as keyof typeof categoryIcons] || Star;
+
+    return (
+      <Card
+        className={`cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 group relative ${
+          isSelected
+            ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20 border-blue-300 shadow-lg"
+            : "hover:border-blue-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
+        }`}
+        onClick={onClick}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1.5">
+                <IconComponent className="w-5 h-5 text-indigo-600" />
+                <h3 className="font-semibold text-sm leading-tight text-gray-900 dark:text-gray-100">
+                  {interest.name}
+                </h3>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                {interest.category} {interest.subcategory && `• ${interest.subcategory}`}
+              </p>
+            </div>
+            {interest.trending && (
+              <Badge variant="destructive" className="text-xs px-1.5 py-0.5">
+                <TrendingUp className="w-2.5 h-2.5 mr-1" /> Hot
+              </Badge>
+            )}
+          </div>
+
+          <div className="space-y-2 mb-3 text-xs text-gray-700 dark:text-gray-300">
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-3.5 h-3.5 text-green-600" />
+              <span>{interest.career_paths.length} career paths</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <DollarSign className="w-3.5 h-3.5 text-blue-600" />
+              <span className="font-semibold">{interest.salary_range}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1 mb-3">
+            {interest.related_skills.slice(0, 3).map((skill, i) => (
+              <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0.5">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+
+          <div className="mt-3 pt-2.5 border-t flex items-center justify-between gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs h-7 px-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 gap-1 font-semibold"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedDetailItem(interest);
+              }}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              More Details
+            </Button>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              {isSelected ? "Selected ✓" : "Click to select"}
+            </span>
+          </div>
 
           {isSelected && (
             <div className="absolute top-2 right-2">
@@ -757,94 +885,119 @@ export default function CareerByInterest() {
             </div>
           </div>
 
-          {/* Subject Categories */}
-          <Tabs
-            value={selectedCategory === "all" ? "trending" : selectedCategory}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger
-                value="trending"
-                onClick={() => setSelectedCategory("all")}
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                Trending
-              </TabsTrigger>
-              <TabsTrigger
-                value="Science"
-                onClick={() => setSelectedCategory("Science")}
-              >
-                <FlaskConical className="w-4 h-4 mr-2" />
-                Science
-              </TabsTrigger>
-              <TabsTrigger
-                value="Technology"
-                onClick={() => setSelectedCategory("Technology")}
-              >
-                <Code className="w-4 h-4 mr-2" />
-                Technology
-              </TabsTrigger>
-              <TabsTrigger
-                value="Commerce"
-                onClick={() => setSelectedCategory("Commerce")}
-              >
-                <Calculator className="w-4 h-4 mr-2" />
-                Commerce
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="trending" className="mt-6">
+          {/* Categories & Cards Grid (Subjects vs Interests) */}
+          {currentView === "interests" ? (
+            <div>
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  🔥 Trending Subjects
-                  <Badge variant="destructive" className="text-xs">
-                    High Demand
-                  </Badge>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
+                  <Star className="w-5 h-5 text-amber-500" />
+                  General & Emerging Interests ({filteredInterests.length})
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  High-demand subjects with excellent career prospects and
-                  growth potential
+                  Select your passionate areas or click 'More Details' to view career roadmaps, packages, and skills.
                 </p>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {trendingSubjects.slice(0, 16).map((subject) => (
-                  <SubjectCard
-                    key={subject.id}
-                    subject={subject}
-                    isSelected={selectedSubjects.includes(subject.name)}
-                    onClick={() => handleSubjectToggle(subject.name)}
+                {filteredInterests.slice(0, 32).map((interest) => (
+                  <InterestCard
+                    key={interest.id}
+                    interest={interest}
+                    isSelected={selectedSubjects.includes(interest.name)}
+                    onClick={() => handleSubjectToggle(interest.name)}
                   />
                 ))}
               </div>
-            </TabsContent>
+            </div>
+          ) : (
+            <Tabs
+              value={selectedCategory === "all" ? "trending" : selectedCategory}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsTrigger
+                  value="trending"
+                  onClick={() => setSelectedCategory("all")}
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Trending
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Science"
+                  onClick={() => setSelectedCategory("Science")}
+                >
+                  <FlaskConical className="w-4 h-4 mr-2" />
+                  Science
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Technology"
+                  onClick={() => setSelectedCategory("Technology")}
+                >
+                  <Code className="w-4 h-4 mr-2" />
+                  Technology
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Commerce"
+                  onClick={() => setSelectedCategory("Commerce")}
+                >
+                  <Calculator className="w-4 h-4 mr-2" />
+                  Commerce
+                </TabsTrigger>
+              </TabsList>
 
-            {uniqueCategories.map((category) => (
-              <TabsContent key={category} value={category} className="mt-6">
+              <TabsContent value="trending" className="mt-6">
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    {category} Subjects
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                    🔥 Trending Subjects
+                    <Badge variant="destructive" className="text-xs">
+                      High Demand
+                    </Badge>
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Explore {category.toLowerCase()} subjects and their career
-                    opportunities
+                    High-demand subjects with excellent career prospects and
+                    growth potential
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredSubjects
-                    .filter((subject) => subject.category === category)
-                    .slice(0, 20)
-                    .map((subject) => (
-                      <SubjectCard
-                        key={subject.id}
-                        subject={subject}
-                        isSelected={selectedSubjects.includes(subject.name)}
-                        onClick={() => handleSubjectToggle(subject.name)}
-                      />
-                    ))}
+                  {trendingSubjects.slice(0, 16).map((subject) => (
+                    <SubjectCard
+                      key={subject.id}
+                      subject={subject}
+                      isSelected={selectedSubjects.includes(subject.name)}
+                      onClick={() => handleSubjectToggle(subject.name)}
+                    />
+                  ))}
                 </div>
               </TabsContent>
-            ))}
-          </Tabs>
+
+              {uniqueCategories.map((category) => (
+                <TabsContent key={category} value={category} className="mt-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      {category} Subjects
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Explore {category.toLowerCase()} subjects and their career
+                      opportunities
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {filteredSubjects
+                      .filter((subject) => subject.category === category)
+                      .slice(0, 20)
+                      .map((subject) => (
+                        <SubjectCard
+                          key={subject.id}
+                          subject={subject}
+                          isSelected={selectedSubjects.includes(subject.name)}
+                          onClick={() => handleSubjectToggle(subject.name)}
+                        />
+                      ))}
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
 
           {/* All Subjects Grid */}
           {selectedCategory === "all" && searchQuery && (
@@ -902,6 +1055,18 @@ export default function CareerByInterest() {
             </div>
           </div>
         )}
+        {/* Subject & Interest Detailed Dossier Modal */}
+        <InterestDetailModal
+          item={selectedDetailItem}
+          isOpen={!!selectedDetailItem}
+          onClose={() => setSelectedDetailItem(null)}
+          isSelected={selectedSubjects.includes(selectedDetailItem?.name || "")}
+          onToggleSelect={() => {
+            if (selectedDetailItem) {
+              handleSubjectToggle(selectedDetailItem.name);
+            }
+          }}
+        />
       </div>
     </div>
   );

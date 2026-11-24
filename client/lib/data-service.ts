@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import bundledPayload from "../../public/CareerMap_unified_payload.json";
+import { getTranslation } from "./translations";
 import {
   extendedInterestDataset,
   ExtendedInterest,
@@ -280,44 +282,61 @@ export const useDataStore = create<DataStore>()(
       loadData: async () => {
         set({ isLoading: true });
         console.log("[CareerMap] 🚀 Starting data load...");
+        let data: CareerMapData | null = null;
         try {
-          const possiblePaths = ["/CareerMap_unified_payload.json", "/public/CareerMap_unified_payload.json"];
-          let data: CareerMapData | null = null;
+          const baseUrl = (import.meta.env.BASE_URL || "./").replace(/\/$/, "");
+          const possiblePaths = [
+            `${baseUrl}/CareerMap_unified_payload.json`,
+            `./CareerMap_unified_payload.json`,
+            `/CareerMap_unified_payload.json`,
+            `/public/CareerMap_unified_payload.json`,
+          ];
           for (const path of possiblePaths) {
             try {
               const response = await fetch(path);
               if (response.ok) {
-                data = await response.json();
-                console.log(`[CareerMap] ✅ Loaded from: ${path}`);
-                break;
+                const parsed = await response.json();
+                if (parsed && parsed.site) {
+                  data = parsed;
+                  console.log(`[CareerMap] ✅ Loaded from: ${path}`);
+                  break;
+                }
               }
-            } catch (e) { console.warn(`Failed: ${path}`, e); }
+            } catch (e) {
+              // Ignore and try next path
+            }
           }
-          if (!data) throw new Error("Could not load data from any path");
-          // Initialize paginated business ideas
-          const initialBusinessIdeas = data.business_ideas?.slice(0, 6) || [];
-
-          set({
-            careerMapData: data,
-            currentLanguage: data.site.languages[0] || "en",
-            darkMode: data.site.design.dark_mode,
-            isLoading: false,
-            paginatedBusinessIdeas: initialBusinessIdeas,
-            hasMoreBusinessIdeas: (data.business_ideas?.length || 0) > 6,
-          });
-
-          // Apply theme
-          if (data.site.design.dark_mode) {
-            document.documentElement.classList.add("dark");
-          }
-
-          console.log("CareerMap data loaded successfully");
         } catch (error) {
-          console.error("[CareerMap] ❌ CRITICAL ERROR:", error);
-          set({ isLoading: false, careerMapData: null });
-          alert("⚠️ Career Map failed to load data.\n\nPlease refresh the page or check the console.");
-          throw error;
+          console.warn("[CareerMap] Network fetch failed, using bundled fallback payload.", error);
         }
+
+        // Always fallback safely to bundled payload so the app never fails or alerts
+        if (!data) {
+          console.log("[CareerMap] 📦 Using embedded bundled payload");
+          data = bundledPayload as unknown as CareerMapData;
+        }
+
+        const initialBusinessIdeas = data.business_ideas?.slice(0, 6) || [];
+        const existingDarkMode = get().darkMode;
+        const finalDarkMode = existingDarkMode !== undefined ? existingDarkMode : data.site.design.dark_mode;
+
+        set({
+          careerMapData: data,
+          currentLanguage: get().currentLanguage || data.site.languages[0] || "en",
+          darkMode: finalDarkMode,
+          isLoading: false,
+          paginatedBusinessIdeas: initialBusinessIdeas,
+          hasMoreBusinessIdeas: (data.business_ideas?.length || 0) > 6,
+        });
+
+        // Apply theme
+        if (finalDarkMode) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+
+        console.log("CareerMap data loaded successfully");
       },
 
       // UI Actions
@@ -729,9 +748,16 @@ export const useDataStore = create<DataStore>()(
       // Get localized text
       getText: (key: string, lang?: string) => {
         const { careerMapData, currentLanguage } = get();
-        const language = lang || currentLanguage;
+        const language = lang || currentLanguage || "en";
 
-        if (careerMapData?.site.ui_text[key]) {
+        // 1. Comprehensive multi-language dictionary
+        const translated = getTranslation(key, language);
+        if (translated && translated !== key) {
+          return translated;
+        }
+
+        // 2. UI text from payload
+        if (careerMapData?.site?.ui_text?.[key]) {
           return (
             careerMapData.site.ui_text[key][language] ||
             careerMapData.site.ui_text[key]["en"] ||
@@ -739,7 +765,7 @@ export const useDataStore = create<DataStore>()(
           );
         }
 
-        return key;
+        return translated || key;
       },
     }),
     {

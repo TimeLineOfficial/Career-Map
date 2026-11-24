@@ -1,164 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   Briefcase,
-  Target,
   MapPin,
-  Search,
-  Building2,
+  GraduationCap,
   Building,
   Scale,
-  GraduationCap,
+  Target,
+  Heart,
+  Compass,
 } from "lucide-react";
+import { useDataStore } from "@/lib/data-service";
 
 export default function EnhancedNavigation() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const location = useLocation();
+  const { getText } = useDataStore();
 
   const navigationItems = [
     {
       id: "institutes",
-      label: "Schools & Colleges",
+      label: getText("nav_institutes"),
       icon: GraduationCap,
       href: "/institutes",
       subItems: [
         {
           label: "Institutes Directory",
           href: "/institutes",
-          description: "Schools and colleges with verified placements",
+          description: "Search 500+ schools and colleges with verified placement data",
         },
         {
           label: "Side-by-Side Compare",
           href: "/compare",
-          description: "Compare pros, cons & packages between colleges",
+          description: "Compare pros, cons, packages & ratings between colleges",
         },
         {
           label: "Class 8-10th Board Guidance",
           href: "/institutes",
-          description: "UP Board, CBSE, ICSE school explorer",
+          description: "Explore top schools across UP Board, CBSE, and ICSE",
         },
         {
-          label: "Verified Placement Records",
+          label: "Corporate Verified Placements",
           href: "/institutes",
-          description: "Direct corporate verified student placements",
+          description: "Placement records confirmed directly by recruiting companies",
         },
       ],
     },
     {
       id: "jobs",
-      label: "Jobs",
+      label: getText("nav_jobs"),
       icon: Briefcase,
       href: "/jobs",
       subItems: [
         {
-          label: "By Goal",
+          label: "By Career Goal",
           href: "/jobs/by-goal",
-          description: "Find careers based on your current education and goals",
+          description: "Step-by-step roadmap from school to your dream job",
         },
         {
-          label: "By Interest",
+          label: "By Subject & Interest",
           href: "/jobs/by-interest",
-          description: "Discover careers matching your interests and passions",
+          description: "Discover careers matching Indian subjects & passions",
         },
         {
-          label: "Latest Vacancies",
-          href: "/jobs/vacancies",
-          description: "Browse current job openings and opportunities",
+          label: "Interactive Career Map",
+          href: "/career-map",
+          description: "Visual nodes & career progression paths",
         },
         {
-          label: "All Jobs",
+          label: "All Career Tracks",
           href: "/latest-jobs",
-          description: "100+ verified government and private jobs",
+          description: "Explore detailed salaries, eligibility & milestones",
         },
       ],
     },
     {
-      id: "business",
-      label: "Business",
-      icon: Building2,
-      href: "/business",
-      subItems: [
-        {
-          label: "Business Ideas",
-          href: "/business/ideas",
-          description: "Profitable business opportunities with guides",
-        },
-        {
-          label: "Startup Guide",
-          href: "/business/guidance",
-          description: "Complete business setup tutorials",
-        },
-        {
-          label: "Documentation",
-          href: "/business/documentation",
-          description: "Legal docs and templates",
-        },
-        {
-          label: "ROI Calculator",
-          href: "/business/calculator",
-          description: "Calculate business investment returns",
-        },
-      ],
+      id: "compare",
+      label: getText("nav_compare"),
+      icon: Scale,
+      href: "/compare",
+      subItems: [],
     },
     {
       id: "career-map",
-      label: "Career Map",
+      label: getText("nav_career_map"),
       icon: MapPin,
       href: "/career-map",
-      subItems: [
-        {
-          label: "Interactive Map",
-          href: "/career-map",
-          description: "Visual career progression paths",
-        },
-        {
-          label: "Career Guidance",
-          href: "/jobs/by-goal",
-          description: "Step-by-step career planning",
-        },
-        {
-          label: "Skill Assessment",
-          href: "/career-map#skills",
-          description: "Evaluate your current skills",
-        },
-      ],
-    },
-    {
-      id: "vacancies",
-      label: "Vacancies",
-      icon: Search,
-      href: "/vacancies",
-      subItems: [
-        {
-          label: "Government Jobs",
-          href: "/latest-jobs?type=government",
-          description: "50+ verified government positions",
-        },
-        {
-          label: "Private Jobs",
-          href: "/latest-jobs?type=private",
-          description: "50+ private sector opportunities",
-        },
-        {
-          label: "Form Guides",
-          href: "/vacancies#guides",
-          description: "Application form tutorials",
-        },
-      ],
+      subItems: [],
     },
   ];
 
   const handleMouseEnter = (itemId: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setActiveDropdown(itemId);
   };
 
   const handleMouseLeave = () => {
-    setActiveDropdown(null);
-  };
-
-  const handleClick = (itemId: string) => {
-    setActiveDropdown(activeDropdown === itemId ? null : itemId);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 280); // Smooth 280ms grace period so cursor never loses menu
   };
 
   return (
@@ -176,13 +124,12 @@ export default function EnhancedNavigation() {
           >
             <Link
               to={item.href}
-              onClick={() => hasDropdown && handleClick(item.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
-                transition-all duration-200 hover:bg-accent/10
+                flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold
+                transition-all duration-200 hover:bg-accent/15
                 ${
                   isActive
-                    ? "bg-career-primary text-white shadow-md"
+                    ? "bg-career-primary text-white shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }
               `}
@@ -191,28 +138,32 @@ export default function EnhancedNavigation() {
               <span>{item.label}</span>
               {hasDropdown && (
                 <ChevronDown
-                  className={`h-3 w-3 transition-transform duration-200 ${
+                  className={`h-3 w-3 transition-transform duration-200 opacity-70 ${
                     activeDropdown === item.id ? "rotate-180" : ""
                   }`}
                 />
               )}
             </Link>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu with zero-gap hover bridge */}
             {hasDropdown && activeDropdown === item.id && (
-              <div className="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[100]">
-                <div className="p-2">
+              <div
+                className="absolute top-full left-0 pt-1.5 w-80 z-[100]"
+                onMouseEnter={() => handleMouseEnter(item.id)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="bg-popover text-popover-foreground rounded-xl shadow-xl border border-border p-2 animate-in fade-in-50 zoom-in-95 duration-150">
                   {item.subItems?.map((subItem, index) => (
                     <Link
                       key={index}
                       to={subItem.href}
-                      className="block px-3 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                      className="block px-3 py-2.5 rounded-lg hover:bg-accent/60 transition-colors group"
                       onClick={() => setActiveDropdown(null)}
                     >
-                      <div className="font-medium text-gray-900 dark:text-white group-hover:text-career-primary">
+                      <div className="font-semibold text-xs text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400">
                         {subItem.label}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
                         {subItem.description}
                       </div>
                     </Link>

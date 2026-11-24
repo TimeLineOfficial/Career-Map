@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { initializeCareerMapData } from "@/lib/data-service";
 import { initializePerformanceOptimizations } from "@/lib/performance-utils";
 import Layout from "@/components/Layout";
@@ -11,15 +11,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import JobsLanding from "./pages/JobsLanding";
-import PlaceholderPage from "./pages/PlaceholderPage";
 import CareerByGoal from "./pages/CareerByGoal";
 import CareerByInterest from "./pages/CareerByInterest";
-import LatestVacancies from "./pages/LatestVacancies";
 import LatestJobs from "./pages/LatestJobs";
-import BusinessLanding from "./pages/BusinessLanding";
-import BusinessIdeas from "./pages/BusinessIdeas";
-import BusinessDocumentation from "./pages/BusinessDocumentation";
-import ROICalculator from "./pages/ROICalculator";
 import InteractiveCareerMap from "./pages/InteractiveCareerMap";
 import AdminDashboard from "./pages/AdminDashboard";
 import InstitutesDirectory from "./pages/InstitutesDirectory";
@@ -51,51 +45,18 @@ export default function App() {
               <Route path="/compare" element={<InstituteCompare />} />
               <Route path="/jobs" element={<JobsLanding />} />
 
-              {/* Jobs sub-routes */}
+              {/* Career paths sub-routes */}
               <Route path="/jobs/by-goal" element={<CareerByGoal />} />
               <Route path="/jobs/by-interest" element={<CareerByInterest />} />
-              <Route path="/jobs/vacancies" element={<LatestVacancies />} />
               <Route path="/latest-jobs" element={<LatestJobs />} />
-
-              {/* Business routes */}
-              <Route path="/business" element={<BusinessLanding />} />
-              <Route path="/business/ideas" element={<BusinessIdeas />} />
-              <Route
-                path="/business/documentation"
-                element={<BusinessDocumentation />}
-              />
-              <Route path="/business/calculator" element={<ROICalculator />} />
-              <Route
-                path="/business/guidance"
-                element={
-                  <PlaceholderPage
-                    title="Business Guidance"
-                    description="Complete business guidance and tutorials. Coming soon!"
-                  />
-                }
-              />
-              <Route
-                path="/business/documents"
-                element={
-                  <PlaceholderPage
-                    title="Business Documents"
-                    description="Downloadable business templates and guides. Coming soon!"
-                  />
-                }
-              />
-              <Route
-                path="/business/funding"
-                element={
-                  <PlaceholderPage
-                    title="Business Funding"
-                    description="Funding options and investment opportunities. Coming soon!"
-                  />
-                }
-              />
-
-              {/* Other routes */}
               <Route path="/career-map" element={<InteractiveCareerMap />} />
-              <Route path="/vacancies" element={<LatestVacancies />} />
+
+              {/* Clean redirects for removed business and vacancies routes */}
+              <Route path="/business/*" element={<Navigate to="/institutes" replace />} />
+              <Route path="/business" element={<Navigate to="/institutes" replace />} />
+              <Route path="/vacancies/*" element={<Navigate to="/jobs" replace />} />
+              <Route path="/vacancies" element={<Navigate to="/jobs" replace />} />
+              <Route path="/jobs/vacancies" element={<Navigate to="/jobs" replace />} />
 
               {/* Admin route */}
               <Route path="/admin" element={<AdminDashboard />} />
