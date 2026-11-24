@@ -138,16 +138,37 @@ export async function initializeSecurityCredentials(): Promise<void> {
       id: "adm_super_1",
       username: "Himesh Singh",
       passwordHash: initialHash,
-      primaryPhone: "9876543210",
-      secondaryPhone: "9876543211",
+      primaryPhone: "7007677139", // Official Super Admin Registered Phone Number
+      secondaryPhone: undefined,
       role: "super_admin",
       createdAt: new Date().toISOString(),
     };
     localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify([superAdmin]));
     localStorage.setItem(STORED_HASH_KEY, initialHash);
     localStorage.setItem(STORED_USER_KEY, "Himesh Singh");
-    localStorage.setItem(STORED_PHONE_KEY, "9876543210");
+    localStorage.setItem(STORED_PHONE_KEY, "7007677139");
     logSecurityEvent("SYSTEM_INIT", "system", "info", "Security subsystem initialized with Super Admin account.");
+  } else {
+    // Migration: ensure super admin has official phone number 7007677139
+    try {
+      const accounts: AdminAccount[] = JSON.parse(accountsRaw);
+      let updated = false;
+      const migrated = accounts.map((acc) => {
+        if (acc.role === "super_admin" || acc.username.toLowerCase().includes("himesh")) {
+          if (acc.primaryPhone !== "7007677139") {
+            acc.primaryPhone = "7007677139";
+            updated = true;
+          }
+        }
+        return acc;
+      });
+      if (updated) {
+        localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(migrated));
+        localStorage.setItem(STORED_PHONE_KEY, "7007677139");
+      }
+    } catch {
+      // ignore
+    }
   }
 }
 
@@ -452,45 +473,66 @@ export function destroySession(): void {
   logSecurityEvent("AUTH_LOGOUT", "auth", "info", `Session closed for '${user}'.`);
 }
 
-// Update Master Password / Phone
+// Update Admin Profile & Credentials
 export async function updateAdminCredentials(
   currentPass: string,
   newUsername: string,
   newPass: string,
   newPrimaryPhone?: string,
-  newSecondaryPhone?: string
+  newSecondaryPhone?: string,
+  targetAdminId?: string
 ): Promise<{ success: boolean; message: string }> {
   const accounts = getAdminAccounts();
   const currentSessionUser = sessionStorage.getItem("cm_session_user") || "Himesh Singh";
-  const target = accounts.find(
-    (a) => a.username.toLowerCase() === currentSessionUser.toLowerCase()
-  );
+  const currentSessionRole = sessionStorage.getItem("cm_session_role") || "admin";
+  const isSuper = currentSessionRole === "super_admin" || currentSessionUser.toLowerCase().includes("himesh");
+
+  // Determine which admin account is being modified
+  let target = targetAdminId
+    ? accounts.find((a) => a.id === targetAdminId)
+    : accounts.find((a) => a.username.toLowerCase() === currentSessionUser.toLowerCase());
+
+  if (!target) {
+    target = accounts[0]; // fallback to primary
+  }
 
   if (!target) {
     return { success: false, message: "Admin account not found." };
   }
 
-  const checkHash = await hashPasswordWithSalt(currentPass);
-  if (checkHash !== target.passwordHash) {
-    logSecurityEvent("CREDENTIAL_CHANGE_FAILED", "auth", "warning", "Attempted credential update with incorrect current password.");
-    return { success: false, message: "Current password verification failed." };
+  // Active admin must verify their current password (unless super admin editing someone else)
+  if (!isSuper || target.username.toLowerCase() === currentSessionUser.toLowerCase()) {
+    const activeAdmin = accounts.find((a) => a.username.toLowerCase() === currentSessionUser.toLowerCase()) || target;
+    const checkHash = await hashPasswordWithSalt(currentPass);
+    if (checkHash !== activeAdmin.passwordHash) {
+      logSecurityEvent("CREDENTIAL_CHANGE_FAILED", "auth", "warning", "Attempted credential update with incorrect password.");
+      return { success: false, message: "Current password verification failed. Please enter your correct current password." };
+    }
   }
 
-  if (newPass && newPass.length < 8) {
-    return { success: false, message: "New password must be at least 8 characters long." };
-  }
-
-  if (newPass) {
+  if (newPass && newPass.trim().length > 0) {
+    if (newPass.length < 8) {
+      return { success: false, message: "New password must be at least 8 characters long." };
+    }
     target.passwordHash = await hashPasswordWithSalt(newPass);
   }
+
   if (newUsername.trim()) {
     target.username = sanitizeInput(newUsername);
-    sessionStorage.setItem("cm_session_user", target.username);
+    if (target.id === sessionStorage.getItem("cm_session_user_id") || target.username.toLowerCase() === currentSessionUser.toLowerCase()) {
+      sessionStorage.setItem("cm_session_user", target.username);
+    }
   }
-  if (newPrimaryPhone) {
+
+  if (newPrimaryPhone && newPrimaryPhone.trim()) {
     const p1 = normalizePhone(newPrimaryPhone);
-    if (p1.length >= 10) target.primaryPhone = p1;
+    if (p1.length >= 10) {
+      target.primaryPhone = p1;
+    } else {
+      return { success: false, message: "Primary phone must be a valid 10-digit number." };
+    }
   }
+
   if (newSecondaryPhone !== undefined) {
     const p2 = normalizePhone(newSecondaryPhone);
     target.secondaryPhone = p2.length >= 10 ? p2 : undefined;
@@ -504,7 +546,44 @@ export async function updateAdminCredentials(
     `Admin credentials successfully updated for '${target.username}'.`
   );
 
-  return { success: true, message: "Account profile and credentials updated securely." };
+  return { success: true, message: `Account details updated successfully for '${target.username}'.` };
+}
+
+// Call on app initialization to install reload protection: page refresh expires session
+export function installPageUnloadSessionClearer(): void {
+  if (typeof window === "undefined") return;
+  window.addEventListener("beforeunload", () => {
+    // When the browser window or tab refreshes, expire admin session immediately
+    sessionStorage.removeItem("cm_session_token");
+    sessionStorage.removeItem("cm_session_expires");
+    sessionStorage.removeItem("cm_session_user");
+    sessionStorage.removeItem("cm_session_role");
+  });
+}
+
+// Anti-snooping & Inspect deterrent helper
+export function enableDevtoolsDeterrent(): void {
+  if (typeof window === "undefined") return;
+  const preventInspect = (e: KeyboardEvent) => {
+    // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+Shift+C
+    if (
+      e.key === "F12" ||
+      (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c")) ||
+      (e.ctrlKey && (e.key === "U" || e.key === "u"))
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  };
+  window.addEventListener("keydown", preventInspect, true);
+  window.addEventListener("contextmenu", (e) => {
+    // Disable right click on admin and login paths
+    if (window.location.hash.includes("/admin") || window.location.pathname.includes("/admin")) {
+      e.preventDefault();
+      return false;
+    }
+  });
 }
 
 // Secure Data Backup & Restoration

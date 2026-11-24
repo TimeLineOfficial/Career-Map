@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useDataStore } from "@/lib/data-service";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import {
   Building,
   Scale,
   Lock,
+  BookOpen,
 } from "lucide-react";
 import EnhancedNavigation from "./EnhancedNavigation";
 
@@ -57,6 +58,12 @@ export default function Layout({ children }: LayoutProps) {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const location = useLocation();
 
+  useEffect(() => {
+    const handleOpenAccount = () => setIsAccountOpen(true);
+    window.addEventListener("open-student-account-modal", handleOpenAccount);
+    return () => window.removeEventListener("open-student-account-modal", handleOpenAccount);
+  }, []);
+
   const languages = getLanguageData();
   const selectedLanguage =
     languages.find((lang) => lang.code === currentLanguage) || languages[0];
@@ -67,28 +74,34 @@ export default function Layout({ children }: LayoutProps) {
 
   const navItems = [
     {
-      label: getText("nav_institutes"),
+      label: getText("nav_institutes") || "Schools & Colleges",
       href: "/institutes",
       icon: Building,
       description: getText("nav_institutes_desc"),
     },
     {
-      label: getText("nav_compare"),
+      label: getText("nav_compare") || "Compare",
       href: "/compare",
       icon: Scale,
       description: getText("nav_compare_desc"),
     },
     {
-      label: getText("nav_career_map"),
+      label: getText("nav_career_map") || "Career Map",
       href: "/career-map",
       icon: MapPin,
       description: getText("nav_career_map_desc"),
     },
     {
-      label: getText("nav_jobs"),
-      href: "/jobs",
+      label: "Community Blogs",
+      href: "/blogs",
+      icon: BookOpen,
+      description: "Student articles, reviews, and admissions guides",
+    },
+    {
+      label: "Career Guides",
+      href: "/jobs/by-goal",
       icon: Briefcase,
-      description: getText("nav_jobs_desc"),
+      description: "Pathways & options by goal & interest",
     },
   ];
 

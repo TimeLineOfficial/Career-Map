@@ -27,6 +27,9 @@ import {
   Lock,
   Sparkles,
   GraduationCap,
+  X,
+  Search,
+  Plus,
 } from "lucide-react";
 import { loadInstitutes, Institute } from "@/lib/institutes-dataset";
 import { useNavigate } from "react-router-dom";
@@ -51,26 +54,55 @@ export interface StudentProfile {
   savedInstituteIds: string[];
 }
 
-const CITIES_LIST = [
+const ALL_INDIAN_CITIES = [
   "Delhi NCR",
+  "New Delhi",
   "Noida",
   "Greater Noida",
+  "Ghaziabad",
+  "Faridabad",
+  "Gurgaon / Gurugram",
   "Lucknow",
   "Kanpur",
   "Varanasi",
   "Prayagraj",
-  "Dehradun",
-  "Pune",
+  "Agra",
+  "Gorakhpur",
+  "Meerut",
+  "Bareilly",
+  "Aligarh",
   "Mumbai",
-  "Bangalore",
+  "Pune",
+  "Nagpur",
+  "Nashik",
+  "Bangalore / Bengaluru",
   "Hyderabad",
   "Chennai",
+  "Coimbatore",
   "Kolkata",
   "Jaipur",
+  "Kota",
+  "Jodhpur",
+  "Udaipur",
   "Chandigarh",
+  "Dehradun",
+  "Haridwar",
   "Patna",
+  "Gaya",
   "Bhopal",
-  "Abroad (Global)",
+  "Indore",
+  "Ahmedabad",
+  "Surat",
+  "Vadodara",
+  "Bhubaneswar",
+  "Cuttack",
+  "Ranchi",
+  "Jamshedpur",
+  "Guwahati",
+  "Kochi",
+  "Thiruvananthapuram",
+  "Visakhapatnam",
+  "Abroad (USA, UK, Canada, Singapore, Germany, Australia)",
 ];
 
 const STAGES_LIST = [
@@ -159,11 +191,29 @@ export default function StudentAccountModal({
     localStorage.setItem("careermap_student_account", JSON.stringify(newProfile));
   };
 
+  const [citySearchQuery, setCitySearchQuery] = useState("");
+
+  const filteredCitySuggestions = ALL_INDIAN_CITIES.filter(
+    (c) =>
+      c.toLowerCase().includes(citySearchQuery.toLowerCase()) &&
+      !(profile.preferredCities || []).includes(c)
+  ).slice(0, 12);
+
+  const handleAddCustomCity = () => {
+    const trimmed = citySearchQuery.trim();
+    if (!trimmed) return;
+    const current = profile.preferredCities || [];
+    if (!current.includes(trimmed)) {
+      setProfile({ ...profile, preferredCities: [...current, trimmed] });
+    }
+    setCitySearchQuery("");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl">
-        {/* Header with Map Banner (Clean, no 'Active' green badge) */}
-        <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-6 rounded-t-lg relative">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative">
+        {/* Sticky Header with Close Button pinned at top right */}
+        <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-6 rounded-t-lg shadow-md flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
               <User className="h-6 w-6 text-white" />
@@ -177,6 +227,14 @@ export default function StudentAccountModal({
               </DialogDescription>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors flex-shrink-0"
+            title="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Content Tabs */}
@@ -203,10 +261,10 @@ export default function StudentAccountModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-semibold text-foreground flex items-center gap-1 mb-1">
-                      <User className="h-3.5 w-3.5 text-blue-500" /> Full Name
+                      <User className="h-3.5 w-3.5 text-blue-500" /> Full Name *
                     </label>
                     <Input
-                      placeholder="e.g. Rahul Sharma"
+                      placeholder="Enter your full name"
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                       className="text-xs h-9"
@@ -216,11 +274,11 @@ export default function StudentAccountModal({
 
                   <div>
                     <label className="text-xs font-semibold text-foreground flex items-center gap-1 mb-1">
-                      <Mail className="h-3.5 w-3.5 text-blue-500" /> Email ID (for verification updates)
+                      <Mail className="h-3.5 w-3.5 text-blue-500" /> Email ID (for verification updates) *
                     </label>
                     <Input
                       type="email"
-                      placeholder="e.g. student@gmail.com"
+                      placeholder="student@example.com"
                       value={profile.email}
                       onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                       className="text-xs h-9"
@@ -234,7 +292,7 @@ export default function StudentAccountModal({
                     </label>
                     <Input
                       type="tel"
-                      placeholder="e.g. 9876543210"
+                      placeholder="Enter 10-digit mobile number"
                       value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                       className="text-xs h-9"
@@ -291,30 +349,74 @@ export default function StudentAccountModal({
                   </div>
                 </div>
 
-                {/* Multi-Select Preferred Cities */}
-                <div className="space-y-1.5 pt-2 border-t">
-                  <label className="text-xs font-semibold text-foreground flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-blue-500" /> Preferred Cities & Regions (Multi-Select):
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CITIES_LIST.map((city) => {
-                      const isSelected = profile.preferredCities?.includes(city);
-                      return (
+                {/* Multi-Select Preferred Cities with Search & Custom Add */}
+                <div className="space-y-2 pt-2 border-t">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-blue-500" /> Preferred Cities & Regions ({(profile.preferredCities || []).length} Selected):
+                    </label>
+                    <span className="text-[10px] text-muted-foreground">Type to search any Indian city or add custom</span>
+                  </div>
+
+                  {/* Selected Cities Badges */}
+                  <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 bg-muted/20 border border-border/80 rounded-lg">
+                    {(profile.preferredCities || []).map((city) => (
+                      <Badge
+                        key={city}
+                        variant="secondary"
+                        className="bg-blue-600 text-white hover:bg-blue-700 text-xs py-0.5 px-2.5 gap-1.5 cursor-pointer font-medium"
+                        onClick={() => toggleCity(city)}
+                      >
+                        {city} <X className="h-3 w-3" />
+                      </Badge>
+                    ))}
+                    {(profile.preferredCities || []).length === 0 && (
+                      <span className="text-xs text-muted-foreground italic">No cities selected yet. Search below.</span>
+                    )}
+                  </div>
+
+                  {/* City Search & Add Box */}
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="h-3.5 w-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
+                      <Input
+                        value={citySearchQuery}
+                        onChange={(e) => setCitySearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddCustomCity())}
+                        placeholder="Search city across India or type any custom region..."
+                        className="text-xs h-8 pl-8"
+                      />
+                    </div>
+                    {citySearchQuery.trim() && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleAddCustomCity}
+                        className="h-8 text-xs bg-indigo-600 hover:bg-indigo-700 text-white gap-1"
+                      >
+                        <Plus className="h-3 w-3" /> Add "{citySearchQuery.trim()}"
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Filtered Suggestion Pills */}
+                  {citySearchQuery.trim() && (
+                    <div className="flex flex-wrap gap-1 pt-1 max-h-24 overflow-y-auto">
+                      {filteredCitySuggestions.map((city) => (
                         <button
                           key={city}
                           type="button"
-                          onClick={() => toggleCity(city)}
-                          className={`px-2.5 py-1 rounded-full text-xs transition-all border ${
-                            isSelected
-                              ? "bg-blue-600 text-white border-blue-600 font-bold"
-                              : "bg-muted/40 hover:bg-muted text-muted-foreground border-border"
-                          }`}
+                          onClick={() => {
+                            toggleCity(city);
+                            setCitySearchQuery("");
+                          }}
+                          className="px-2 py-0.5 rounded text-[11px] bg-muted/60 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-950 dark:hover:text-blue-300 border border-border"
                         >
-                          {city} {isSelected && "✓"}
+                          + {city}
                         </button>
-                      );
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Dynamic Recommendation Snippet */}

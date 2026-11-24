@@ -98,24 +98,21 @@ export default function InstituteCompare() {
   const { institutes, verdict } = comparisonData;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 py-10 px-4">
-      <div className="container max-w-7xl mx-auto space-y-8">
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 py-5 px-4">
+      <div className="container max-w-7xl mx-auto space-y-5">
+        {/* Compact Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3">
+          <div className="space-y-0.5">
             <Link
               to="/institutes"
-              className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline mb-1"
+              className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Back to Institutes Directory
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-extrabold flex items-center gap-2">
-              <Scale className="h-7 w-7 text-blue-600" />
+            <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
+              <Scale className="h-5 w-5 text-blue-600" />
               Side-by-Side Institutional Comparison
             </h1>
-            <p className="text-xs text-muted-foreground">
-              Compare advantages, disadvantages, verified placement metrics, and physical campus audits across institutions.
-            </p>
           </div>
 
           {/* Add candidate dropdown */}

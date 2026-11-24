@@ -235,42 +235,46 @@ export default function InteractiveCareerMap() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-career-primary to-purple-600 text-white py-12 px-4">
-        <div className="container max-w-6xl mx-auto text-center space-y-4">
-          <Badge className="bg-white/20 text-white border-white/30 text-xs">
-            Visual Career Universe
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Interactive Career Map
-          </h1>
-          <p className="text-sm sm:text-base text-blue-100 max-w-2xl mx-auto leading-relaxed">
-            Navigate through career connections, educational milestones, and industry compensation nodes.
-          </p>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <section className="py-8 px-4">
-        <div className="container max-w-7xl mx-auto space-y-6">
-          {/* Account Gating Banner */}
-          {!hasStudentAccount && (
-            <div className="p-4 rounded-xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-300 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                <span className="text-foreground">
-                  <strong>Create Your Free Student Account:</strong> Save career trajectories, receive verified placement notifications, and track matching colleges.
-                </span>
+      {/* Compact Top Header Bar */}
+      <div className="border-b bg-background/90 backdrop-blur-sm py-4 px-4 sticky top-16 z-20">
+        <div className="container max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-career-primary to-purple-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-foreground">
+                  Interactive Career Map
+                </h1>
+                <Badge variant="secondary" className="text-[10px] py-0 font-medium">
+                  Visual Universe
+                </Badge>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Click any career node to explore step-by-step milestones, top colleges & salary packages.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {!hasStudentAccount && (
               <Button
                 size="sm"
                 onClick={() => setIsAccountModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-8 whitespace-nowrap"
+                variant="outline"
+                className="text-xs h-8 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold"
               >
-                Log In / Create Account
+                <Sparkles className="h-3.5 w-3.5 mr-1.5 text-amber-500" />
+                Sign In to Save Paths
               </Button>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <section className="py-6 px-4">
+        <div className="container max-w-7xl mx-auto space-y-6">
 
           {/* Controls Bar */}
           <div className="bg-card p-4 rounded-2xl shadow-sm border space-y-4">
@@ -416,6 +420,18 @@ export default function InteractiveCareerMap() {
                           }
                         }}
                       >
+                        {/* Hover Tooltip Pill directly above node */}
+                        {hoveredNode === node.id && node.type !== "center" && (
+                          <div className="absolute -top-9 left-1/2 -translate-x-1/2 z-30 whitespace-nowrap bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold py-1 px-2.5 rounded-full shadow-lg border border-slate-700 pointer-events-none flex items-center gap-1.5 animate-in fade-in-50 zoom-in-95 duration-100">
+                            <Sparkles className="h-3 w-3 text-amber-400" />
+                            <span>{node.title}</span>
+                            <span className="opacity-50">•</span>
+                            <span className="text-emerald-400">{node.salary}</span>
+                            <span className="opacity-50">•</span>
+                            <span className="text-blue-300">Click to open dossier →</span>
+                          </div>
+                        )}
+
                         <div
                           className={`relative ${node.color} text-white rounded-xl p-3.5 shadow-lg min-w-[170px] text-center select-none ${
                             node.type === "center"
@@ -446,54 +462,6 @@ export default function InteractiveCareerMap() {
                         </div>
                       </div>
                     ))}
-
-                    {/* Hover Details Card (Dark mode compatible) */}
-                    {hoveredNode && hoveredNode !== "center" && (
-                      <div className="absolute bottom-4 left-4 right-4 z-30">
-                        {(() => {
-                          const node = filteredNodes.find((n) => n.id === hoveredNode);
-                          if (!node) return null;
-                          return (
-                            <Card className="border shadow-2xl bg-white/95 dark:bg-slate-900/95 dark:border-slate-800 backdrop-blur">
-                              <CardContent className="p-4 space-y-2 text-xs">
-                                <div className="flex items-start justify-between">
-                                  <div>
-                                    <h3 className="font-bold text-sm text-foreground">{node.title}</h3>
-                                    <p className="text-[11px] text-muted-foreground line-clamp-1">{node.description}</p>
-                                  </div>
-                                  <div className="flex gap-1.5">
-                                    {node.demand && (
-                                      <Badge className={getDemandColor(node.demand)}>
-                                        {node.demand} Demand
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-3 gap-3 pt-1 border-t">
-                                  <div>
-                                    <span className="text-muted-foreground text-[10px]">Package (CTC):</span>
-                                    <div className="font-bold text-foreground">{node.salary || "N/A"}</div>
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground text-[10px]">Growth Rate:</span>
-                                    <div className="font-bold text-blue-600">{node.growth || "N/A"}</div>
-                                  </div>
-                                  <div className="flex items-end">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => setSelectedProfessionForDetail(node)}
-                                      className="w-full h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                                    >
-                                      View Full Dossier →
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })()}
-                      </div>
-                    )}
                   </div>
                 </CardContent>
               </Card>

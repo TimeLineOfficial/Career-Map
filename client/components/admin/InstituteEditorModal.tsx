@@ -71,7 +71,7 @@ export default function InstituteEditorModal({
     if (institute) {
       setFormData(JSON.parse(JSON.stringify(institute)));
     } else {
-      // Default template for new institute
+      // Default blank template for new institute - all fields completely clean
       setFormData({
         id: "inst_" + Date.now(),
         name: "",
@@ -79,85 +79,138 @@ export default function InstituteEditorModal({
         type: "college",
         ownershipType: "central_govt",
         institutionCategory: "government",
-        totalStudentsEnrolled: 5000,
-        seatMatrix: { availableSeats: 250, totalSeats: 1000 },
-        levels: ["ug", "pg"],
-        streams: ["Engineering (B.Tech CS/IT/AI)", "Commerce"],
+        totalStudentsEnrolled: undefined,
+        seatMatrix: { availableSeats: 0, totalSeats: 0 },
+        levels: ["ug"],
+        streams: [],
         location: {
-          city: "New Delhi",
-          state: "Delhi",
-          area: "Central",
-          address: "New Delhi, India",
-          geo: { lat: 28.6139, lng: 77.209 },
-          googleMapsUrl: "https://maps.google.com/?q=New+Delhi",
+          area: "",
+          city: "",
+          district: "",
+          state: "",
+          country: "India",
+          pincode: "",
+          address: "",
+          geo: { lat: 20.5937, lng: 78.9629 },
+          googleMapsUrl: "",
         },
-        establishedYear: 2000,
-        yearsInOperation: 26,
-        website: "https://",
+        establishedYear: undefined,
+        yearsInOperation: undefined,
+        website: "",
         contact: {
-          email: "admissions@institute.edu.in",
-          phone: "+91 9876543210",
-          whatsapp: "+91 9876543210",
+          email: "",
+          phone: "",
+          whatsapp: "",
         },
         feeStructure: {
-          tuitionPerYear: 125000,
-          hostelPerYear: 60000,
-          totalEstimated: 185000,
-          scholarshipAvailable: true,
-          notes: "Need-based and merit scholarships available.",
+          tuitionPerYear: 0,
+          hostelPerYear: 0,
+          totalEstimated: 0,
+          scholarshipAvailable: false,
+          notes: "",
         },
         ratings: {
-          overall: 9.0,
-          faculty: 9.0,
-          infrastructure: 9.0,
-          studentCaliber: 9.0,
-          sportsAndExtracurricular: 9.0,
-          techLevel: 9.0,
+          overall: 0,
+          faculty: 0,
+          infrastructure: 0,
+          studentCaliber: 0,
+          sportsAndExtracurricular: 0,
+          techLevel: 0,
         },
-        advantages: [
-          "State of the art laboratory infrastructure and experienced faculty",
-          "Comprehensive industry exposure and project-based learning",
-        ],
-        disadvantages: [
-          "High competition for core discipline seats",
-        ],
+        advantages: [],
+        disadvantages: [],
         placement: {
           status: "unverified",
           badgeNotice: "Placement records pending formal corporate audit verification.",
-          lastYearPlacementRate: 85,
-          allTimePlacementRate: 80,
-          averagePackageLPA: 7.5,
-          highestPackageLPA: 24.0,
-          medianPackageLPA: 6.8,
-          topRecruiters: ["TCS", "Infosys", "Wipro", "HCL"],
+          lastYearPlacementRate: 0,
+          allTimePlacementRate: 0,
+          averagePackageLPA: 0,
+          highestPackageLPA: 0,
+          medianPackageLPA: 0,
+          topRecruiters: [],
           students: [],
         },
         audit: {
           status: "unverified",
-          badgeNotice: "On-site audit pending.",
+          badgeNotice: "On-site campus audit pending.",
           studentSamplingConducted: false,
           randomStudentInterviewCount: 0,
           topStudentInterviewCount: 0,
         },
         photos: [],
         reviews: [],
-        rankScore: 85,
+        rankScore: 50,
         featured: false,
       });
     }
   }, [institute, isOpen]);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  // Client-side auto compression via HTML5 Canvas (max 1200px, JPEG 0.72)
+  const compressImageFile = (file: File, callback: (compressedUrl: string) => void) => {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
-        setNewPhotoUrl(reader.result);
+        const rawDataUrl = reader.result;
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxDim = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", 0.72);
+            callback(compressed);
+          } else {
+            callback(rawDataUrl);
+          }
+        };
+        img.src = rawDataUrl;
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    compressImageFile(file, (compressedUrl) => {
+      setNewPhotoUrl(compressedUrl);
+    });
+  };
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    compressImageFile(file, (compressedUrl) => {
+      const coverPhoto: InstitutePhoto = {
+        id: "cover_" + Date.now(),
+        category: "campus",
+        title: "Campus Cover Wallpaper",
+        url: compressedUrl,
+        type: "highlight",
+        status: "verified",
+        caption: "Official Campus Cover",
+      };
+      setFormData((prev) => ({
+        ...prev,
+        photos: [coverPhoto, ...(prev.photos || []).filter((p) => !p.id.startsWith("cover_"))],
+      }));
+    });
   };
 
   const handleAddPhoto = () => {
@@ -344,14 +397,30 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Established Year</Label>
                   <Input
                     type="number"
-                    value={formData.establishedYear || 2000}
-                    onChange={(e) => setFormData({ ...formData, establishedYear: Number(e.target.value) })}
+                    value={formData.establishedYear || ""}
+                    onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value ? Number(e.target.value) : undefined })}
+                    placeholder="e.g. 1961"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-slate-300">City *</Label>
+                  <Label className="text-xs text-slate-300">Campus Locality / Area</Label>
+                  <Input
+                    value={formData.location?.area || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location: { ...formData.location!, area: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Hauz Khas / Powai / Ramnagar"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs text-slate-300">City / Town *</Label>
                   <Input
                     value={formData.location?.city || ""}
                     onChange={(e) =>
@@ -360,9 +429,24 @@ export default function InstituteEditorModal({
                         location: { ...formData.location!, city: e.target.value },
                       })
                     }
-                    placeholder="e.g. New Delhi, Lucknow, Pune, Bangalore, Abroad"
+                    placeholder="e.g. New Delhi, Varanasi, Mumbai, Lucknow"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                     required
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs text-slate-300">District</Label>
+                  <Input
+                    value={formData.location?.district || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location: { ...formData.location!, district: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Varanasi, South Delhi, Mumbai Suburban"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
 
@@ -376,14 +460,44 @@ export default function InstituteEditorModal({
                         location: { ...formData.location!, state: e.target.value },
                       })
                     }
-                    placeholder="e.g. Delhi, Uttar Pradesh, Maharashtra, Karnataka"
+                    placeholder="e.g. Uttar Pradesh, Delhi, Maharashtra"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                     required
                   />
                 </div>
 
+                <div>
+                  <Label className="text-xs text-slate-300">Country</Label>
+                  <Input
+                    value={formData.location?.country || "India"}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location: { ...formData.location!, country: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. India, USA, UK"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs text-slate-300">PIN / Postal Code</Label>
+                  <Input
+                    value={formData.location?.pincode || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        location: { ...formData.location!, pincode: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. 110016"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                  />
+                </div>
+
                 <div className="sm:col-span-2">
-                  <Label className="text-xs text-slate-300">Full Campus Address</Label>
+                  <Label className="text-xs text-slate-300">Full Campus Street Address</Label>
                   <Input
                     value={formData.location?.address || ""}
                     onChange={(e) =>
@@ -392,6 +506,7 @@ export default function InstituteEditorModal({
                         location: { ...formData.location!, address: e.target.value },
                       })
                     }
+                    placeholder="e.g. Hauz Khas, New Delhi, Delhi 110016"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -407,7 +522,7 @@ export default function InstituteEditorModal({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-slate-300">Google Maps URL</Label>
+                  <Label className="text-xs text-slate-300">Google Maps URL / Coordinates</Label>
                   <Input
                     value={formData.location?.googleMapsUrl || ""}
                     onChange={(e) =>
@@ -424,6 +539,7 @@ export default function InstituteEditorModal({
                 <div>
                   <Label className="text-xs text-slate-300">Contact Email</Label>
                   <Input
+                    type="email"
                     value={formData.contact?.email || ""}
                     onChange={(e) =>
                       setFormData({
@@ -431,6 +547,7 @@ export default function InstituteEditorModal({
                         contact: { ...formData.contact!, email: e.target.value },
                       })
                     }
+                    placeholder="admissions@institute.edu.in"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -438,6 +555,7 @@ export default function InstituteEditorModal({
                 <div>
                   <Label className="text-xs text-slate-300">Contact Phone / Mobile</Label>
                   <Input
+                    type="tel"
                     value={formData.contact?.phone || ""}
                     onChange={(e) =>
                       setFormData({
@@ -445,8 +563,29 @@ export default function InstituteEditorModal({
                         contact: { ...formData.contact!, phone: e.target.value },
                       })
                     }
+                    placeholder="e.g. 011-26597135"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
+                </div>
+
+                <div className="sm:col-span-2 p-3 rounded-lg border border-slate-700 bg-slate-800/40">
+                  <Label className="text-xs font-semibold text-slate-200 flex items-center justify-between">
+                    <span>Main Cover Wallpaper (Auto-Compressed)</span>
+                    <span className="text-[10px] text-slate-400">Direct Upload or Paste URL</span>
+                  </Label>
+                  <div className="flex gap-2 mt-2 items-center">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverUpload}
+                      className="text-xs bg-slate-900 border-slate-700 text-slate-300 file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:text-xs"
+                    />
+                    {(formData.photos && formData.photos.length > 0) && (
+                      <span className="text-[11px] text-emerald-400 font-semibold whitespace-nowrap">
+                        ✓ {formData.photos.length} photo(s) attached
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </TabsContent>
@@ -458,8 +597,9 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Total Enrolled Students</Label>
                   <Input
                     type="number"
-                    value={formData.totalStudentsEnrolled || 0}
-                    onChange={(e) => setFormData({ ...formData, totalStudentsEnrolled: Number(e.target.value) })}
+                    value={formData.totalStudentsEnrolled ?? ""}
+                    onChange={(e) => setFormData({ ...formData, totalStudentsEnrolled: e.target.value ? Number(e.target.value) : undefined })}
+                    placeholder="e.g. 5200"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -468,16 +608,17 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Available Admission Seats</Label>
                   <Input
                     type="number"
-                    value={formData.seatMatrix?.availableSeats || 0}
+                    value={formData.seatMatrix?.availableSeats ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
                         seatMatrix: {
-                          availableSeats: Number(e.target.value),
-                          totalSeats: formData.seatMatrix?.totalSeats || 500,
+                          availableSeats: Number(e.target.value) || 0,
+                          totalSeats: formData.seatMatrix?.totalSeats || 0,
                         },
                       })
                     }
+                    placeholder="e.g. 240"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -486,16 +627,17 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Total Approved Seats</Label>
                   <Input
                     type="number"
-                    value={formData.seatMatrix?.totalSeats || 0}
+                    value={formData.seatMatrix?.totalSeats ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
                         seatMatrix: {
-                          availableSeats: formData.seatMatrix?.availableSeats || 100,
-                          totalSeats: Number(e.target.value),
+                          availableSeats: formData.seatMatrix?.availableSeats || 0,
+                          totalSeats: Number(e.target.value) || 0,
                         },
                       })
                     }
+                    placeholder="e.g. 1000"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -504,17 +646,18 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Annual Tuition Fee (₹)</Label>
                   <Input
                     type="number"
-                    value={formData.feeStructure?.tuitionPerYear || 0}
+                    value={formData.feeStructure?.tuitionPerYear ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
                         feeStructure: {
                           ...formData.feeStructure!,
-                          tuitionPerYear: Number(e.target.value),
-                          totalEstimated: Number(e.target.value) + (formData.feeStructure?.hostelPerYear || 0),
+                          tuitionPerYear: Number(e.target.value) || 0,
+                          totalEstimated: (Number(e.target.value) || 0) + (formData.feeStructure?.hostelPerYear || 0),
                         },
                       })
                     }
+                    placeholder="e.g. 125000"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -523,17 +666,18 @@ export default function InstituteEditorModal({
                   <Label className="text-xs text-slate-300">Hostel Fee Per Year (₹)</Label>
                   <Input
                     type="number"
-                    value={formData.feeStructure?.hostelPerYear || 0}
+                    value={formData.feeStructure?.hostelPerYear ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
                         feeStructure: {
                           ...formData.feeStructure!,
-                          hostelPerYear: Number(e.target.value),
-                          totalEstimated: (formData.feeStructure?.tuitionPerYear || 0) + Number(e.target.value),
+                          hostelPerYear: Number(e.target.value) || 0,
+                          totalEstimated: (formData.feeStructure?.tuitionPerYear || 0) + (Number(e.target.value) || 0),
                         },
                       })
                     }
+                    placeholder="e.g. 60000"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -542,7 +686,7 @@ export default function InstituteEditorModal({
                   <input
                     type="checkbox"
                     id="schCheck"
-                    checked={formData.feeStructure?.scholarshipAvailable ?? true}
+                    checked={formData.feeStructure?.scholarshipAvailable ?? false}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -588,13 +732,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.overall || 9.0}
+                    value={formData.ratings?.overall ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, overall: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, overall: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 9.5"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -606,13 +751,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.faculty || 9.0}
+                    value={formData.ratings?.faculty ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, faculty: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, faculty: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 9.2"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -624,13 +770,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.infrastructure || 9.0}
+                    value={formData.ratings?.infrastructure ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, infrastructure: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, infrastructure: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 9.4"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -642,13 +789,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.studentCaliber || 9.0}
+                    value={formData.ratings?.studentCaliber ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, studentCaliber: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, studentCaliber: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 9.3"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -660,13 +808,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.sportsAndExtracurricular || 9.0}
+                    value={formData.ratings?.sportsAndExtracurricular ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, sportsAndExtracurricular: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, sportsAndExtracurricular: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 8.8"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>
@@ -678,13 +827,14 @@ export default function InstituteEditorModal({
                     step="0.1"
                     min="0"
                     max="10"
-                    value={formData.ratings?.techLevel || 9.0}
+                    value={formData.ratings?.techLevel ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        ratings: { ...formData.ratings!, techLevel: Number(e.target.value) },
+                        ratings: { ...formData.ratings!, techLevel: Number(e.target.value) || 0 },
                       })
                     }
+                    placeholder="e.g. 9.6"
                     className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
                   />
                 </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,12 +24,20 @@ import {
   ShieldCheck,
   FileCheck,
   Compass,
+  Star,
+  ExternalLink,
 } from "lucide-react";
 import { useDataStore } from "@/lib/data-service";
-import { loadInstitutes } from "@/lib/institutes-dataset";
+import { loadInstitutes, Institute } from "@/lib/institutes-dataset";
+import InstituteDetailModal from "@/components/institutes/InstituteDetailModal";
 
 export default function Index() {
   const { getText } = useDataStore();
+  const navigate = useNavigate();
+  const [allInstitutes] = useState<Institute[]>(() => loadInstitutes());
+  const [selectedInstitute, setSelectedInstitute] = useState<Institute | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
   const [animatedNumbers, setAnimatedNumbers] = useState({
     jobsListed: 0,
     institutesMapped: 0,
@@ -40,7 +48,7 @@ export default function Index() {
   useEffect(() => {
     const targets = {
       jobsListed: 4125,
-      institutesMapped: 500,
+      institutesMapped: allInstitutes.length || 500,
       successStories: 687,
       students: 13750,
     };
@@ -84,44 +92,48 @@ export default function Index() {
     }, interval);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [allInstitutes.length]);
 
   const coreFeatures = [
     {
       icon: Building,
       title: "Schools & Colleges Directory",
       description:
-        "500+ verified institutes with corporate-checked placements and on-site audit dossiers.",
+        "Explore 500+ schools and colleges with corporate-verified placement data, authentic campus audits, and granular fees.",
       color: "from-blue-600 to-indigo-600",
       href: "/institutes",
-      badge: "Verified Data",
+      badge: "Verified Registry",
+      highlight: `${allInstitutes.length}+ Campuses Mapped`,
     },
     {
       icon: Scale,
       title: "Side-by-Side Compare",
       description:
-        "Compare packages, advantages, real student reviews, and verified fees between colleges.",
+        "Compare actual packages, pros & cons, verified reviews, and ratings side-by-side to make the right institutional choice.",
       color: "from-indigo-600 to-purple-600",
       href: "/compare",
       badge: "Decision Engine",
+      highlight: "Direct Metrics Comparison",
     },
     {
       icon: Target,
       title: "By Career Goal",
       description:
-        "Personalized milestone roadmap from Class 8/10th or 12th directly to your dream career.",
+        "Personalized milestone roadmap from Class 8/10th or 12th directly to your dream career, competitive exams, and degrees.",
       color: "from-purple-600 to-pink-600",
       href: "/jobs/by-goal",
-      badge: "Roadmap",
+      badge: "Goal Roadmap",
+      highlight: "Step-by-Step Path",
     },
     {
       icon: Heart,
       title: "By Subject & Interest",
       description:
-        "Discover emerging careers matching Indian school/college subjects you actually enjoy.",
+        "Discover emerging careers, courses, and institutes matching Indian school and college subjects you actually enjoy.",
       color: "from-pink-500 to-rose-500",
       href: "/jobs/by-interest",
       badge: "Passion Driven",
+      highlight: "Aligned with NEP 2020",
     },
   ];
 
@@ -152,113 +164,91 @@ export default function Index() {
     },
   ];
 
-  const topInstitutes = [
-    {
-      name: "IIT Bombay",
-      city: "Mumbai, Maharashtra",
-      type: "College",
-      avgPackage: "₹21.8 LPA",
-      placementStatus: "VERIFIED PLACEMENT",
-      auditStatus: "AUDIT VERIFIED",
-    },
-    {
-      name: "AIIMS New Delhi",
-      city: "New Delhi, Delhi NCR",
-      type: "College",
-      avgPackage: "₹18.5 LPA",
-      placementStatus: "VERIFIED PLACEMENT",
-      auditStatus: "AUDIT VERIFIED",
-    },
-    {
-      name: "DPS R.K. Puram",
-      city: "New Delhi, Delhi NCR",
-      type: "School",
-      avgPackage: "99.2% Board Pass",
-      placementStatus: "VERIFIED RECORD",
-      auditStatus: "AUDIT VERIFIED",
-    },
-    {
-      name: "BITS Pilani",
-      city: "Pilani, Rajasthan",
-      type: "College",
-      avgPackage: "₹19.2 LPA",
-      placementStatus: "VERIFIED PLACEMENT",
-      auditStatus: "AUDIT VERIFIED",
-    },
-  ];
+  const handleOpenInstituteModal = (inst: Institute) => {
+    setSelectedInstitute(inst);
+    setIsDetailOpen(true);
+  };
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
         
-        {/* Subtle Map Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle at 10px 10px, currentColor 1.5px, transparent 0)`,
-            backgroundSize: "28px 28px",
-          }}
-        />
+        {/* Subtle Map Coordinate Grid */}
+        <div className="absolute inset-0 map-grid-pattern opacity-40 pointer-events-none" />
 
-        <div className="container relative px-4 pt-10 pb-12 max-w-6xl mx-auto text-center space-y-6">
-          <Badge
-            variant="secondary"
-            className="px-3.5 py-1.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 inline-flex items-center gap-1.5"
-          >
-            <Compass className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-            {getText("site_tagline")}
-          </Badge>
+        <div className="container relative px-4 pt-10 pb-14 max-w-6xl mx-auto space-y-8">
+          {/* Header Layout: Left-Aligned Heading & Right-Aligned Subtitle */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+            <div className="space-y-3 text-left max-w-xl">
+              <Badge
+                variant="secondary"
+                className="px-3.5 py-1.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 inline-flex items-center gap-1.5"
+              >
+                <Compass className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                {getText("site_tagline")}
+              </Badge>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+                <span>{getText("hero_title_1")} </span>
+                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  {getText("hero_title_2")}
+                </span>
+              </h1>
+            </div>
+            <div className="text-left md:text-right max-w-md space-y-2">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                {getText("hero_subtitle")}
+              </p>
+              <div className="flex items-center md:justify-end gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>{allInstitutes.length}+ Verified Institutions Active</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Clean, Refined Hero Heading */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
-            <span>{getText("hero_title_1")} </span>
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {getText("hero_title_2")}
-            </span>
-          </h1>
-
-          {/* Clear Subtitle */}
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {getText("hero_subtitle")}
-          </p>
-
-          {/* 4 Core Features Displayed Prominently Above the Fold */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left pt-2">
+          {/* 4 Core Features in a 2x2 Prominent Matrix Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left pt-2">
             {coreFeatures.map((feature, index) => (
               <Card
                 key={index}
-                className="group relative overflow-hidden border border-border/80 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between bg-card/90 backdrop-blur-sm"
+                className="group relative overflow-hidden border border-border/80 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between bg-card/95 backdrop-blur-sm p-1"
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity`}
                 />
 
-                <CardHeader className="relative p-4 space-y-2">
+                <CardHeader className="relative p-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <div
-                      className={`p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-md`}
-                    >
-                      <feature.icon className="h-4 w-4" />
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`p-3 rounded-2xl bg-gradient-to-br ${feature.color} text-white shadow-md`}
+                      >
+                        <feature.icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base sm:text-lg font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {feature.title}
+                        </CardTitle>
+                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                          {feature.highlight}
+                        </span>
+                      </div>
                     </div>
-                    <Badge variant="secondary" className="text-[10px] font-semibold">
+                    <Badge variant="secondary" className="text-[10px] font-semibold px-2 py-0.5">
                       {feature.badge}
                     </Badge>
                   </div>
-                  <CardTitle className="text-sm font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {feature.title}
-                  </CardTitle>
-                  <CardDescription className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
+                  <CardDescription className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="relative p-4 pt-0">
+                <CardContent className="relative p-5 pt-0">
                   <Link to={feature.href}>
-                    <Button className="w-full text-xs h-8 font-semibold" variant="outline">
-                      Explore Now
-                      <ArrowRight className="h-3 w-3 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                    <Button className="w-full text-xs h-9 font-semibold" variant="outline">
+                      Explore Feature
+                      <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-1 transition-transform text-blue-600" />
                     </Button>
                   </Link>
                 </CardContent>
@@ -266,8 +256,8 @@ export default function Index() {
             ))}
           </div>
 
-          {/* Key Trust Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border/50 max-w-4xl mx-auto">
+          {/* Dynamic Trust Stats Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border/60 max-w-4xl mx-auto">
             <div className="text-center p-3">
               <div className="text-2xl md:text-3xl font-extrabold text-blue-600 dark:text-blue-400">
                 {animatedNumbers.jobsListed.toLocaleString()}+
@@ -296,8 +286,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Highlighted Registry: Verified Institutes & Career Pathways */}
-      <section className="py-16">
+      {/* Highlighted Registry: Verified Institutes & In-Demand Career Tracks */}
+      <section className="py-14">
         <div className="container px-4 max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Column 1: Top Verified Institutes */}
@@ -308,40 +298,56 @@ export default function Index() {
                   <h3 className="text-lg font-bold text-foreground">Verified Institutes</h3>
                 </div>
                 <Link to="/institutes" className="text-xs font-semibold text-blue-600 hover:underline">
-                  View All ({animatedNumbers.institutesMapped}+) →
+                  View All ({allInstitutes.length}+) →
                 </Link>
               </div>
 
               <div className="space-y-3">
-                {topInstitutes.map((inst, index) => (
-                  <Card key={index} className="border border-border/80 hover:shadow-md transition-shadow">
+                {allInstitutes.slice(0, 4).map((inst) => (
+                  <Card
+                    key={inst.id}
+                    onClick={() => handleOpenInstituteModal(inst)}
+                    className="border border-border/80 hover:shadow-md hover:border-blue-500/40 transition-all cursor-pointer group"
+                  >
                     <CardContent className="p-3.5 flex items-center justify-between text-xs">
-                      <div className="space-y-1">
+                      <div className="space-y-1.5 pr-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-foreground">{inst.name}</span>
-                          <Badge variant="outline" className="text-[10px] px-1 py-0">
+                          <span className="font-bold text-foreground group-hover:text-blue-600 transition-colors">
+                            {inst.name}
+                          </span>
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 uppercase">
                             {inst.type}
                           </Badge>
+                          {inst.ratings?.overall && (
+                            <span className="inline-flex items-center text-amber-600 font-semibold text-[11px]">
+                              <Star className="h-3 w-3 fill-amber-500 text-amber-500 mr-0.5" />
+                              {inst.ratings.overall.toFixed(1)}/10
+                            </span>
+                          )}
                         </div>
                         <div className="text-[11px] text-muted-foreground flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-blue-500" />
-                          <span>{inst.city}</span>
-                          <span className="ml-1 text-foreground font-medium">• {inst.avgPackage}</span>
+                          <MapPin className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                          <span>{inst.location.city}, {inst.location.state}</span>
+                          {inst.type !== "school" && inst.placement?.averagePackageLPA && (
+                            <span className="ml-1 text-foreground font-medium">
+                              • Avg: ₹{inst.placement.averagePackageLPA} LPA
+                            </span>
+                          )}
                         </div>
-                        <div className="flex gap-1.5 pt-0.5">
-                          <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] py-0">
-                            {inst.placementStatus}
-                          </Badge>
-                          <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] py-0">
-                            {inst.auditStatus}
+                        <div className="flex flex-wrap gap-1.5 pt-0.5">
+                          {inst.type !== "school" && (
+                            <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] py-0 font-medium">
+                              {inst.placement?.status === "verified" ? "VERIFIED PLACEMENT" : "PLACEMENT AUDIT PENDING"}
+                            </Badge>
+                          )}
+                          <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] py-0 font-medium">
+                            {inst.audit?.status === "verified" ? "CAMPUS AUDITED" : "AUDIT PENDING"}
                           </Badge>
                         </div>
                       </div>
-                      <Link to="/institutes">
-                        <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600">
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
+                      <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600 flex-shrink-0">
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -362,11 +368,17 @@ export default function Index() {
 
               <div className="space-y-3">
                 {trendingJobs.map((job, index) => (
-                  <Card key={index} className="border border-border/80 hover:shadow-md transition-shadow">
+                  <Card
+                    key={index}
+                    onClick={() => navigate("/jobs/by-goal")}
+                    className="border border-border/80 hover:shadow-md hover:border-blue-500/40 transition-all cursor-pointer group"
+                  >
                     <CardContent className="p-3.5 flex items-center justify-between text-xs">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-foreground">{job.title}</span>
+                          <span className="font-bold text-foreground group-hover:text-blue-600 transition-colors">
+                            {job.title}
+                          </span>
                         </div>
                         <div className="text-[11px] text-muted-foreground flex items-center gap-2">
                           <span>{job.category}</span>
@@ -378,11 +390,9 @@ export default function Index() {
                           {job.growth}
                         </Badge>
                       </div>
-                      <Link to="/jobs/by-interest">
-                        <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600">
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
+                      <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600">
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -392,7 +402,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Verification Direct Call-to-Action */}
+      {/* Verification & Anti-Manipulation Call-to-Action */}
       <section className="py-14 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white">
         <div className="container px-4 max-w-4xl mx-auto text-center space-y-4">
           <Badge className="bg-white/20 text-white text-xs backdrop-blur-md">
@@ -419,6 +429,32 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Direct Institute Modal on Click */}
+      {selectedInstitute && (
+        <InstituteDetailModal
+          institute={selectedInstitute}
+          isOpen={isDetailOpen}
+          onClose={() => {
+            setIsDetailOpen(false);
+            setSelectedInstitute(null);
+          }}
+          onOpenAuditBooking={() => {
+            setIsDetailOpen(false);
+            navigate("/institutes");
+          }}
+          onOpenPlacementVerification={() => {
+            setIsDetailOpen(false);
+            navigate("/institutes");
+          }}
+          onOpenApply={() => {
+            setIsDetailOpen(false);
+            navigate("/institutes");
+          }}
+          onToggleCompare={() => {}}
+          isCompared={false}
+        />
+      )}
     </div>
   );
 }

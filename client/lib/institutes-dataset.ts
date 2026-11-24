@@ -87,6 +87,7 @@ export interface InstituteReview {
   parentReviewId?: string;
   replies: InstituteReview[];
   likes: number;
+  dislikes?: number;
 }
 
 export type PhotoCategory = "campus" | "classrooms" | "labs" | "grounds" | "sports";
@@ -114,6 +115,9 @@ export interface Institute {
     state: string;
     area: string;
     address: string;
+    district?: string;
+    country?: string;
+    pincode?: string;
     geo: { lat: number; lng: number };
     googleMapsUrl: string;
   };
@@ -153,6 +157,7 @@ export interface Institute {
   audit: AuditDetails;
   photos: InstitutePhoto[];
   reviews: InstituteReview[];
+  studentCommunityRating?: number; // Calculated average of student reviews out of 10.0
   rankScore: number; // 1-100 calculated ranking
   featured: boolean;
 }
@@ -2147,7 +2152,7 @@ export function addInstituteReview(
   collectRatings(inst.reviews);
   if (allRatings.length > 0) {
     const avg = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
-    inst.ratings.overall = Math.round(avg * 10) / 10;
+    inst.studentCommunityRating = Math.round(avg * 10) / 10;
   }
 
   saveInstitutes(institutes);
@@ -2174,6 +2179,28 @@ export function likeInstituteReview(instituteId: string, reviewId: string): void
   };
 
   likeInList(inst.reviews);
+  saveInstitutes(institutes);
+}
+
+export function dislikeInstituteReview(instituteId: string, reviewId: string): void {
+  const institutes = loadInstitutes();
+  const inst = institutes.find((i) => i.id === instituteId);
+  if (!inst || !inst.reviews) return;
+
+  const dislikeInList = (list: InstituteReview[]): boolean => {
+    for (const r of list) {
+      if (r.id === reviewId) {
+        r.dislikes = (r.dislikes || 0) + 1;
+        return true;
+      }
+      if (r.replies && r.replies.length > 0) {
+        if (dislikeInList(r.replies)) return true;
+      }
+    }
+    return false;
+  };
+
+  dislikeInList(inst.reviews);
   saveInstitutes(institutes);
 }
 

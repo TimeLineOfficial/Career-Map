@@ -10,6 +10,7 @@ import {
   Target,
   Heart,
   Compass,
+  BookOpen,
 } from "lucide-react";
 import { useDataStore } from "@/lib/data-service";
 
@@ -22,7 +23,7 @@ export default function EnhancedNavigation() {
   const navigationItems = [
     {
       id: "institutes",
-      label: getText("nav_institutes"),
+      label: getText("nav_institutes") || "Schools & Colleges",
       icon: GraduationCap,
       href: "/institutes",
       subItems: [
@@ -49,10 +50,42 @@ export default function EnhancedNavigation() {
       ],
     },
     {
-      id: "jobs",
-      label: getText("nav_jobs"),
-      icon: Briefcase,
-      href: "/jobs",
+      id: "compare",
+      label: getText("nav_compare") || "Compare",
+      icon: Scale,
+      href: "/compare",
+      subItems: [],
+    },
+    {
+      id: "career-map",
+      label: getText("nav_career_map") || "Interactive Career Map",
+      icon: MapPin,
+      href: "/career-map",
+      subItems: [],
+    },
+    {
+      id: "blogs",
+      label: "Community Blogs",
+      icon: BookOpen,
+      href: "/blogs",
+      subItems: [
+        {
+          label: "All Community Articles",
+          href: "/blogs",
+          description: "Guides on courses, college audits, hostels, and careers",
+        },
+        {
+          label: "Write an Article",
+          href: "/blogs",
+          description: "Share your college experience and tips with other students",
+        },
+      ],
+    },
+    {
+      id: "career-guides",
+      label: "Career Guides",
+      icon: Compass,
+      href: "/jobs/by-goal",
       subItems: [
         {
           label: "By Career Goal",
@@ -65,20 +98,6 @@ export default function EnhancedNavigation() {
           description: "Discover careers matching Indian subjects & passions",
         },
       ],
-    },
-    {
-      id: "compare",
-      label: getText("nav_compare"),
-      icon: Scale,
-      href: "/compare",
-      subItems: [],
-    },
-    {
-      id: "career-map",
-      label: getText("nav_career_map"),
-      icon: MapPin,
-      href: "/career-map",
-      subItems: [],
     },
   ];
 

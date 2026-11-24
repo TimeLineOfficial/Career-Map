@@ -7,16 +7,19 @@ import {
   InstituteReview,
   addInstituteReview,
   likeInstituteReview,
+  dislikeInstituteReview,
 } from "@/lib/institutes-dataset";
 import {
   Star,
   ThumbsUp,
+  ThumbsDown,
   MessageSquare,
   CornerDownRight,
   User,
   ShieldCheck,
   Send,
   Sparkles,
+  Lock,
 } from "lucide-react";
 
 interface StudentReviewsSectionProps {
@@ -57,7 +60,7 @@ export default function StudentReviewsSection({
   // New Review Form State
   const [studentName, setStudentName] = useState(storedStudent?.name || "");
   const [studentEmail, setStudentEmail] = useState(storedStudent?.email || "");
-  const [studentRole, setStudentRole] = useState("Student");
+  const [studentRole, setStudentRole] = useState(storedStudent?.educationLevel || "Student");
   const [ratingOutOf10, setRatingOutOf10] = useState(9.0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,8 +74,29 @@ export default function StudentReviewsSection({
   const [replyEmail, setReplyEmail] = useState(storedStudent?.email || "");
   const [replyComment, setReplyComment] = useState("");
 
+  // Calculate Average Student Community Score
+  const allStudentScores: number[] = [];
+  const collectScores = (list: InstituteReview[]) => {
+    list.forEach((r) => {
+      if (r.ratingOutOf10 && r.ratingOutOf10 > 0) allStudentScores.push(r.ratingOutOf10);
+      if (r.replies) collectScores(r.replies);
+    });
+  };
+  collectScores(reviews);
+  const studentCommunityAvg =
+    allStudentScores.length > 0
+      ? (allStudentScores.reduce((a, b) => a + b, 0) / allStudentScores.length).toFixed(1)
+      : null;
+
   const handlePostReview = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!storedStudent) {
+      if (window.confirm("You must be signed in with a Student Account to submit an authentic review. Open student account window now?")) {
+        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
+      }
+      return;
+    }
+
     if (!comment.trim() || !studentName.trim()) {
       alert("Please provide your name and review text.");
       return;
@@ -82,19 +106,11 @@ export default function StudentReviewsSection({
     try {
       addInstituteReview(instituteId, {
         studentName,
-        studentEmail: studentEmail || "anonymous@student.in",
+        studentEmail: studentEmail || storedStudent?.email || "verified@student.in",
         studentRole,
         ratingOutOf10,
         comment,
       });
-
-      // Save student credentials to local profile for convenience
-      if (!storedStudent && studentName) {
-        localStorage.setItem(
-          "careermap_student_account",
-          JSON.stringify({ name: studentName, email: studentEmail })
-        );
-      }
 
       setComment("");
       if (onReviewAdded) onReviewAdded();
@@ -106,6 +122,13 @@ export default function StudentReviewsSection({
   };
 
   const handlePostReply = (parentReviewId: string) => {
+    if (!storedStudent) {
+      if (window.confirm("Please log in with a Student Account to reply to reviews. Open student account window now?")) {
+        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
+      }
+      return;
+    }
+
     if (!replyComment.trim() || !replyName.trim()) {
       alert("Please enter your name and reply message.");
       return;
@@ -114,7 +137,7 @@ export default function StudentReviewsSection({
     try {
       addInstituteReview(instituteId, {
         studentName: replyName,
-        studentEmail: replyEmail || "anonymous@student.in",
+        studentEmail: replyEmail || storedStudent?.email || "verified@student.in",
         studentRole: "Student",
         ratingOutOf10: 9.0,
         comment: replyComment,
@@ -130,7 +153,24 @@ export default function StudentReviewsSection({
   };
 
   const handleLike = (reviewId: string) => {
+    if (!storedStudent) {
+      if (window.confirm("Please sign in with a Student Account to like reviews. Open student account window now?")) {
+        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
+      }
+      return;
+    }
     likeInstituteReview(instituteId, reviewId);
+    if (onReviewAdded) onReviewAdded();
+  };
+
+  const handleDislike = (reviewId: string) => {
+    if (!storedStudent) {
+      if (window.confirm("Please sign in with a Student Account to rate reviews. Open student account window now?")) {
+        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
+      }
+      return;
+    }
+    dislikeInstituteReview(instituteId, reviewId);
     if (onReviewAdded) onReviewAdded();
   };
 
@@ -139,13 +179,19 @@ export default function StudentReviewsSection({
     const isReplying = replyingToId === review.id;
 
     return (
-      <div className={`space-y-3 ${depth > 0 ? "ml-4 sm:ml-6 pl-3 sm:pl-4 border-l-2 border-indigo-200 dark:border-indigo-800" : ""}`}>
-        <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-border/80 shadow-sm space-y-2">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-2 flex-wrap">
+      <div
+        className={`space-y-3 transition-all ${
+          depth > 0
+            ? "ml-4 sm:ml-8 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800/80 my-2"
+            : "p-4 rounded-xl border border-border bg-card shadow-sm"
+        }`}
+      >
+        <div className="space-y-2">
+          {/* Header Row */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-                {review.studentName.charAt(0).toUpperCase()}
+              <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs">
+                {review.studentName ? review.studentName.charAt(0).toUpperCase() : "S"}
               </div>
               <div>
                 <span className="font-bold text-xs text-foreground">{review.studentName}</span>
@@ -175,7 +221,8 @@ export default function StudentReviewsSection({
             <button
               type="button"
               onClick={() => handleLike(review.id)}
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-1 hover:text-emerald-600 transition-colors font-medium"
+              title="Helpful Review"
             >
               <ThumbsUp className="h-3 w-3" />
               <span>{review.likes || 0}</span>
@@ -183,8 +230,18 @@ export default function StudentReviewsSection({
 
             <button
               type="button"
+              onClick={() => handleDislike(review.id)}
+              className="flex items-center gap-1 hover:text-rose-600 transition-colors font-medium"
+              title="Not Helpful"
+            >
+              <ThumbsDown className="h-3 w-3" />
+              <span>{review.dislikes || 0}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setReplyingToId(isReplying ? null : review.id)}
-              className="flex items-center gap-1 hover:text-indigo-600 transition-colors font-medium"
+              className="flex items-center gap-1 hover:text-indigo-600 transition-colors font-medium ml-2"
             >
               <MessageSquare className="h-3 w-3" />
               <span>{isReplying ? "Cancel Reply" : "Reply"}</span>
@@ -251,7 +308,7 @@ export default function StudentReviewsSection({
 
   return (
     <div className="space-y-6">
-      {/* 1. Rating Dashboard Banner (Scale 10.0) */}
+      {/* 1. Dual Rating Dashboard (Audit Rating & Student Community Rating) */}
       <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-blue-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border border-border shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-border/60">
           <div>
@@ -263,11 +320,31 @@ export default function StudentReviewsSection({
               Strictly measured on a 10.0 scale from audited student surveys and verified alumni feedback.
             </p>
           </div>
-          <div className="text-center sm:text-right">
-            <div className="text-3xl font-black text-amber-600 dark:text-amber-400 flex items-center justify-center sm:justify-end gap-1">
-              ⭐ {ratings?.overall || 9.0} <span className="text-sm font-semibold text-muted-foreground">/ 10.0</span>
+
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 justify-center sm:justify-end">
+            {/* Audit / Official Rating */}
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center min-w-[130px]">
+              <div className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-400">
+                Official Audit Rating
+              </div>
+              <div className="text-xl font-black text-amber-600 dark:text-amber-400 mt-0.5">
+                ⭐ {ratings?.overall || 9.0} <span className="text-xs font-semibold text-muted-foreground">/ 10</span>
+              </div>
+              <div className="text-[9px] text-muted-foreground">Verified Inspection</div>
             </div>
-            <span className="text-[11px] text-muted-foreground">Based on student evaluations</span>
+
+            {/* Student Community Rating */}
+            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center min-w-[130px]">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-400">
+                Student Community Rating
+              </div>
+              <div className="text-xl font-black text-blue-600 dark:text-blue-400 mt-0.5">
+                👥 {studentCommunityAvg || ratings?.overall || 9.0} <span className="text-xs font-semibold text-muted-foreground">/ 10</span>
+              </div>
+              <div className="text-[9px] text-muted-foreground">
+                {allStudentScores.length > 0 ? `${allStudentScores.length} reviews` : "Community score"}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -350,78 +427,107 @@ export default function StudentReviewsSection({
         </div>
       </div>
 
-      {/* 2. Post a Student Review Box */}
-      <form onSubmit={handlePostReview} className="p-4 rounded-xl border bg-card space-y-3 shadow-sm">
-        <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
-          <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
-          Share Your Ground Reality Review
-        </h4>
+      {/* 2. Review Submission Form or Login Gate */}
+      {storedStudent ? (
+        <form onSubmit={handlePostReview} className="p-4 rounded-xl border bg-card space-y-3 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
+              <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
+              Share Your Ground Reality Review
+            </h4>
+            <Badge variant="outline" className="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-300">
+              ✓ Logged in as {storedStudent.name || "Student"}
+            </Badge>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div>
-            <label className="text-[11px] text-muted-foreground font-semibold">Your Name *</label>
-            <Input
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              className="mt-1 h-8 text-xs"
-              required
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label className="text-[11px] text-muted-foreground font-semibold">Your Full Name *</label>
+              <Input
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="Enter your full name"
+                className="mt-1 h-8 text-xs"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] text-muted-foreground font-semibold">Role / Grade</label>
+              <Input
+                value={studentRole}
+                onChange={(e) => setStudentRole(e.target.value)}
+                placeholder="e.g. 3rd Year CSE / Alumnus / Class 12th"
+                className="mt-1 h-8 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] text-muted-foreground font-semibold flex justify-between">
+                <span>Rating (1 - 10.0)</span>
+                <span className="font-bold text-amber-600">⭐ {ratingOutOf10} / 10</span>
+              </label>
+              <Input
+                type="number"
+                min="1"
+                max="10"
+                step="0.1"
+                value={ratingOutOf10}
+                onChange={(e) => setRatingOutOf10(Number(e.target.value))}
+                className="mt-1 h-8 text-xs"
+                required
+              />
+            </div>
           </div>
 
           <div>
-            <label className="text-[11px] text-muted-foreground font-semibold">Role / Grade</label>
-            <Input
-              value={studentRole}
-              onChange={(e) => setStudentRole(e.target.value)}
-              placeholder="e.g. 3rd Year CSE / Alumnus / Class 12th"
-              className="mt-1 h-8 text-xs"
-            />
-          </div>
-
-          <div>
-            <label className="text-[11px] text-muted-foreground font-semibold flex justify-between">
-              <span>Rating (1 - 10.0)</span>
-              <span className="font-bold text-amber-600">⭐ {ratingOutOf10} / 10</span>
+            <label className="text-[11px] text-muted-foreground font-semibold">
+              Your Honest Feedback (Infrastructure, Lab condition, Academics, Faculty support) *
             </label>
-            <Input
-              type="number"
-              min="1"
-              max="10"
-              step="0.1"
-              value={ratingOutOf10}
-              onChange={(e) => setRatingOutOf10(Number(e.target.value))}
-              className="mt-1 h-8 text-xs"
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={`Share genuine insights for other students exploring ${instituteName}...`}
+              className="mt-1 text-xs min-h-[70px]"
               required
             />
           </div>
-        </div>
 
-        <div>
-          <label className="text-[11px] text-muted-foreground font-semibold">
-            Your Honest Feedback (Infrastructure, Lab condition, Academics, Faculty support) *
-          </label>
-          <Textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder={`Share genuine insights for other students exploring ${instituteName}...`}
-            className="mt-1 text-xs min-h-[70px]"
-            required
-          />
-        </div>
-
-        <div className="flex justify-end">
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
+            >
+              <Send className="h-3.5 w-3.5" />
+              Post Review
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="p-5 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/30 text-center space-y-3">
+          <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mx-auto text-blue-600 dark:text-blue-400">
+            <Lock className="h-5 w-5" />
+          </div>
+          <div>
+            <h4 className="font-bold text-xs text-foreground">
+              Login or Register to Write a Review & Rate
+            </h4>
+            <p className="text-[11px] text-muted-foreground mt-1 max-w-md mx-auto">
+              You can read all student reviews freely. To publish your own authentic review or like/rate experiences, please sign in with your student account.
+            </p>
+          </div>
           <Button
-            type="submit"
+            type="button"
             size="sm"
-            disabled={isSubmitting}
+            onClick={() => window.dispatchEvent(new CustomEvent("open-student-account-modal"))}
             className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
           >
-            <Send className="h-3.5 w-3.5" />
-            Post Review
+            <User className="h-3.5 w-3.5" /> Login / Register with Student Account
           </Button>
         </div>
-      </form>
+      )}
 
       {/* 3. Threaded Discussion Tree */}
       <div className="space-y-4">
@@ -451,9 +557,9 @@ export default function StudentReviewsSection({
                   variant="outline"
                   size="sm"
                   onClick={() => setVisibleCount((prev) => prev + 15)}
-                  className="text-xs gap-1.5"
+                  className="text-xs"
                 >
-                  Load More Reviews ({reviews.length - visibleCount} remaining)
+                  Load More Comments ({reviews.length - visibleCount} remaining)
                 </Button>
               </div>
             )}

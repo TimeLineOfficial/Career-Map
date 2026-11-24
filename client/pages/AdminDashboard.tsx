@@ -553,7 +553,7 @@ export default function AdminDashboard() {
                     id="adminUser"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. Himesh Singh"
+                    placeholder="Enter your admin username"
                     className="mt-1 bg-slate-800/80 border-slate-700 text-white text-xs"
                     required
                   />
@@ -566,7 +566,7 @@ export default function AdminDashboard() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter master password"
+                    placeholder="Enter Password"
                     className="mt-1 bg-slate-800/80 border-slate-700 text-white text-xs"
                     required
                   />
@@ -582,17 +582,10 @@ export default function AdminDashboard() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="e.g. 9876543210"
+                    placeholder="Enter registered 10-digit mobile number"
                     className="mt-1 bg-slate-800/80 border-slate-700 text-white text-xs"
                     required
                   />
-                </div>
-
-                <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-800/60 text-[11px] text-blue-200/90 leading-relaxed space-y-1">
-                  <div className="font-semibold text-blue-300 flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5" /> Verified Dual-Credential Security
-                  </div>
-                  <p>Login requires matching Username, Password, and your registered mobile phone number. 3 incorrect attempts trigger automatic lockout.</p>
                 </div>
 
                 <Button
