@@ -282,9 +282,21 @@ export const useDataStore = create<DataStore>()(
       // Load data from JSON
       loadData: async () => {
         set({ isLoading: true });
+        console.log("[CareerMap] 🚀 Starting data load...");
         try {
-          const response = await fetch("/CareerMap_unified_payload.json");
-          const data: CareerMapData = await response.json();
+          const possiblePaths = ["/CareerMap_unified_payload.json", "/public/CareerMap_unified_payload.json"];
+          let data: CareerMapData | null = null;
+          for (const path of possiblePaths) {
+            try {
+              const response = await fetch(path);
+              if (response.ok) {
+                data = await response.json();
+                console.log(`[CareerMap] ✅ Loaded from: ${path}`);
+                break;
+              }
+            } catch (e) { console.warn(`Failed: ${path}`, e); }
+          }
+          if (!data) throw new Error("Could not load data from any path");
           // Initialize paginated business ideas
           const initialBusinessIdeas = data.business_ideas?.slice(0, 6) || [];
 
@@ -304,8 +316,10 @@ export const useDataStore = create<DataStore>()(
 
           console.log("CareerMap data loaded successfully");
         } catch (error) {
-          console.error("Failed to load CareerMap data:", error);
-          set({ isLoading: false });
+          console.error("[CareerMap] ❌ CRITICAL ERROR:", error);
+          set({ isLoading: false, careerMapData: null });
+          alert("⚠️ Career Map failed to load data.\n\nPlease refresh the page or check the console.");
+          throw error;
         }
       },
 

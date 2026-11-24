@@ -26,6 +26,8 @@ import {
   Play,
   Download,
   Bell,
+  Scale,
+  ShieldCheck,
 } from "lucide-react";
 
 export default function Index() {
@@ -228,19 +230,30 @@ export default function Index() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-career-primary to-career-secondary hover:opacity-90 text-lg px-8 py-6"
-              >
-                <MapPin className="h-5 w-5 mr-2" />
-                Start Career Mapping
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
+              <Link to="/institutes">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-90 text-base px-7 py-6 shadow-lg shadow-blue-500/20 text-white font-bold"
+                >
+                  <Building className="h-5 w-5 mr-2" />
+                  Schools & Colleges Map
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
 
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                <Play className="h-5 w-5 mr-2" />
-                Watch Demo
-              </Button>
+              <Link to="/compare">
+                <Button variant="outline" size="lg" className="text-base px-7 py-6 gap-2">
+                  <Scale className="h-5 w-5 text-indigo-600" />
+                  Compare Institutes
+                </Button>
+              </Link>
+
+              <Link to="/career-map">
+                <Button variant="secondary" size="lg" className="text-base px-7 py-6 gap-2">
+                  <MapPin className="h-5 w-5 text-career-primary" />
+                  Career Roadmap
+                </Button>
+              </Link>
             </div>
 
             {/* Stats */}

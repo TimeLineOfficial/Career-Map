@@ -26,6 +26,9 @@ import {
   Search,
   Bookmark,
   User,
+  Building,
+  Scale,
+  ShieldCheck,
 } from "lucide-react";
 import EnhancedNavigation from "./EnhancedNavigation";
 
@@ -66,6 +69,24 @@ export default function Layout({ children }: LayoutProps) {
 
   const navItems = [
     {
+      label: "Schools & Colleges",
+      href: "/institutes",
+      icon: Building,
+      description: "Verified placements & campus audits",
+    },
+    {
+      label: "Compare",
+      href: "/compare",
+      icon: Scale,
+      description: "Side-by-side college comparison",
+    },
+    {
+      label: "Career Map",
+      href: "/career-map",
+      icon: MapPin,
+      description: "Interactive career planning",
+    },
+    {
       label: "Jobs",
       href: "/jobs",
       icon: Briefcase,
@@ -76,18 +97,6 @@ export default function Layout({ children }: LayoutProps) {
       href: "/business",
       icon: Target,
       description: "Start your entrepreneurial journey",
-    },
-    {
-      label: "Career Map",
-      href: "/career-map",
-      icon: MapPin,
-      description: "Interactive career planning",
-    },
-    {
-      label: "Vacancies",
-      href: "/vacancies",
-      icon: Search,
-      description: "Latest job openings",
     },
   ];
 
@@ -208,6 +217,14 @@ export default function Layout({ children }: LayoutProps) {
               <Bookmark className="h-4 w-4" />
               <span className="hidden lg:inline">Saved</span>
             </Button>
+
+            {/* Admin Console */}
+            <Link to="/admin">
+              <Button variant="outline" size="sm" className="gap-1.5 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold text-xs">
+                <ShieldCheck className="h-4 w-4" />
+                <span>Admin</span>
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu */}

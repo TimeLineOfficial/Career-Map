@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { initializeCareerMapData } from "@/lib/data-service";
 import { initializePerformanceOptimizations } from "@/lib/performance-utils";
 import Layout from "@/components/Layout";
@@ -22,6 +22,8 @@ import BusinessDocumentation from "./pages/BusinessDocumentation";
 import ROICalculator from "./pages/ROICalculator";
 import InteractiveCareerMap from "./pages/InteractiveCareerMap";
 import AdminDashboard from "./pages/AdminDashboard";
+import InstitutesDirectory from "./pages/InstitutesDirectory";
+import InstituteCompare from "./pages/InstituteCompare";
 
 const queryClient = new QueryClient();
 
@@ -39,10 +41,14 @@ export default function App() {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <Router>
           <Layout>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/institutes" element={<InstitutesDirectory />} />
+              <Route path="/schools" element={<InstitutesDirectory />} />
+              <Route path="/colleges" element={<InstitutesDirectory />} />
+              <Route path="/compare" element={<InstituteCompare />} />
               <Route path="/jobs" element={<JobsLanding />} />
 
               {/* Jobs sub-routes */}
@@ -98,7 +104,7 @@ export default function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
-        </BrowserRouter>
+        </Router>
       </TooltipProvider>
     </QueryClientProvider>
   );

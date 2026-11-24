@@ -280,6 +280,7 @@ const timeCommitments = [
 export default function CareerByGoal() {
   const {
     careerMapData,
+    isLoading: dataIsLoading,
     currentLanguage,
     getText,
     generateCareerPath,
@@ -290,6 +291,46 @@ export default function CareerByGoal() {
     getCareerNotes,
     getYouTubeLectures,
   } = useDataStore();
+  
+  // Show loading screen if data is still loading
+  if (dataIsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Loading Career Map Data...
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300">
+            Please wait while we prepare your career guidance
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show error if data failed to load
+  if (!careerMapData) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Data Loading Failed
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Unable to load Career Map data. Please refresh the page or check your internet connection.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const [currentStep, setCurrentStep] = useState<Step>("goal");
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
@@ -335,18 +376,98 @@ export default function CareerByGoal() {
       stream: "",
       course: "",
     }));
-    setCurrentStep("stream");
+    
+    console.log(`[CareerByGoal] Stage selected: ${stageId}`);
+    
+    // CRITICAL FIX: Implement correct flow based on education level
+    if (stageId === "class_10_below") {
+      // For 10th or below → Skip everything, go directly to personalization then results
+      console.log("[CareerByGoal] ✅ 10th below → Skipping to personalization");
+      setCurrentStep("personalization");
+    } else if (stageId === "class_11_12") {
+      // For 11-12 → Ask stream only, then results
+      console.log("[CareerByGoal] ✅ 11-12 → Going to stream selection");
+      setCurrentStep("stream");
+    } else if (stageId === "undergraduate" || stageId === "postgraduate") {
+      // For UG/PG → Ask stream first, then course
+      console.log("[CareerByGoal] ✅ UG/PG → Going to stream selection");
+      setCurrentStep("stream");
+    } else if (stageId === "working_professional") {
+      // For working → Ask domain/field
+      console.log("[CareerByGoal] ✅ Working Professional → Going to stream selection");
+      setCurrentStep("stream");
+    } else {
+      // Default: go to stream
+      setCurrentStep("stream");
+    }
   };
 
   const handleStreamSelect = (stream: string) => {
     setSelectedOptions((prev) => ({ ...prev, stream, course: "" }));
 
-    // For working professionals, go to personalization directly
-    if (selectedOptions.stage === "working_professional") {
+    console.log(`[CareerByGoal] Stream selected: ${stream} for stage: ${selectedOptions.stage}`);
+    
+    // Validate stream for specific careers (CRITICAL FIX for Doctor → PCM bug)
+    const selectedGoal = careerGoals.find((g) => g.id === selectedOptions.goal);
+    if (selectedGoal) {
+      const isValidCombination = validateStreamForGoal(selectedGoal.id, stream);
+      if (!isValidCombination) {
+        alert(
+          `⚠️ Warning: Invalid Stream Selection!\n\n` +
+          `"${stream}" is NOT suitable for "${selectedGoal.title}".\n\n` +
+          `Please choose the correct stream or reconsider your career goal.\n\n` +
+          `Hint: ${getStreamHintForGoal(selectedGoal.id)}`
+        );
+      }
+    }
+    
+    const stage = selectedOptions.stage;
+    
+    if (stage === "class_11_12") {
+      // For 11-12 → Go directly to personalization after stream
+      console.log("[CareerByGoal] ✅ 11-12 stream selected → Going to personalization");
+      setCurrentStep("personalization");
+    } else if (stage === "working_professional") {
+      // For working → Go to personalization
+      console.log("[CareerByGoal] ✅ Working professional stream selected → Going to personalization");
       setCurrentStep("personalization");
     } else {
+      // For UG/PG → Ask for course
+      console.log("[CareerByGoal] ✅ UG/PG stream selected → Going to course selection");
       setCurrentStep("course");
     }
+  };
+  
+  // Helper function to validate stream for career goal
+  const validateStreamForGoal = (goalId: string, stream: string): boolean => {
+    const validations: Record<string, string[]> = {
+      doctor: ["PCB", "Science (PCB)", "Biology"],
+      engineer: ["PCM", "Science (PCM)", "Mathematics"],
+      data_scientist: ["PCM", "Science (PCM)", "Mathematics", "Engineering"],
+      researcher_scientist: ["PCM", "PCB", "Science"],
+      lawyer: ["Arts", "Humanities"],
+      finance_banker: ["Commerce", "PCM"],
+    };
+    
+    const validStreams = validations[goalId];
+    if (!validStreams) return true; // No specific requirement
+    
+    return validStreams.some((valid) =>
+      stream.toLowerCase().includes(valid.toLowerCase())
+    );
+  };
+  
+  // Helper function to provide hints for correct stream
+  const getStreamHintForGoal = (goalId: string): string => {
+    const hints: Record<string, string> = {
+      doctor: "You MUST choose Science (PCB) - Biology is mandatory for medical careers!",
+      engineer: "You MUST choose Science (PCM) - Mathematics is mandatory for engineering!",
+      data_scientist: "Choose Science (PCM) or Engineering for best preparation.",
+      lawyer: "Arts/Humanities stream is ideal for law careers.",
+      finance_banker: "Commerce or Science (PCM) are best suited.",
+    };
+    
+    return hints[goalId] || "Please choose an appropriate stream for your career goal.";
   };
 
   const handleCourseSelect = (course: string) => {
@@ -430,75 +551,81 @@ export default function CareerByGoal() {
     setShowAdvancedMapping(false);
   };
 
-  const StepIndicator = () => (
-    <div className="flex items-center justify-center mb-8 space-x-2 overflow-x-auto pb-2">
-      {(
-        [
-          "goal",
-          "stage",
-          "stream",
-          "course",
-          "personalization",
-          "results",
-        ] as Step[]
-      ).map((step, index) => {
-        const isActive = currentStep === step;
-        const isCompleted =
-          [
-            "goal",
-            "stage",
-            "stream",
-            "course",
-            "personalization",
-            "results",
-          ].indexOf(currentStep) > index;
+  const StepIndicator = () => {
+    // CRITICAL FIX: Dynamically determine which steps to show based on education level
+    const getVisibleSteps = (): Step[] => {
+      if (selectedOptions.stage === "class_10_below") {
+        // Only goal → stage → personalization → results
+        return ["goal", "stage", "personalization", "results"];
+      } else if (selectedOptions.stage === "class_11_12") {
+        // goal → stage → stream → personalization → results
+        return ["goal", "stage", "stream", "personalization", "results"];
+      } else if (selectedOptions.stage === "working_professional") {
+        // goal → stage → stream → personalization → results
+        return ["goal", "stage", "stream", "personalization", "results"];
+      } else if (selectedOptions.stage === "undergraduate" || selectedOptions.stage === "postgraduate") {
+        // Full flow for UG/PG
+        return ["goal", "stage", "stream", "course", "personalization", "results"];
+      } else {
+        // Default: show all steps
+        return ["goal", "stage", "stream", "course", "personalization", "results"];
+      }
+    };
+    
+    const visibleSteps = getVisibleSteps();
+    const currentIndex = visibleSteps.indexOf(currentStep);
+    
+    return (
+      <div className="flex items-center justify-center mb-8 space-x-2 overflow-x-auto pb-2">
+        {visibleSteps.map((step, index) => {
+          const isActive = currentStep === step;
+          const isCompleted = currentIndex > index;
 
-        // Skip course step for working professionals
-        if (
-          step === "course" &&
-          selectedOptions.stage === "working_professional"
-        ) {
-          return null;
-        }
+          const stepNames = {
+            goal: "Goal",
+            stage: "Level",
+            stream: "Stream",
+            course: "Course",
+            personalization: "Details",
+            results: "Roadmap",
+          };
 
-        const stepNames = {
-          goal: "Goal",
-          stage: "Stage",
-          stream: "Stream",
-          course: "Course",
-          personalization: "Details",
-          results: "Results",
-        };
-
-        return (
-          <React.Fragment key={step}>
-            <div className="flex flex-col items-center">
-              <div
-                className={`
-                  w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm
-                  ${
-                    isActive
-                      ? "bg-blue-600 text-white"
-                      : isCompleted
-                        ? "bg-green-600 text-white"
-                        : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                  }
-                `}
-              >
-                {index + 1}
+          return (
+            <React.Fragment key={step}>
+              <div className="flex flex-col items-center">
+                <div
+                  className={`
+                    w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all
+                    ${
+                      isActive
+                        ? "bg-blue-600 text-white scale-110 shadow-lg"
+                        : isCompleted
+                          ? "bg-green-600 text-white"
+                          : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                    }
+                  `}
+                >
+                  {isCompleted ? "✓" : index + 1}
+                </div>
+                <span className={`text-xs mt-1 ${
+                  isActive 
+                    ? "font-semibold text-blue-600 dark:text-blue-400" 
+                    : "text-gray-600 dark:text-gray-300"
+                }`}>
+                  {stepNames[step]}
+                </span>
               </div>
-              <span className="text-xs mt-1 text-gray-600 dark:text-gray-300">
-                {stepNames[step]}
-              </span>
-            </div>
-            {index < 5 && step !== "course" ? (
-              <ArrowRight className="w-4 h-4 text-gray-400 mt-2" />
-            ) : null}
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
+              {index < visibleSteps.length - 1 && (
+                <ArrowRight className={`w-4 h-4 mt-2 ${
+                  isCompleted ? "text-green-600" : "text-gray-400"
+                }`} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  };
 
   const renderGoalSelection = () => (
     <div className="space-y-6">

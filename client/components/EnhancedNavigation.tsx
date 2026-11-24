@@ -7,6 +7,9 @@ import {
   MapPin,
   Search,
   Building2,
+  Building,
+  Scale,
+  GraduationCap,
 } from "lucide-react";
 
 export default function EnhancedNavigation() {
@@ -14,6 +17,34 @@ export default function EnhancedNavigation() {
   const location = useLocation();
 
   const navigationItems = [
+    {
+      id: "institutes",
+      label: "Schools & Colleges",
+      icon: GraduationCap,
+      href: "/institutes",
+      subItems: [
+        {
+          label: "Institutes Directory",
+          href: "/institutes",
+          description: "Schools and colleges with verified placements",
+        },
+        {
+          label: "Side-by-Side Compare",
+          href: "/compare",
+          description: "Compare pros, cons & packages between colleges",
+        },
+        {
+          label: "Class 8-10th Board Guidance",
+          href: "/institutes",
+          description: "UP Board, CBSE, ICSE school explorer",
+        },
+        {
+          label: "Verified Placement Records",
+          href: "/institutes",
+          description: "Direct corporate verified student placements",
+        },
+      ],
+    },
     {
       id: "jobs",
       label: "Jobs",
