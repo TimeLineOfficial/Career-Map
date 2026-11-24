@@ -246,9 +246,6 @@ interface DataStore {
   searchJobs: (query: string) => JobPosting[];
   autoFetchJobs: () => Promise<void>;
 
-  // Business Ideas
-  loadMoreBusinessIdeas: () => void;
-
   // Advanced Career Mapping
   getCareerSwitchPaths: (currentField: string, targetField: string) => any[];
   getCareerNotes: (careerPath: string) => any;
@@ -830,7 +827,7 @@ export class JobFetchService {
     // This would implement the actual scheduled fetching
     // For now, we'll just update the store with mock data
     const jobs = await this.fetchJobsFromSources();
-    useDataStore.setState({ jobs });
+    useDataStore.setState({ jobs: jobs as any });
   }
 }
 

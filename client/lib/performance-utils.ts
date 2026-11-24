@@ -263,7 +263,7 @@ export const collectPerformanceMetrics = () => {
       dnsLookup: navigation.domainLookupEnd - navigation.domainLookupStart,
       tcpConnect: navigation.connectEnd - navigation.connectStart,
       serverResponse: navigation.responseEnd - navigation.requestStart,
-      domProcessing: navigation.domComplete - navigation.domLoading,
+      domProcessing: navigation.domComplete - ((navigation as any).domLoading || navigation.domInteractive || 0),
     };
 
     return metrics;

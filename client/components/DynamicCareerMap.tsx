@@ -38,13 +38,13 @@ interface CareerStep {
   nextSteps?: string[];
   resources?: {
     title: string;
-    type: "link" | "video" | "course";
+    type: "link" | "video" | "course" | string;
     url?: string;
   }[];
   isCompleted?: boolean;
   isActive?: boolean;
-  difficulty?: "Easy" | "Medium" | "Hard" | "Very Hard";
-  importance?: "Low" | "Medium" | "High" | "Critical";
+  difficulty?: "Easy" | "Medium" | "Hard" | "Very Hard" | string;
+  importance?: "Low" | "Medium" | "High" | "Critical" | string;
 }
 
 export default function DynamicCareerMap({
