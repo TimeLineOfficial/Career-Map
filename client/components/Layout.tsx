@@ -126,6 +126,12 @@ export default function Layout({ children }: LayoutProps) {
     </>
   );
 
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    return <div className="min-h-screen bg-slate-900">{children}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -359,11 +365,6 @@ export default function Layout({ children }: LayoutProps) {
                 <li>
                   <Link to="/career-map" className="hover:text-foreground">
                     Interactive Career Map
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/latest-jobs" className="hover:text-foreground">
-                    Career Tracks
                   </Link>
                 </li>
               </ul>

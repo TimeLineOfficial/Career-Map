@@ -13,7 +13,6 @@ import NotFound from "./pages/NotFound";
 import JobsLanding from "./pages/JobsLanding";
 import CareerByGoal from "./pages/CareerByGoal";
 import CareerByInterest from "./pages/CareerByInterest";
-import LatestJobs from "./pages/LatestJobs";
 import InteractiveCareerMap from "./pages/InteractiveCareerMap";
 import AdminDashboard from "./pages/AdminDashboard";
 import InstitutesDirectory from "./pages/InstitutesDirectory";
@@ -48,7 +47,7 @@ export default function App() {
               {/* Career paths sub-routes */}
               <Route path="/jobs/by-goal" element={<CareerByGoal />} />
               <Route path="/jobs/by-interest" element={<CareerByInterest />} />
-              <Route path="/latest-jobs" element={<LatestJobs />} />
+              <Route path="/latest-jobs" element={<Navigate to="/jobs" replace />} />
               <Route path="/career-map" element={<InteractiveCareerMap />} />
 
               {/* Clean redirects for removed business and vacancies routes */}

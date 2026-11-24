@@ -10,6 +10,8 @@ import {
   EducationLevel,
   analyzeStudentMarksAndPreferences,
   StudentRecommendation,
+  OwnershipType,
+  InstitutionCategory,
 } from "@/lib/institutes-dataset";
 import InstituteDetailModal from "@/components/institutes/InstituteDetailModal";
 import AuditBookingModal from "@/components/institutes/AuditBookingModal";
@@ -42,7 +44,32 @@ import {
   MessageCircle,
   SlidersHorizontal,
   RotateCcw,
+  Award,
+  BookOpen,
 } from "lucide-react";
+
+// Expanded Pan-India and International Cities (Indian first by default)
+const COMPREHENSIVE_CITIES = [
+  "New Delhi",
+  "Noida",
+  "Greater Noida",
+  "Lucknow",
+  "Kanpur",
+  "Varanasi",
+  "Prayagraj",
+  "Dehradun",
+  "Pune",
+  "Mumbai",
+  "Bangalore",
+  "Hyderabad",
+  "Chennai",
+  "Kolkata",
+  "Jaipur",
+  "Chandigarh",
+  "Patna",
+  "Bhopal",
+  "Abroad (USA / UK / Global)",
+];
 
 export default function InstitutesDirectory() {
   const navigate = useNavigate();
@@ -53,7 +80,9 @@ export default function InstitutesDirectory() {
   const [selectedType, setSelectedType] = useState<"all" | "college" | "school">("all");
   const [selectedLevel, setSelectedLevel] = useState<"all" | EducationLevel>("all");
   const [selectedBoard, setSelectedBoard] = useState<"all" | BoardType>("all");
-  const [selectedCity, setSelectedCity] = useState<string>("all");
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<"all" | InstitutionCategory>("all");
+  const [selectedOwnership, setSelectedOwnership] = useState<"all" | OwnershipType>("all");
   const [placementOnly, setPlacementOnly] = useState<boolean>(false);
   const [auditOnly, setAuditOnly] = useState<boolean>(false);
   const [maxFee, setMaxFee] = useState<number>(0);
@@ -83,12 +112,12 @@ export default function InstitutesDirectory() {
   const [medicalInterest, setMedicalInterest] = useState<boolean>(false);
   const [calculatorResult, setCalculatorResult] = useState<StudentRecommendation | null>(null);
 
-  // Unique Cities in Dataset
-  const cities = useMemo(() => {
-    const set = new Set<string>();
-    allInstitutes.forEach((i) => set.add(i.location.city));
-    return Array.from(set);
-  }, [allInstitutes]);
+  // Toggle multi-select city
+  const toggleCity = (city: string) => {
+    setSelectedCities((prev) =>
+      prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
+    );
+  };
 
   // Query Results
   const filteredInstitutes = useMemo(() => {
@@ -97,7 +126,9 @@ export default function InstitutesDirectory() {
       type: selectedType,
       level: selectedLevel,
       board: selectedBoard,
-      city: selectedCity,
+      cities: selectedCities.length > 0 ? selectedCities : undefined,
+      category: selectedCategory,
+      ownership: selectedOwnership,
       minPlacementStatus: placementOnly ? "verified_only" : "all",
       auditStatus: auditOnly ? "verified_only" : "all",
       maxFee: maxFee > 0 ? maxFee : undefined,
@@ -108,7 +139,9 @@ export default function InstitutesDirectory() {
     selectedType,
     selectedLevel,
     selectedBoard,
-    selectedCity,
+    selectedCities,
+    selectedCategory,
+    selectedOwnership,
     placementOnly,
     auditOnly,
     maxFee,
@@ -129,8 +162,22 @@ export default function InstitutesDirectory() {
     });
   };
 
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedType("all");
+    setSelectedLevel("all");
+    setSelectedBoard("all");
+    setSelectedCities([]);
+    setSelectedCategory("all");
+    setSelectedOwnership("all");
+    setPlacementOnly(false);
+    setAuditOnly(false);
+    setMaxFee(0);
+    setSortBy("rank");
+  };
+
   const handleRunAnalysis = () => {
-    const result = analyzeStudentMarksAndPreferences({
+    const res = analyzeStudentMarksAndPreferences({
       currentClass: currentClassInput,
       mathScore,
       scienceScore,
@@ -141,102 +188,69 @@ export default function InstitutesDirectory() {
       businessInterest,
       medicalInterest,
     });
-    setCalculatorResult(result);
-  };
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedType("all");
-    setSelectedLevel("all");
-    setSelectedBoard("all");
-    setSelectedCity("all");
-    setPlacementOnly(false);
-    setAuditOnly(false);
-    setMaxFee(0);
-    setSortBy("rank");
+    setCalculatorResult(res);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/50 relative pb-28">
-      {/* Decorative Career Map Background */}
-      <div
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(circle at 12px 12px, #3b82f6 2px, transparent 0)`,
-          backgroundSize: "32px 32px",
-        }}
-      />
+    <div className="min-h-screen bg-background pb-20">
+      {/* CLEAN ELEVATED HEADER BANNER */}
+      <section className="relative bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white pt-8 pb-10 px-4 shadow-lg overflow-hidden">
+        {/* Map Grid Texture */}
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 10px 10px, white 2px, transparent 0)`,
+            backgroundSize: "28px 28px",
+          }}
+        />
 
-      {/* Hero Section with Map Theme Styling (Compact Header) */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white py-8 md:py-10 px-4 overflow-hidden shadow-md">
-        {/* Subtle decorative roadmap paths */}
-        <div className="absolute inset-0 opacity-15 pointer-events-none overflow-hidden">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M-100,100 C300,50 600,250 1200,80 S1800,200 2000,100"
-              fill="none"
-              stroke="#60a5fa"
-              strokeWidth="4"
-              strokeDasharray="10 8"
-            />
-            <path
-              d="M-50,220 C400,180 800,40 1400,180 S1900,100 2100,220"
-              fill="none"
-              stroke="#a78bfa"
-              strokeWidth="3"
-              strokeDasharray="6 6"
-            />
-          </svg>
-        </div>
-
-        <div className="container max-w-7xl mx-auto relative z-10 space-y-4">
+        <div className="container max-w-7xl mx-auto relative z-10 space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-2 max-w-3xl">
+            <div className="space-y-1 max-w-3xl">
               <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold backdrop-blur-sm">
                 <Compass className="h-3.5 w-3.5 text-amber-300" />
                 <span>India's 100% Transparent School & College Navigation Map</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
-                Schools & Colleges Explorer
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                Schools & Colleges Directory
               </h1>
-              <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed max-w-2xl">
-                Explore every school and college with <strong className="text-white">Verified Placement Records</strong> (cross-checked directly with employer HRs) and <strong className="text-white">On-Site Campus Audits</strong> (physical inspections & random student interviews).
-              </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-2.5">
               <Button
+                size="sm"
                 onClick={() => setShowCalculator(!showCalculator)}
-                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs gap-2 shadow-lg"
+                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs gap-1.5 shadow-md h-9"
               >
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-3.5 w-3.5" />
                 {showCalculator ? "Hide Marks Analyzer" : "Marks & Stream Analyzer"}
               </Button>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setNewInstModalOpen(true)}
-                className="border-white/30 text-white hover:bg-white/10 text-xs gap-2"
+                className="border-white/30 text-white hover:bg-white/10 text-xs gap-1.5 h-9"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3.5 w-3.5" />
                 Add School / College
               </Button>
             </div>
           </div>
 
           {/* Quick Level Selector Tabs */}
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <span className="text-xs text-blue-200/80 mr-2 font-medium">Stage Navigation:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-xs text-blue-200/80 mr-1 font-medium">Stage:</span>
             {[
               { id: "all", label: "All Institutions" },
               { id: "class_8_10", label: "Class 8th - 10th (Board Guidance)" },
-              { id: "class_11_12", label: "Class 11th - 12th (Streams & JEE/NEET)" },
-              { id: "ug", label: "Undergraduate (B.Tech / BBA / MBBS)" },
+              { id: "class_11_12", label: "Class 11th - 12th (Streams)" },
+              { id: "ug", label: "Undergraduate (UG)" },
               { id: "pg", label: "Postgraduate & Research" },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedLevel(tab.id as any)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                   selectedLevel === tab.id
                     ? "bg-white text-blue-900 shadow-md font-bold scale-105"
                     : "bg-white/10 text-blue-100 hover:bg-white/20"
@@ -249,32 +263,29 @@ export default function InstitutesDirectory() {
         </div>
       </section>
 
-      {/* MARKS & STREAM ANALYZER (Audio 1: Class 8th to 12th guidance) */}
+      {/* MARKS & STREAM ANALYZER */}
       {showCalculator && (
-        <section className="container max-w-7xl mx-auto px-4 -mt-6 relative z-20">
+        <section className="container max-w-7xl mx-auto px-4 -mt-4 relative z-20">
           <Card className="border-2 border-amber-300 dark:border-amber-700 shadow-xl bg-gradient-to-br from-amber-50/90 via-white to-blue-50/90 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-                  <Sparkles className="h-5 w-5" />
-                  <CardTitle className="text-lg">Student Marks & Career Recommendation Engine</CardTitle>
+                  <Sparkles className="h-4 w-4" />
+                  <CardTitle className="text-base font-bold">Student Marks & Career Recommendation Engine</CardTitle>
                 </div>
                 <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs">
                   Class 8th, 10th & 12th Custom Guidance
                 </Badge>
               </div>
-              <CardDescription className="text-xs">
-                Enter your last academic exam marks and interests. Our map engine analyzes your strengths to suggest optimal boards (CBSE, ICSE, UP Board), 11th streams, and matching schools/colleges.
-              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Current Stage</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground">Current Stage</label>
                   <select
                     value={currentClassInput}
                     onChange={(e) => setCurrentClassInput(e.target.value as any)}
-                    className="w-full mt-1 px-3 py-2 border rounded-md bg-background text-xs font-medium"
+                    className="w-full mt-1 px-3 py-1.5 border rounded-md bg-background text-xs font-medium"
                   >
                     <option value="class_8">Class 8th (Choosing 9th Board)</option>
                     <option value="class_10">Class 10th (Choosing 11th Stream)</option>
@@ -283,110 +294,110 @@ export default function InstitutesDirectory() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Mathematics Marks (%)</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground">Mathematics (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={mathScore}
                     onChange={(e) => setMathScore(Number(e.target.value))}
-                    className="mt-1 text-xs"
+                    className="mt-1 h-8 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Science / EVS (%)</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground">Science / EVS (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={scienceScore}
                     onChange={(e) => setScienceScore(Number(e.target.value))}
-                    className="mt-1 text-xs"
+                    className="mt-1 h-8 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">English / Language (%)</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground">English / Language (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={englishScore}
                     onChange={(e) => setEnglishScore(Number(e.target.value))}
-                    className="mt-1 text-xs"
+                    className="mt-1 h-8 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Social Sciences (%)</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground">Social Sciences (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={socialScore}
                     onChange={(e) => setSocialScore(Number(e.target.value))}
-                    className="mt-1 text-xs"
+                    className="mt-1 h-8 text-xs"
                   />
                 </div>
               </div>
 
               {/* Interests toggles */}
-              <div className="space-y-2">
-                <span className="text-xs font-semibold text-muted-foreground">Key Interests & Aspirations:</span>
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-semibold text-muted-foreground">Key Interests & Aspirations:</span>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <button
                     type="button"
                     onClick={() => setTechInterest(!techInterest)}
-                    className={`px-3 py-1.5 rounded-full border transition-all ${
+                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
                       techInterest ? "bg-blue-600 text-white border-blue-600 font-semibold" : "bg-muted/40 hover:bg-muted"
                     }`}
                   >
-                    💻 Tech, Coding & Robotics
+                    💻 Tech & Coding
                   </button>
                   <button
                     type="button"
                     onClick={() => setMedicalInterest(!medicalInterest)}
-                    className={`px-3 py-1.5 rounded-full border transition-all ${
+                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
                       medicalInterest ? "bg-red-600 text-white border-red-600 font-semibold" : "bg-muted/40 hover:bg-muted"
                     }`}
                   >
-                    🩺 Biology, Medicine & Life Sciences
+                    🩺 Biology & Medicine
                   </button>
                   <button
                     type="button"
                     onClick={() => setBusinessInterest(!businessInterest)}
-                    className={`px-3 py-1.5 rounded-full border transition-all ${
+                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
                       businessInterest ? "bg-amber-600 text-white border-amber-600 font-semibold" : "bg-muted/40 hover:bg-muted"
                     }`}
                   >
-                    📊 Business, Finance & Startups
+                    📊 Commerce & Startups
                   </button>
                   <button
                     type="button"
                     onClick={() => setSportsInterest(!sportsInterest)}
-                    className={`px-3 py-1.5 rounded-full border transition-all ${
+                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
                       sportsInterest ? "bg-emerald-600 text-white border-emerald-600 font-semibold" : "bg-muted/40 hover:bg-muted"
                     }`}
                   >
-                    ⚽ Sports, Athletics & Extracurriculars
+                    ⚽ Sports & Athletics
                   </button>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                <Button size="sm" onClick={handleRunAnalysis} className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Generate Personalized Roadmap Suggestions
+              <div className="flex justify-end gap-3 pt-1">
+                <Button size="sm" onClick={handleRunAnalysis} className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5 h-8">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Generate Personalized Recommendations
                 </Button>
               </div>
 
               {/* Results Preview */}
               {calculatorResult && (
-                <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-300 dark:border-blue-800 space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200">
-                      <div className="text-xs font-bold text-blue-900 dark:text-blue-200">Strongest Subject Domains</div>
+                <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-300 dark:border-blue-800 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200">
+                      <div className="text-[11px] font-bold text-blue-900 dark:text-blue-200">Strongest Subject Domains</div>
                       <ul className="mt-1 space-y-1 text-xs">
                         {calculatorResult.strongAreas.map((area, idx) => (
                           <li key={idx} className="flex items-center gap-1.5">
@@ -397,8 +408,8 @@ export default function InstitutesDirectory() {
                       </ul>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200">
-                      <div className="text-xs font-bold text-emerald-900 dark:text-emerald-200">Recommended Streams & Boards</div>
+                    <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200">
+                      <div className="text-[11px] font-bold text-emerald-900 dark:text-emerald-200">Recommended Streams & Boards</div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {calculatorResult.recommendedBoards.map((b) => (
                           <Badge key={b} className="bg-emerald-600 text-white text-[10px]">Board: {b}</Badge>
@@ -409,30 +420,13 @@ export default function InstitutesDirectory() {
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200">
-                      <div className="text-xs font-bold text-purple-900 dark:text-purple-200">Suggested High-Yield Careers</div>
+                    <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200">
+                      <div className="text-[11px] font-bold text-purple-900 dark:text-purple-200">Suggested Careers</div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {calculatorResult.careerPaths.map((cp) => (
                           <Badge key={cp} variant="secondary" className="text-[10px]">{cp}</Badge>
                         ))}
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <span className="text-xs font-semibold text-muted-foreground">Top Matching Institutions:</span>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {calculatorResult.suggestedInstitutes.map((inst) => (
-                        <Button
-                          key={inst.id}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs h-7"
-                          onClick={() => setSelectedInstituteForDetail(inst)}
-                        >
-                          {inst.name} ({inst.location.city}) →
-                        </Button>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -443,15 +437,15 @@ export default function InstitutesDirectory() {
       )}
 
       {/* Main Exploration Controls */}
-      <section className="container max-w-7xl mx-auto px-4 mt-8 space-y-6">
+      <section className="container max-w-7xl mx-auto px-4 mt-6 space-y-5">
         {/* Search & Quick Filters Bar */}
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border space-y-4">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border space-y-3.5">
           <div className="flex flex-col lg:flex-row items-center gap-3">
-            {/* Search Input */}
+            {/* Dynamic Search Input */}
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search schools & colleges by name, city, courses, or board (e.g., IIT, DPS, UP Board, Pune)..."
+                placeholder={`Search ${allInstitutes.length}+ schools & colleges by name, city, courses, or board (e.g. IIT, DPS, UP Board, Pune)...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 text-xs h-10 w-full"
@@ -464,30 +458,30 @@ export default function InstitutesDirectory() {
                 variant={selectedType === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedType("all")}
-                className="text-xs flex-1 lg:flex-none"
+                className="text-xs flex-1 lg:flex-none h-10"
               >
-                All
+                All ({allInstitutes.length})
               </Button>
               <Button
                 variant={selectedType === "school" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedType("school")}
-                className="text-xs flex-1 lg:flex-none gap-1.5"
+                className="text-xs flex-1 lg:flex-none gap-1.5 h-10"
               >
-                <School className="h-3.5 w-3.5" /> Schools
+                <School className="h-3.5 w-3.5" /> Schools ({allInstitutes.filter((i) => i.type === "school").length})
               </Button>
               <Button
                 variant={selectedType === "college" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedType("college")}
-                className="text-xs flex-1 lg:flex-none gap-1.5"
+                className="text-xs flex-1 lg:flex-none gap-1.5 h-10"
               >
-                <Building className="h-3.5 w-3.5" /> Colleges
+                <Building className="h-3.5 w-3.5" /> Colleges ({allInstitutes.filter((i) => i.type === "college").length})
               </Button>
             </div>
           </div>
 
-          {/* Granular Filter Row */}
+          {/* Granular Filter Row: Board, Category, Ownership, Toggles */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 pt-2 border-t text-xs">
             {/* Board Selector */}
             <div>
@@ -506,18 +500,34 @@ export default function InstitutesDirectory() {
               </select>
             </div>
 
-            {/* City Selector */}
+            {/* Institution Category */}
             <div>
-              <label className="text-[11px] font-semibold text-muted-foreground">Location / City</label>
+              <label className="text-[11px] font-semibold text-muted-foreground">Category</label>
               <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value as any)}
                 className="w-full mt-1 p-2 border rounded-md bg-background text-xs"
               >
-                <option value="all">All Cities</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
+                <option value="all">Govt & Private</option>
+                <option value="government">Government Only</option>
+                <option value="private">Private Only</option>
+              </select>
+            </div>
+
+            {/* Ownership */}
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground">Ownership</label>
+              <select
+                value={selectedOwnership}
+                onChange={(e) => setSelectedOwnership(e.target.value as any)}
+                className="w-full mt-1 p-2 border rounded-md bg-background text-xs"
+              >
+                <option value="all">All Ownerships</option>
+                <option value="central_govt">Central Government</option>
+                <option value="state_govt">State Government</option>
+                <option value="deemed">Deemed University</option>
+                <option value="private">Private Institution</option>
+                <option value="international">International / Autonomous</option>
               </select>
             </div>
 
@@ -533,7 +543,7 @@ export default function InstitutesDirectory() {
                 }`}
               >
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Verified Placement Only</span>
+                <span>Verified Placements</span>
               </button>
             </div>
 
@@ -549,35 +559,71 @@ export default function InstitutesDirectory() {
                 }`}
               >
                 <FileCheck className="h-3.5 w-3.5" />
-                <span>Campus Audit Only</span>
+                <span>Audited Labs Only</span>
               </button>
             </div>
 
-            {/* Sort By */}
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground">Sort Ranking</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full mt-1 p-2 border rounded-md bg-background text-xs"
-              >
-                <option value="rank">CareerMap Overall Rank</option>
-                <option value="placement">Highest Average CTC</option>
-                <option value="rating">Student & Infra Rating</option>
-                <option value="fee_low">Lowest Annual Tuition</option>
-              </select>
-            </div>
-
-            {/* Reset Filters */}
-            <div className="flex flex-col justify-end">
+            {/* Sort By & Reset */}
+            <div className="flex items-center gap-1.5">
+              <div className="flex-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Sort</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="w-full mt-1 p-2 border rounded-md bg-background text-xs"
+                >
+                  <option value="rank">Overall Rank</option>
+                  <option value="placement">Highest CTC</option>
+                  <option value="rating">Rating (/10)</option>
+                  <option value="fee_low">Lowest Fee</option>
+                </select>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleResetFilters}
-                className="w-full text-xs text-muted-foreground gap-1.5"
+                className="h-8 mt-4 text-xs text-muted-foreground p-2"
+                title="Reset all filters"
               >
-                <RotateCcw className="h-3.5 w-3.5" /> Reset
+                <RotateCcw className="h-3.5 w-3.5" />
               </Button>
+            </div>
+          </div>
+
+          {/* Multi-Select Cities Filter Pills */}
+          <div className="pt-2 border-t space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-semibold flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5 text-blue-600" /> Filter by Cities / Geography (Multi-Select):
+              </span>
+              {selectedCities.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedCities([])}
+                  className="text-blue-600 hover:underline font-medium text-[11px]"
+                >
+                  Clear Selected Cities ({selectedCities.length})
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {COMPREHENSIVE_CITIES.map((city) => {
+                const isSelected = selectedCities.includes(city);
+                return (
+                  <button
+                    key={city}
+                    type="button"
+                    onClick={() => toggleCity(city)}
+                    className={`px-2.5 py-1 rounded-full text-xs transition-all border ${
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-600 font-bold shadow-sm"
+                        : "bg-muted/40 hover:bg-muted text-muted-foreground border-border"
+                    }`}
+                  >
+                    {city} {isSelected && "✓"}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -588,8 +634,8 @@ export default function InstitutesDirectory() {
             Showing <strong className="text-foreground">{filteredInstitutes.length}</strong> institutions matching your map criteria
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" /> Verified Data
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 ml-2" /> Self-Reported Data
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" /> Corporate Verified
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 ml-2" /> Self-Reported
           </div>
         </div>
 
@@ -599,6 +645,7 @@ export default function InstitutesDirectory() {
             const isCompared = comparedInstitutes.includes(inst.id);
             const isPlacementVerified = inst.placement.status === "verified";
             const isAuditVerified = inst.audit.status === "verified";
+            const isSchool = inst.type === "school";
 
             return (
               <Card
@@ -615,17 +662,27 @@ export default function InstitutesDirectory() {
                     alt={inst.name}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
                   {/* Top Badges */}
-                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1">
-                    <Badge
-                      className={`text-[10px] font-bold px-2 py-0.5 ${
-                        inst.type === "school" ? "bg-amber-400 text-amber-950" : "bg-emerald-400 text-emerald-950"
-                      }`}
-                    >
-                      {inst.type === "school" ? "School" : "College"}
-                    </Badge>
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <Badge
+                        className={`text-[10px] font-bold px-2 py-0.5 ${
+                          isSchool ? "bg-amber-400 text-amber-950" : "bg-emerald-400 text-emerald-950"
+                        }`}
+                      >
+                        {isSchool ? "School" : "College"}
+                      </Badge>
+                      <Badge className="bg-black/60 backdrop-blur-md text-white text-[10px]">
+                        {inst.institutionCategory === "government" ? "Govt" : "Private"}
+                      </Badge>
+                      {inst.ownershipType && (
+                        <Badge className="bg-blue-600/70 backdrop-blur-md text-white text-[10px] uppercase">
+                          {inst.ownershipType.replace("_", " ")}
+                        </Badge>
+                      )}
+                    </div>
                     <div className="flex gap-1">
                       {inst.boards?.map((b) => (
                         <Badge key={b} className="bg-black/60 backdrop-blur-md text-white text-[10px]">
@@ -647,36 +704,45 @@ export default function InstitutesDirectory() {
                 </div>
 
                 {/* Card Body */}
-                <CardContent className="p-4 space-y-3.5 flex-1 flex flex-col justify-between text-xs">
-                  {/* Verified / Unverified Dual Badges (Text & Audio 2) */}
+                <CardContent className="p-4 space-y-3 flex-1 flex flex-col justify-between text-xs">
+                  {/* Verification / Academic Badges */}
                   <div className="space-y-1.5">
-                    {/* Placement Tag */}
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPlacementVerifyInst(inst);
-                      }}
-                      className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer hover:opacity-95 transition-opacity ${
-                        isPlacementVerified
-                          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200"
-                          : "bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200"
-                      }`}
-                      title="Click to view corporate verification procedure"
-                    >
-                      <div className="flex items-center gap-1.5 font-bold">
-                        {isPlacementVerified ? (
-                          <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0" />
-                        )}
-                        <span>{isPlacementVerified ? "VERIFIED PLACEMENT" : "UNVERIFIED PLACEMENT"}</span>
+                    {!isSchool ? (
+                      // College Placement Tag
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPlacementVerifyInst(inst);
+                        }}
+                        className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer hover:opacity-95 transition-opacity ${
+                          isPlacementVerified
+                            ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200"
+                            : "bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200"
+                        }`}
+                        title="Click to view corporate verification procedure"
+                      >
+                        <div className="flex items-center gap-1.5 font-bold">
+                          {isPlacementVerified ? (
+                            <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                          )}
+                          <span>{isPlacementVerified ? "VERIFIED PLACEMENT" : "UNVERIFIED PLACEMENT"}</span>
+                        </div>
+                        <span className="text-[10px] font-semibold">
+                          Avg: ₹{inst.placement.averagePackageLPA} LPA
+                        </span>
                       </div>
-                      <span className="text-[10px] font-semibold">
-                        {inst.type !== "school"
-                          ? `Avg: ₹${inst.placement.averagePackageLPA} LPA`
-                          : `Success: ${inst.placement.lastYearPlacementRate}%`}
-                      </span>
-                    </div>
+                    ) : (
+                      // School Academic Results Tag (No Placement Data!)
+                      <div className="p-2 rounded-lg border bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-800 text-blue-900 dark:text-blue-200 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <BookOpen className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                          <span>BOARD EXCELLENCE TRACK</span>
+                        </div>
+                        <span className="text-[10px] font-semibold">100% Pass Rate</span>
+                      </div>
+                    )}
 
                     {/* Physical Audit Tag */}
                     <div
@@ -697,7 +763,7 @@ export default function InstitutesDirectory() {
                         ) : (
                           <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
                         )}
-                        <span>{isAuditVerified ? "AUDIT VERIFIED" : "CAMPUS DETAIL: UNVERIFIED"}</span>
+                        <span>{isAuditVerified ? "AUDIT VERIFIED" : "CAMPUS AUDIT: PENDING"}</span>
                       </div>
                       <span className="text-[10px] font-semibold">
                         {isAuditVerified ? `${inst.audit.randomStudentInterviewCount} Students Sampled` : "Click to Audit"}
@@ -705,23 +771,23 @@ export default function InstitutesDirectory() {
                     </div>
                   </div>
 
-                  {/* Financial & Rating Highlights */}
+                  {/* Financial & Calibrated 10.0 Rating Highlights */}
                   <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-muted/40 text-[11px]">
                     <div>
-                      <span className="text-muted-foreground">Tuition Fee:</span>
+                      <span className="text-muted-foreground">Annual Tuition:</span>
                       <div className="font-bold text-foreground">
                         ₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}/yr
                       </div>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Rating Score:</span>
-                      <div className="font-bold text-foreground">
-                        ⭐ {inst.ratings.overall} / 5.0 ({inst.rankScore}/100)
+                      <div className="font-bold text-amber-600 dark:text-amber-400">
+                        ⭐ {inst.ratings.overall} / 10.0
                       </div>
                     </div>
                   </div>
 
-                  {/* Advantages Sneak Peek */}
+                  {/* Key Advantage */}
                   <div className="space-y-1">
                     <span className="text-[11px] font-semibold text-muted-foreground">Key Advantage:</span>
                     <p className="text-[11px] text-foreground line-clamp-1 font-medium">
@@ -756,47 +822,32 @@ export default function InstitutesDirectory() {
                       </Button>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 text-[11px]">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setApplyModalInst(inst);
-                        }}
-                        className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+                      <a
+                        href={`tel:${inst.contact.phone}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-blue-600 inline-flex items-center gap-1"
                       >
-                        Direct Apply →
-                      </button>
-                      <div className="flex items-center gap-2">
-                        <a
-                          href={`tel:${inst.contact.phone}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-blue-600"
-                          title="Call Institute"
-                        >
-                          <Phone className="h-3.5 w-3.5" />
-                        </a>
-                        <a
-                          href={`https://wa.me/${inst.contact.whatsapp.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-emerald-600"
-                          title="WhatsApp Institute"
-                        >
-                          <MessageCircle className="h-3.5 w-3.5" />
-                        </a>
-                        <a
-                          href={inst.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-foreground"
-                          title="Visit Official Website"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      </div>
+                        <Phone className="h-3 w-3" /> Call
+                      </a>
+                      <a
+                        href={`https://wa.me/${inst.contact.whatsapp.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-emerald-600 inline-flex items-center gap-1 text-emerald-600"
+                      >
+                        <MessageCircle className="h-3 w-3" /> WhatsApp
+                      </a>
+                      <a
+                        href={inst.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-foreground inline-flex items-center gap-1"
+                      >
+                        Website <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
                     </div>
                   </div>
                 </CardContent>
@@ -805,70 +856,43 @@ export default function InstitutesDirectory() {
           })}
         </div>
 
-        {/* Load More Pagination */}
-        {visibleCount < filteredInstitutes.length && (
-          <div className="text-center py-8">
+        {/* Load More Button */}
+        {filteredInstitutes.length > visibleCount && (
+          <div className="text-center pt-8">
             <Button
               variant="outline"
               size="lg"
               onClick={() => setVisibleCount((prev) => prev + 9)}
-              className="text-xs font-bold px-8 h-11 border-blue-500/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 shadow-sm"
+              className="text-xs px-8"
             >
-              Load More Institutes ({filteredInstitutes.length - visibleCount} more available)
+              Load More Institutions ({filteredInstitutes.length - visibleCount} remaining)
             </Button>
           </div>
         )}
       </section>
 
-      {/* Floating Side-by-Side Comparison Dock */}
+      {/* Floating Side-by-Side Compare Bar */}
       {comparedInstitutes.length > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 max-w-4xl mx-auto z-40 bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in slide-in-from-bottom duration-300">
-          <div className="flex items-center gap-3 overflow-x-auto w-full sm:w-auto">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-amber-400 flex-shrink-0">
-              <Scale className="h-4 w-4" />
-              <span>Comparing ({comparedInstitutes.length}/4):</span>
-            </div>
-            <div className="flex gap-2">
-              {comparedInstitutes.map((id) => {
-                const inst = allInstitutes.find((i) => i.id === id);
-                if (!inst) return null;
-                return (
-                  <Badge
-                    key={id}
-                    variant="secondary"
-                    className="bg-slate-800 text-white text-[11px] gap-1 pl-2 pr-1 py-1"
-                  >
-                    <span>{inst.shortName}</span>
-                    <button
-                      type="button"
-                      onClick={() => toggleCompare(inst)}
-                      className="hover:bg-slate-700 rounded-full p-0.5"
-                    >
-                      <XCircle className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setComparedInstitutes([])}
-              className="text-xs text-slate-300 hover:text-white"
-            >
-              Clear
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => navigate(`/compare?ids=${comparedInstitutes.join(",")}`)}
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-xs gap-1.5"
-            >
-              <Scale className="h-4 w-4" /> Compare Side-by-Side Now
-            </Button>
-          </div>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-950 text-white border border-slate-700 px-5 py-3 rounded-full shadow-2xl flex items-center gap-4 text-xs backdrop-blur-lg">
+          <Scale className="h-4 w-4 text-amber-400" />
+          <span>
+            <strong className="text-amber-400">{comparedInstitutes.length}</strong> institute(s) selected for comparison
+          </span>
+          <Button
+            size="sm"
+            onClick={() => navigate(`/compare?ids=${comparedInstitutes.join(",")}`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold h-7 px-3"
+          >
+            Compare Side-by-Side →
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setComparedInstitutes([])}
+            className="text-xs text-slate-400 hover:text-white h-7 px-2"
+          >
+            Clear
+          </Button>
         </div>
       )}
 
@@ -877,9 +901,18 @@ export default function InstitutesDirectory() {
         institute={selectedInstituteForDetail}
         isOpen={!!selectedInstituteForDetail}
         onClose={() => setSelectedInstituteForDetail(null)}
-        onOpenAuditBooking={(inst) => setAuditModalInst(inst)}
-        onOpenPlacementVerification={(inst) => setPlacementVerifyInst(inst)}
-        onOpenApply={(inst) => setApplyModalInst(inst)}
+        onOpenAuditBooking={(inst) => {
+          setSelectedInstituteForDetail(null);
+          setAuditModalInst(inst);
+        }}
+        onOpenPlacementVerification={(inst) => {
+          setSelectedInstituteForDetail(null);
+          setPlacementVerifyInst(inst);
+        }}
+        onOpenApply={(inst) => {
+          setSelectedInstituteForDetail(null);
+          setApplyModalInst(inst);
+        }}
         onToggleCompare={toggleCompare}
         isCompared={selectedInstituteForDetail ? comparedInstitutes.includes(selectedInstituteForDetail.id) : false}
       />

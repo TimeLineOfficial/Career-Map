@@ -202,7 +202,7 @@ export default function Index() {
           }}
         />
 
-        <div className="container relative px-4 py-16 md:py-24 max-w-5xl mx-auto text-center space-y-6">
+        <div className="container relative px-4 pt-10 pb-12 max-w-6xl mx-auto text-center space-y-6">
           <Badge
             variant="secondary"
             className="px-3.5 py-1.5 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 inline-flex items-center gap-1.5"
@@ -220,48 +220,54 @@ export default function Index() {
           </h1>
 
           {/* Clear Subtitle */}
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             {getText("hero_subtitle")}
           </p>
 
-          {/* Elevated Call-to-Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <Link to="/institutes">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm px-6 h-12 shadow-lg shadow-blue-500/25 gap-2"
+          {/* 4 Core Features Displayed Prominently Above the Fold */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left pt-2">
+            {coreFeatures.map((feature, index) => (
+              <Card
+                key={index}
+                className="group relative overflow-hidden border border-border/80 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between bg-card/90 backdrop-blur-sm"
               >
-                <Building className="h-4 w-4" />
-                {getText("btn_explore_institutes")}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity`}
+                />
 
-            <Link to="/compare">
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-sm font-semibold px-6 h-12 gap-2 border-indigo-400/40 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-foreground"
-              >
-                <Scale className="h-4 w-4 text-indigo-600" />
-                {getText("btn_compare_institutes")}
-              </Button>
-            </Link>
+                <CardHeader className="relative p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={`p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-md`}
+                    >
+                      <feature.icon className="h-4 w-4" />
+                    </div>
+                    <Badge variant="secondary" className="text-[10px] font-semibold">
+                      {feature.badge}
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-sm font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
 
-            <Link to="/career-map">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="text-sm font-semibold px-5 h-12 gap-2"
-              >
-                <MapPin className="h-4 w-4 text-career-primary" />
-                {getText("btn_career_roadmap")}
-              </Button>
-            </Link>
+                <CardContent className="relative p-4 pt-0">
+                  <Link to={feature.href}>
+                    <Button className="w-full text-xs h-8 font-semibold" variant="outline">
+                      Explore Now
+                      <ArrowRight className="h-3 w-3 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           {/* Key Trust Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-10 border-t border-border/50 max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border/50 max-w-4xl mx-auto">
             <div className="text-center p-3">
               <div className="text-2xl md:text-3xl font-extrabold text-blue-600 dark:text-blue-400">
                 {animatedNumbers.jobsListed.toLocaleString()}+
@@ -286,61 +292,6 @@ export default function Index() {
               </div>
               <div className="text-xs text-muted-foreground mt-0.5">{getText("stat_students")}</div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Guided Exploration Cards */}
-      <section className="py-16 bg-muted/20">
-        <div className="container px-4 max-w-6xl mx-auto">
-          <div className="text-center space-y-2 mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-              Map Your Education & Career
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Select verified schools & colleges and explore milestone-based career trajectories.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {coreFeatures.map((feature, index) => (
-              <Card
-                key={index}
-                className="group relative overflow-hidden border border-border/70 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between"
-              >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity`}
-                />
-
-                <CardHeader className="relative p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className={`p-2.5 rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-md`}
-                    >
-                      <feature.icon className="h-5 w-5" />
-                    </div>
-                    <Badge variant="secondary" className="text-[10px] font-semibold">
-                      {feature.badge}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-base font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {feature.title}
-                  </CardTitle>
-                  <CardDescription className="text-xs leading-relaxed text-muted-foreground">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="relative p-5 pt-0">
-                  <Link to={feature.href}>
-                    <Button className="w-full text-xs h-9" variant="outline">
-                      Explore Now
-                      <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
       </section>

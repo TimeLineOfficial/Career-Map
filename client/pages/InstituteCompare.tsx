@@ -348,16 +348,16 @@ export default function InstituteCompare() {
               {/* ROW 5: PLACEMENT NUMBERS */}
               <tr>
                 <td className="p-4 font-bold text-slate-900 dark:text-slate-100">
-                  Placement & Admissions Record
+                  Placement & Academic Outcome
                 </td>
                 {institutes.map((inst) => (
                   <td key={inst.id} className="p-4 border-l space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Placement Rate:</span>
-                      <strong className="text-blue-600">{inst.placement.lastYearPlacementRate}%</strong>
-                    </div>
-                    {inst.type !== "school" && (
+                    {inst.type !== "school" ? (
                       <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Placement Rate:</span>
+                          <strong className="text-blue-600">{inst.placement.lastYearPlacementRate}%</strong>
+                        </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Average CTC:</span>
                           <strong className="text-emerald-600">₹{inst.placement.averagePackageLPA} LPA</strong>
@@ -366,11 +366,21 @@ export default function InstituteCompare() {
                           <span className="text-muted-foreground">Highest CTC:</span>
                           <strong className="text-purple-600">₹{inst.placement.highestPackageLPA} LPA</strong>
                         </div>
+                        <div className="text-[10px] text-muted-foreground pt-1">
+                          Top Recruiters: {inst.placement.topRecruiters.slice(0, 4).join(", ")}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Board Track:</span>
+                          <strong className="text-emerald-600">100% Pass Rate</strong>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground pt-1">
+                          Premier Admissions: {inst.placement.topRecruiters.slice(0, 3).join(", ")}
+                        </div>
                       </>
                     )}
-                    <div className="text-[10px] text-muted-foreground pt-1">
-                      Top Recruiters: {inst.placement.topRecruiters.slice(0, 4).join(", ")}
-                    </div>
                   </td>
                 ))}
               </tr>
@@ -378,16 +388,21 @@ export default function InstituteCompare() {
               {/* ROW 6: FEE STRUCTURE */}
               <tr className="bg-slate-50/50 dark:bg-slate-900/50">
                 <td className="p-4 font-bold text-slate-900 dark:text-slate-100">
-                  Annual Fee & Scholarships
+                  Annual Fee & Capacity
                 </td>
                 {institutes.map((inst) => (
                   <td key={inst.id} className="p-4 border-l space-y-1">
                     <div className="text-sm font-bold text-foreground">
                       ₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}/yr
                     </div>
-                    {inst.feeStructure.hostelPerYear && (
+                    {inst.totalStudentsEnrolled && (
                       <div className="text-[11px] text-muted-foreground">
-                        Hostel: ₹{inst.feeStructure.hostelPerYear.toLocaleString("en-IN")}/yr
+                        Enrolled: {inst.totalStudentsEnrolled.toLocaleString()} students
+                      </div>
+                    )}
+                    {inst.seatMatrix && (
+                      <div className="text-[11px] text-muted-foreground">
+                        Available Seats: {inst.seatMatrix.availableSeats} / {inst.seatMatrix.totalSeats}
                       </div>
                     )}
                     <div className="text-[10px] font-semibold text-emerald-600">
@@ -397,32 +412,32 @@ export default function InstituteCompare() {
                 ))}
               </tr>
 
-              {/* ROW 7: RATINGS COMPARISON */}
+              {/* ROW 7: RATINGS COMPARISON (Scale 10.0) */}
               <tr>
                 <td className="p-4 font-bold text-slate-900 dark:text-slate-100">
-                  Ratings (Out of 5.0)
+                  Ratings (Scale: 10.0)
                 </td>
                 {institutes.map((inst) => (
                   <td key={inst.id} className="p-4 border-l space-y-1.5 text-[11px]">
                     <div className="flex justify-between">
-                      <span>Overall:</span>
-                      <span className="font-bold">⭐ {inst.ratings.overall}</span>
+                      <span>Overall Score:</span>
+                      <span className="font-bold text-amber-600">⭐ {inst.ratings.overall} / 10.0</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Faculty:</span>
-                      <span className="font-bold">{inst.ratings.faculty}</span>
+                      <span className="font-bold">{inst.ratings.faculty} / 10.0</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Infrastructure:</span>
-                      <span className="font-bold">{inst.ratings.infrastructure}</span>
+                      <span className="font-bold">{inst.ratings.infrastructure} / 10.0</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Student Caliber:</span>
-                      <span className="font-bold">{inst.ratings.studentCaliber}</span>
+                      <span className="font-bold">{inst.ratings.studentCaliber} / 10.0</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Sports/Extracurricular:</span>
-                      <span className="font-bold">{inst.ratings.sportsAndExtracurricular}</span>
+                      <span>Sports/Extra:</span>
+                      <span className="font-bold">{inst.ratings.sportsAndExtracurricular} / 10.0</span>
                     </div>
                   </td>
                 ))}

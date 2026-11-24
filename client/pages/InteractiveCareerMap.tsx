@@ -34,7 +34,10 @@ import {
   Zap,
   Building,
   GraduationCap,
+  Sparkles,
 } from "lucide-react";
+import ProfessionDetailModal from "@/components/career/ProfessionDetailModal";
+import StudentAccountModal from "@/components/StudentAccountModal";
 
 export default function InteractiveCareerMap() {
   const { careerMapData } = useDataStore();
@@ -42,6 +45,17 @@ export default function InteractiveCareerMap() {
   const [selectedField, setSelectedField] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
+  // Modals & Account Gate State
+  const [selectedProfessionForDetail, setSelectedProfessionForDetail] = useState<any | null>(null);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [hasStudentAccount, setHasStudentAccount] = useState(() => {
+    try {
+      return !!localStorage.getItem("careermap_student_account");
+    } catch {
+      return false;
+    }
+  });
 
   const careerFields = [
     {
@@ -112,341 +126,275 @@ export default function InteractiveCareerMap() {
         id: career.id,
         title: career.title,
         subtitle: getCareerSubtitle(career.id),
-        x: Math.max(10, Math.min(90, x)), // Keep within bounds
-        y: Math.max(10, Math.min(90, y)), // Keep within bounds
+        x: Math.max(10, Math.min(90, x)),
+        y: Math.max(10, Math.min(90, y)),
         type: "career" as const,
         field: getCareerField(career.preferred_stream),
         level: getCareerLevel(career.preferred_stream),
         color: `bg-gradient-to-r ${getGradientFromColor(stageColor)}`,
-        salary: getCareerSalary(career.id),
-        growth: "High" as const,
-        demand: "High" as const,
-        description: getCareerDescription(career.id),
-        career: career,
+        salary: (career as any).salary_range_inr || "₹8 - 35 LPA",
+        growth: (career as any).growth_projection || "High Growth (+18%)",
+        demand: (career as any).market_demand || "High",
+        description: (career as any).description || "Professional career path with high industry impact.",
       };
     });
 
     return [centerNode, ...careerNodes];
   };
 
-  const getCareerSubtitle = (careerId: string) => {
-    const subtitles: Record<string, string> = {
-      doctor: "Heal People",
-      software_engineer: "Build Applications",
-      civil_services: "Serve the Nation",
-      chartered_accountant: "Manage Finances",
-      data_scientist: "Analyze Data",
-      nurse: "Care for Patients",
-      lawyer: "Practice Law",
-      journalist: "Report News",
-      pharmacist: "Dispense Medicine",
-      police_officer: "Maintain Order",
+  const getCareerSubtitle = (id: string): string => {
+    const subtitles: { [key: string]: string } = {
+      "software-engineer": "Build the Digital World",
+      "data-scientist": "Unlock Data Insights",
+      "chartered-accountant": "Financial Mastery",
+      "medical-doctor": "Heal & Save Lives",
+      "digital-marketer": "Connect Brands & People",
+      "civil-servant": "Serve the Nation",
+      "graphic-designer": "Visual Storytelling",
+      "teacher-educator": "Shape Future Minds",
+      entrepreneur: "Create Solutions & Value",
     };
-    return subtitles[careerId] || "Professional Career";
+    return subtitles[id] || "Professional Path";
   };
 
-  const getCareerField = (stream: string) => {
-    if (stream.includes("pcb") || stream.includes("medical"))
-      return "healthcare";
-    if (stream.includes("pcm") || stream.includes("engineering"))
+  const getCareerField = (stream: string): string => {
+    if (stream.includes("Science") || stream.includes("Engineering"))
       return "technology";
-    if (stream.includes("commerce")) return "business";
-    if (stream.includes("arts")) return "creative";
-    return "general";
+    if (stream.includes("Commerce")) return "commerce";
+    if (stream.includes("Arts") || stream.includes("Design")) return "creative";
+    return "technology";
   };
 
-  const getCareerLevel = (stream: string) => {
-    if (stream.includes("school")) return "school";
-    if (stream.includes("ug_")) return "undergraduate";
-    if (stream.includes("pg")) return "postgraduate";
-    return "professional";
+  const getCareerLevel = (stream: string): string => {
+    return "undergraduate";
   };
 
-  const getGradientFromColor = (hexColor: string) => {
-    // Convert hex to gradient classes (simplified)
-    const colorMap: Record<string, string> = {
-      "#1E88E5": "from-blue-500 to-blue-600",
-      "#43A047": "from-green-500 to-green-600",
-      "#8E24AA": "from-purple-500 to-purple-600",
-      "#F4511E": "from-orange-500 to-orange-600",
-      "#00897B": "from-teal-500 to-teal-600",
-      "#C2185B": "from-pink-500 to-pink-600",
-    };
-    return colorMap[hexColor] || "from-gray-500 to-gray-600";
+  const getGradientFromColor = (color: string): string => {
+    if (color.includes("blue")) return "from-blue-500 to-indigo-500";
+    if (color.includes("green")) return "from-green-500 to-emerald-500";
+    if (color.includes("purple")) return "from-purple-500 to-pink-500";
+    if (color.includes("orange")) return "from-yellow-500 to-orange-500";
+    return "from-blue-500 to-purple-500";
   };
 
-  const getCareerSalary = (careerId: string) => {
-    const salaries: Record<string, string> = {
-      doctor: "₹10-50 LPA",
-      software_engineer: "₹8-25 LPA",
-      civil_services: "₹56K-2L PM",
-      chartered_accountant: "₹6-20 LPA",
-      data_scientist: "₹12-35 LPA",
-      nurse: "₹3-8 LPA",
-      lawyer: "₹5-25 LPA",
-      journalist: "₹4-15 LPA",
-      pharmacist: "₹3-12 LPA",
-      police_officer: "₹35K-1L PM",
-    };
-    return salaries[careerId] || "₹5-15 LPA";
-  };
-
-  const getCareerDescription = (careerId: string) => {
-    const descriptions: Record<string, string> = {
-      doctor: "Diagnose, treat, and prevent illness in patients",
-      software_engineer: "Design, develop, and maintain software applications",
-      civil_services: "Lead administrative functions and policy implementation",
-      chartered_accountant:
-        "Provide accounting and financial advisory services",
-      data_scientist: "Extract insights from complex data using analytics",
-      nurse: "Provide patient care and support in healthcare settings",
-      lawyer: "Represent clients and provide legal counsel",
-      journalist: "Research, write, and report news and stories",
-      pharmacist: "Dispense medications and provide pharmaceutical care",
-      police_officer: "Maintain law and order and ensure public safety",
-    };
-    return (
-      descriptions[careerId] || "Professional role with growth opportunities"
-    );
-  };
-
-  const careerNodes = generateCareerNodes();
-
-  // Generate pathways from center to all career nodes
-  const pathways = careerNodes
-    .filter((node) => node.type === "career")
-    .map((node) => ({
-      from: "center",
-      to: node.id,
-      color: `stroke-${getCareerField(node.field)}-500`,
-    }));
-
-  const filteredNodes = careerNodes.filter((node) => {
-    if (node.type === "center") return true;
-    if (selectedField !== "all" && node.field !== selectedField) return false;
-    if (selectedLevel !== "all" && node.level !== selectedLevel) return false;
-    if (
-      searchTerm &&
-      !node.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-      return false;
-    return true;
-  });
-
-  const getDemandColor = (demand: string) => {
+  const getDemandColor = (demand: string): string => {
     switch (demand) {
       case "Very High":
-        return "text-green-600 bg-green-50";
+        return "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300";
       case "High":
-        return "text-blue-600 bg-blue-50";
-      case "Medium":
-        return "text-yellow-600 bg-yellow-50";
-      case "Low":
-        return "text-red-600 bg-red-50";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300";
+      case "Moderate":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300";
       default:
-        return "text-gray-600 bg-gray-50";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
   };
 
+  const allNodes = generateCareerNodes();
+
+  const filteredNodes = allNodes.filter((node) => {
+    if (node.type === "center") return true;
+
+    const matchesSearch =
+      node.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.subtitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesField =
+      selectedField === "all" || node.field === selectedField;
+    const matchesLevel =
+      selectedLevel === "all" || node.level === selectedLevel;
+
+    return matchesSearch && matchesField && matchesLevel;
+  });
+
+  const generatePathways = () => {
+    const pathways = [];
+    const careerNodes = filteredNodes.filter((node) => node.type === "career");
+
+    for (let i = 0; i < careerNodes.length; i++) {
+      pathways.push({
+        from: "center",
+        to: careerNodes[i].id,
+        color: "stroke-career-primary",
+      });
+
+      if (i > 0) {
+        pathways.push({
+          from: careerNodes[i - 1].id,
+          to: careerNodes[i].id,
+          color: "stroke-career-secondary",
+        });
+      }
+    }
+
+    return pathways;
+  };
+
+  const pathways = generatePathways();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
-      {/* Header */}
-      <section className="py-12 bg-gradient-to-r from-career-primary/10 to-purple-500/10">
-        <div className="container px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <MapPin className="h-10 w-10 text-career-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold">
-                Interactive Career Map
-              </h1>
-            </div>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Explore career paths visually with our interactive map. Discover
-              connections between different roles, required skills, and
-              progression pathways in various fields.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Badge variant="secondary" className="px-4 py-2">
-                <Compass className="h-4 w-4 mr-2" />
-                Visual Exploration
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2">
-                <Route className="h-4 w-4 mr-2" />
-                Career Pathways
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2">
-                <Target className="h-4 w-4 mr-2" />
-                Goal Planning
-              </Badge>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-career-primary to-purple-600 text-white py-12 px-4">
+        <div className="container max-w-6xl mx-auto text-center space-y-4">
+          <Badge className="bg-white/20 text-white border-white/30 text-xs">
+            Visual Career Universe
+          </Badge>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Interactive Career Map
+          </h1>
+          <p className="text-sm sm:text-base text-blue-100 max-w-2xl mx-auto leading-relaxed">
+            Navigate through career connections, educational milestones, and industry compensation nodes.
+          </p>
         </div>
       </section>
 
-      <div className="container px-4 py-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-4 gap-8">
-            {/* Controls Panel */}
-            <div className="space-y-6">
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Search className="h-5 w-5" />
-                    Explore Careers
+      {/* Main Content */}
+      <section className="py-8 px-4">
+        <div className="container max-w-7xl mx-auto space-y-6">
+          {/* Account Gating Banner */}
+          {!hasStudentAccount && (
+            <div className="p-4 rounded-xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-300 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                <span className="text-foreground">
+                  <strong>Create Your Free Student Account:</strong> Save career trajectories, receive verified placement notifications, and track matching colleges.
+                </span>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setIsAccountModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-8 whitespace-nowrap"
+              >
+                Log In / Create Account
+              </Button>
+            </div>
+          )}
+
+          {/* Controls Bar */}
+          <div className="bg-card p-4 rounded-2xl shadow-sm border space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="relative md:col-span-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search professions, skills or packages..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 text-xs"
+                />
+              </div>
+
+              <div>
+                <Select value={selectedField} onValueChange={setSelectedField}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="All Career Fields" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Fields</SelectItem>
+                    {careerFields.map((field) => (
+                      <SelectItem key={field.value} value={field.value}>
+                        {field.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="All Education Levels" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Levels</SelectItem>
+                    {educationLevels.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Map Layout Grid */}
+          <div className="grid lg:grid-cols-4 gap-6">
+            {/* Sidebar Guide */}
+            <div className="space-y-4">
+              <Card className="border shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-bold flex items-center gap-1.5">
+                    <Compass className="h-4 w-4 text-blue-600" /> Map Navigation Guide
                   </CardTitle>
-                  <CardDescription>
-                    Filter and search to find your ideal career path
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Search Careers
-                    </label>
-                    <Input
-                      placeholder="e.g., Software Engineer, Doctor"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Career Field
-                    </label>
-                    <Select
-                      value={selectedField}
-                      onValueChange={setSelectedField}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Fields" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Fields</SelectItem>
-                        {careerFields.map((field) => (
-                          <SelectItem key={field.value} value={field.value}>
-                            {field.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Education Level
-                    </label>
-                    <Select
-                      value={selectedLevel}
-                      onValueChange={setSelectedLevel}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Levels" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Levels</SelectItem>
-                        {educationLevels.map((level) => (
-                          <SelectItem key={level.value} value={level.value}>
-                            {level.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <h4 className="font-medium mb-3">Quick Actions</h4>
-                    <div className="space-y-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <Target className="h-4 w-4 mr-2" />
-                        Set Career Goal
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <Route className="h-4 w-4 mr-2" />
-                        View Pathway
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
-                        <BookOpen className="h-4 w-4 mr-2" />
-                        Get Guidance
-                      </Button>
-                    </div>
-                  </div>
+                <CardContent className="space-y-3 text-xs text-muted-foreground">
+                  <p>
+                    • <strong>Center Node:</strong> Represents your current starting educational level.
+                  </p>
+                  <p>
+                    • <strong>Profession Nodes:</strong> Click on any career node to open the full detailed dossier with milestone roadmap and salary.
+                  </p>
+                  <p>
+                    • <strong>Connecting Paths:</strong> Indicate natural career transitions and multi-disciplinary pathways.
+                  </p>
                 </CardContent>
               </Card>
 
-              {/* Career Field Legend */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg">Career Fields</CardTitle>
+              <Card className="border shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-bold">Career Domains</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {careerFields.map((field) => (
-                      <div
-                        key={field.value}
-                        className="flex items-center gap-3"
-                      >
-                        <div
-                          className={`w-4 h-4 rounded-full bg-gradient-to-r ${field.color}`}
-                        ></div>
-                        <span className="text-sm">{field.label}</span>
-                      </div>
-                    ))}
-                  </div>
+                <CardContent className="space-y-2">
+                  {careerFields.map((field) => (
+                    <div
+                      key={field.value}
+                      onClick={() => setSelectedField(field.value)}
+                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors text-xs ${
+                        selectedField === field.value
+                          ? "bg-muted font-bold text-foreground"
+                          : "hover:bg-muted/50 text-muted-foreground"
+                      }`}
+                    >
+                      <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${field.color}`} />
+                      <span>{field.label}</span>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Interactive Map */}
+            {/* Interactive Map Canvas */}
             <div className="lg:col-span-3">
-              <Card className="border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Career Universe
-                  </CardTitle>
-                  <CardDescription>
-                    Click on any career to explore details and pathways
-                  </CardDescription>
+              <Card className="border shadow-xl overflow-hidden">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-base font-bold">
+                      <MapPin className="h-4 w-4 text-blue-600" />
+                      Visual Career Universe
+                    </CardTitle>
+                    <span className="text-xs text-muted-foreground">
+                      Click any node to open full profession roadmap
+                    </span>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  {/* Map Container */}
-                  <div className="relative h-[600px] bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
-                    {/* SVG for connection lines */}
+                  <div className="relative h-[620px] bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 overflow-hidden border-t">
+                    {/* SVG Connecting Lines */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none">
                       {pathways.map((path, index) => {
-                        const fromNode = filteredNodes.find(
-                          (n) => n.id === path.from,
-                        );
-                        const toNode = filteredNodes.find(
-                          (n) => n.id === path.to,
-                        );
+                        const fromNode = filteredNodes.find((n) => n.id === path.from);
+                        const toNode = filteredNodes.find((n) => n.id === path.to);
                         if (!fromNode || !toNode) return null;
-
-                        const x1 = (fromNode.x / 100) * 100;
-                        const y1 = (fromNode.y / 100) * 100;
-                        const x2 = (toNode.x / 100) * 100;
-                        const y2 = (toNode.y / 100) * 100;
 
                         return (
                           <line
                             key={index}
-                            x1={`${x1}%`}
-                            y1={`${y1}%`}
-                            x2={`${x2}%`}
-                            y2={`${y2}%`}
+                            x1={`${fromNode.x}%`}
+                            y1={`${fromNode.y}%`}
+                            x2={`${toNode.x}%`}
+                            y2={`${toNode.y}%`}
                             className={`${path.color} stroke-2 opacity-30`}
                             strokeDasharray="5,5"
                           />
@@ -454,104 +402,89 @@ export default function InteractiveCareerMap() {
                       })}
                     </svg>
 
-                    {/* Career Nodes */}
+                    {/* Nodes */}
                     {filteredNodes.map((node) => (
                       <div
                         key={node.id}
-                        className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:scale-110 hover:z-10"
+                        className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:scale-110 hover:z-20"
                         style={{ left: `${node.x}%`, top: `${node.y}%` }}
                         onMouseEnter={() => setHoveredNode(node.id)}
                         onMouseLeave={() => setHoveredNode(null)}
+                        onClick={() => {
+                          if (node.type !== "center") {
+                            setSelectedProfessionForDetail(node);
+                          }
+                        }}
                       >
                         <div
-                          className={`relative ${node.color} text-white rounded-xl p-4 shadow-lg min-w-[180px] text-center ${
+                          className={`relative ${node.color} text-white rounded-xl p-3.5 shadow-lg min-w-[170px] text-center select-none ${
                             node.type === "center"
-                              ? "w-24 h-24 flex items-center justify-center"
+                              ? "w-20 h-20 flex items-center justify-center rounded-2xl"
                               : ""
                           }`}
                         >
                           {node.type === "center" ? (
                             <div>
-                              <div className="text-2xl font-bold">You</div>
-                              <div className="text-xs opacity-80">
-                                Start Here
-                              </div>
+                              <div className="text-xl font-black">You</div>
+                              <div className="text-[10px] opacity-80">Start Here</div>
                             </div>
                           ) : (
                             <div>
-                              <h3 className="font-bold text-sm">
-                                {node.title}
-                              </h3>
-                              <p className="text-xs opacity-80">
-                                {node.subtitle}
-                              </p>
+                              <h3 className="font-bold text-xs">{node.title}</h3>
+                              <p className="text-[10px] opacity-80 line-clamp-1">{node.subtitle}</p>
                               {node.salary && (
-                                <div className="text-xs mt-1 bg-white/20 rounded px-2 py-1">
+                                <div className="text-[10px] mt-1 bg-white/20 backdrop-blur-sm rounded px-1.5 py-0.5 font-semibold">
                                   {node.salary}
                                 </div>
                               )}
                             </div>
                           )}
 
-                          {/* Pulse animation for center node */}
                           {node.type === "center" && (
-                            <div className="absolute inset-0 rounded-xl animate-ping bg-white/20"></div>
+                            <div className="absolute inset-0 rounded-2xl animate-ping bg-white/20 pointer-events-none" />
                           )}
                         </div>
                       </div>
                     ))}
 
-                    {/* Hover Details */}
+                    {/* Hover Details Card (Dark mode compatible) */}
                     {hoveredNode && hoveredNode !== "center" && (
-                      <div className="absolute bottom-4 left-4 right-4">
+                      <div className="absolute bottom-4 left-4 right-4 z-30">
                         {(() => {
-                          const node = filteredNodes.find(
-                            (n) => n.id === hoveredNode,
-                          );
+                          const node = filteredNodes.find((n) => n.id === hoveredNode);
                           if (!node) return null;
                           return (
-                            <Card className="border-0 shadow-xl bg-white/95 backdrop-blur">
-                              <CardContent className="p-4">
-                                <div className="flex items-start justify-between mb-2">
+                            <Card className="border shadow-2xl bg-white/95 dark:bg-slate-900/95 dark:border-slate-800 backdrop-blur">
+                              <CardContent className="p-4 space-y-2 text-xs">
+                                <div className="flex items-start justify-between">
                                   <div>
-                                    <h3 className="font-bold text-lg">
-                                      {node.title}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                      {node.description}
-                                    </p>
+                                    <h3 className="font-bold text-sm text-foreground">{node.title}</h3>
+                                    <p className="text-[11px] text-muted-foreground line-clamp-1">{node.description}</p>
                                   </div>
-                                  <div className="flex gap-2">
+                                  <div className="flex gap-1.5">
                                     {node.demand && (
-                                      <Badge
-                                        className={getDemandColor(node.demand)}
-                                      >
+                                      <Badge className={getDemandColor(node.demand)}>
                                         {node.demand} Demand
                                       </Badge>
                                     )}
                                   </div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-4 text-sm">
+                                <div className="grid grid-cols-3 gap-3 pt-1 border-t">
                                   <div>
-                                    <span className="text-muted-foreground">
-                                      Salary:
-                                    </span>
-                                    <div className="font-medium">
-                                      {node.salary}
-                                    </div>
+                                    <span className="text-muted-foreground text-[10px]">Package (CTC):</span>
+                                    <div className="font-bold text-foreground">{node.salary || "N/A"}</div>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground">
-                                      Growth:
-                                    </span>
-                                    <div className="font-medium">
-                                      {node.growth}
-                                    </div>
+                                    <span className="text-muted-foreground text-[10px]">Growth Rate:</span>
+                                    <div className="font-bold text-blue-600">{node.growth || "N/A"}</div>
                                   </div>
-                                  <div>
-                                    <Button size="sm" className="w-full">
-                                      <Target className="h-3 w-3 mr-1" />
-                                      Explore
+                                  <div className="flex items-end">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => setSelectedProfessionForDetail(node)}
+                                      className="w-full h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                                    >
+                                      View Full Dossier →
                                     </Button>
                                   </div>
                                 </div>
@@ -564,74 +497,26 @@ export default function InteractiveCareerMap() {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Map Actions */}
-              <div className="flex flex-wrap gap-4 mt-6">
-                <Button className="bg-gradient-to-r from-career-primary to-purple-600">
-                  <Route className="h-4 w-4 mr-2" />
-                  Create Roadmap
-                </Button>
-                <Button variant="outline">
-                  <Play className="h-4 w-4 mr-2" />
-                  Take Tour
-                </Button>
-                <Button variant="outline">
-                  <Users className="h-4 w-4 mr-2" />
-                  Join Community
-                </Button>
-                <Button variant="outline">
-                  <Award className="h-4 w-4 mr-2" />
-                  Skill Assessment
-                </Button>
-              </div>
             </div>
           </div>
-
-          {/* Features Section */}
-          <div className="mt-16 grid md:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg text-center">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-career-primary to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Visual Exploration</h3>
-                <p className="text-muted-foreground">
-                  Discover career connections and pathways through interactive
-                  visualization
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg text-center">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-career-secondary to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Growth Insights</h3>
-                <p className="text-muted-foreground">
-                  Understand salary ranges, growth potential, and market demand
-                  for each career
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg text-center">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Lightbulb className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">
-                  Smart Recommendations
-                </h3>
-                <p className="text-muted-foreground">
-                  Get personalized career suggestions based on your interests
-                  and background
-                </p>
-              </CardContent>
-            </Card>
-          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Profession Detail Modal */}
+      <ProfessionDetailModal
+        isOpen={!!selectedProfessionForDetail}
+        onClose={() => setSelectedProfessionForDetail(null)}
+        profession={selectedProfessionForDetail}
+      />
+
+      {/* Student Account Modal */}
+      <StudentAccountModal
+        isOpen={isAccountModalOpen}
+        onClose={() => {
+          setIsAccountModalOpen(false);
+          setHasStudentAccount(!!localStorage.getItem("careermap_student_account"));
+        }}
+      />
     </div>
   );
 }

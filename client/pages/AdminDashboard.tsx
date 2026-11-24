@@ -36,6 +36,10 @@ import {
   Phone,
   Calendar,
   Sparkles,
+  Clock,
+  UserPlus,
+  ShieldAlert,
+  MapPin,
 } from "lucide-react";
 import {
   Institute,
@@ -49,6 +53,8 @@ import {
   getNewInstituteRequests,
   approveNewInstituteRequest,
   getDirectStudentApplications,
+  updateInstitute,
+  deleteInstitute,
 } from "@/lib/institutes-dataset";
 import {
   authenticateAdmin,
@@ -61,7 +67,13 @@ import {
   exportEncryptedBackup,
   importEncryptedBackup,
   logSecurityEvent,
+  getSessionRemainingSeconds,
+  getAdminAccounts,
+  createAdminAccount,
+  deleteAdminAccount,
+  AdminAccount,
 } from "@/lib/security-service";
+import InstituteEditorModal from "@/components/admin/InstituteEditorModal";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
@@ -71,8 +83,10 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [authError, setAuthError] = useState("");
   const [lockoutRemaining, setLockoutRemaining] = useState(0);
+  const [sessionSecondsRemaining, setSessionSecondsRemaining] = useState(1800);
 
   // Active Admin Tab
   const [activeTab, setActiveTab] = useState("overview");
@@ -84,10 +98,11 @@ export default function AdminDashboard() {
   const [newInstRequests, setNewInstRequests] = useState(getNewInstituteRequests());
   const [studentApplications, setStudentApplications] = useState(getDirectStudentApplications());
   const [auditLogs, setAuditLogs] = useState(getSecurityAuditLogs());
+  const [adminAccounts, setAdminAccounts] = useState<AdminAccount[]>([]);
 
-  // Editing Institute State
-  const [editingInst, setEditingInst] = useState<Institute | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  // Institute Editor Modal State
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingInstitute, setEditingInstitute] = useState<Institute | null>(null);
 
   // New Student Record Modal State
   const [selectedInstForStudents, setSelectedInstForStudents] = useState<string>("");
@@ -97,10 +112,19 @@ export default function AdminDashboard() {
   const [newStudentRole, setNewStudentRole] = useState("Software Engineer");
   const [newStudentVerified, setNewStudentVerified] = useState(true);
 
-  // Password Change State
+  // Password / Profile Change State
   const [currentPass, setCurrentPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
+  const [newPhone1, setNewPhone1] = useState("");
+  const [newPhone2, setNewPhone2] = useState("");
+
+  // New Admin Account Creation State
+  const [addAdminUser, setAddAdminUser] = useState("");
+  const [addAdminPass, setAddAdminPass] = useState("");
+  const [addAdminPhone1, setAddAdminPhone1] = useState("");
+  const [addAdminPhone2, setAddAdminPhone2] = useState("");
+  const [addAdminRole, setAddAdminRole] = useState<"admin" | "super_admin">("admin");
 
   // Backup passkey
   const [backupPasskey, setBackupPasskey] = useState("");
@@ -114,8 +138,24 @@ export default function AdminDashboard() {
     }
 
     const interval = setInterval(() => {
+      // 1. Lockout check
       const lock = getLockoutStatus();
       setLockoutRemaining(lock.isLocked ? lock.remainingSeconds : 0);
+
+      // 2. Session countdown check
+      if (isSessionValid()) {
+        const remaining = getSessionRemainingSeconds();
+        setSessionSecondsRemaining(remaining);
+        if (remaining <= 0) {
+          // Auto-logout cleanly
+          destroySession();
+          setIsAuthenticated(false);
+          toast({
+            title: "Session Expired",
+            description: "Your 30-minute session has ended. Please log in again to continue.",
+          });
+        }
+      }
     }, 1000);
 
     return () => clearInterval(interval);
@@ -128,19 +168,25 @@ export default function AdminDashboard() {
     setNewInstRequests(getNewInstituteRequests());
     setStudentApplications(getDirectStudentApplications());
     setAuditLogs(getSecurityAuditLogs());
+    setAdminAccounts(getAdminAccounts());
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
 
-    const res = await authenticateAdmin(username, password);
+    if (!username.trim() || !password.trim() || !phone.trim()) {
+      setAuthError("All 3 fields (Username, Password, Phone Number) are required.");
+      return;
+    }
+
+    const res = await authenticateAdmin(username, password, phone);
     if (res.success) {
       setIsAuthenticated(true);
       loadAllData();
       toast({
         title: "Admin Access Granted",
-        description: "Cryptographically authenticated. Secure session initialized.",
+        description: `Welcome back, ${res.account?.username || "Admin"}. 30-minute session active.`,
       });
     } else {
       setAuthError(res.message);
@@ -157,10 +203,46 @@ export default function AdminDashboard() {
     setIsAuthenticated(false);
     setUsername("");
     setPassword("");
+    setPhone("");
     toast({
       title: "Logged Out",
-      description: "Admin session destroyed securely.",
+      description: "Admin session closed cleanly.",
     });
+  };
+
+  // Open Full Editor for an existing institute
+  const handleOpenEditInstitute = (inst: Institute) => {
+    setEditingInstitute(inst);
+    setIsEditorOpen(true);
+  };
+
+  // Open Full Editor for creating a new institute
+  const handleOpenCreateInstitute = () => {
+    setEditingInstitute(null);
+    setIsEditorOpen(true);
+  };
+
+  // Save Institute from Editor
+  const handleSaveInstituteFromEditor = (savedInst: Institute) => {
+    const existingIndex = institutes.findIndex((i) => i.id === savedInst.id);
+    let updated: Institute[];
+    if (existingIndex !== -1) {
+      updated = [...institutes];
+      updated[existingIndex] = savedInst;
+      toast({
+        title: "Institute Updated",
+        description: `Profile for ${savedInst.name} successfully saved.`,
+      });
+    } else {
+      updated = [savedInst, ...institutes];
+      toast({
+        title: "Institute Added",
+        description: `${savedInst.name} added to the directory.`,
+      });
+    }
+
+    setInstitutes(updated);
+    saveInstitutes(updated);
   };
 
   // 1-Click Verification Toggle for Placement
@@ -235,10 +317,9 @@ export default function AdminDashboard() {
     if (!window.confirm(`Are you sure you want to permanently delete '${name}' from CareerMap?`)) {
       return;
     }
+    deleteInstitute(id);
     const filtered = institutes.filter((i) => i.id !== id);
     setInstitutes(filtered);
-    saveInstitutes(filtered);
-    logSecurityEvent("INSTITUTE_DELETED", "data_mutation", "critical", `Deleted institute ${name} (${id})`);
     toast({
       title: "Institute Removed",
       description: `${name} has been removed from directory.`,
@@ -250,135 +331,186 @@ export default function AdminDashboard() {
     e.preventDefault();
     if (!selectedInstForStudents || !newStudentName || !newStudentCompany) return;
 
-    const updated = institutes.map((i) => {
-      if (i.id === selectedInstForStudents) {
-        const newRecord: StudentPlacementRecord = {
-          id: "st_" + Date.now(),
-          studentName: newStudentName,
-          company: newStudentCompany,
-          packageLPA: Number(newStudentPackage),
-          year: new Date().getFullYear(),
-          role: newStudentRole,
-          verified: newStudentVerified,
-          verificationSource: newStudentVerified
-            ? "Corporate Confirmation (Direct Company HR)"
-            : "College Self-Reported (Pending Corporate Confirmation)",
-        };
-        logSecurityEvent(
-          "STUDENT_RECORD_ADDED",
-          "data_mutation",
-          "info",
-          `Added placement record for ${newStudentName} at ${i.name}`
-        );
+    const newRecord: StudentPlacementRecord = {
+      id: "st_" + Date.now(),
+      studentName: newStudentName,
+      company: newStudentCompany,
+      packageLPA: Number(newStudentPackage),
+      year: new Date().getFullYear(),
+      role: newStudentRole,
+      verified: newStudentVerified,
+      verificationSource: newStudentVerified
+        ? "Verified via Corporate HR Confirmation"
+        : "Pending Corporate Cross-Verification",
+    };
+
+    const updated = institutes.map((inst) => {
+      if (inst.id === selectedInstForStudents) {
         return {
-          ...i,
+          ...inst,
           placement: {
-            ...i.placement,
-            students: [newRecord, ...i.placement.students],
+            ...inst.placement,
+            students: [newRecord, ...inst.placement.students],
           },
         };
       }
-      return i;
+      return inst;
     });
 
     setInstitutes(updated);
     saveInstitutes(updated);
+    logSecurityEvent(
+      "STUDENT_RECORD_ADDED",
+      "data_mutation",
+      "info",
+      `Student record for ${newStudentName} at ${newStudentCompany} added to ${selectedInstForStudents}`
+    );
+
     setNewStudentName("");
     setNewStudentCompany("");
     toast({
-      title: "Student Placement Record Added",
-      description: "New verified record logged.",
+      title: "Student Record Added",
+      description: `Added ${newStudentName} (${newStudentCompany}, ₹${newStudentPackage} LPA)`,
     });
   };
 
   // Approve New Institute Request
-  const handleApproveNewInstitute = (reqId: string) => {
-    const created = approveNewInstituteRequest(reqId);
+  const handleApproveNewInstitute = (requestId: string) => {
+    const created = approveNewInstituteRequest(requestId);
     if (created) {
       loadAllData();
       toast({
-        title: "Institute Approved & Published",
-        description: `'${created.name}' is now live in the CareerMap directory!`,
+        title: "Institute Published",
+        description: `'${created.name}' has been added to CareerMap directory.`,
       });
     }
   };
 
-  // Save Credentials Change
+  // Change Credentials
   const handleChangeCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await updateAdminCredentials(currentPass, newUsername, newPass);
+    const res = await updateAdminCredentials(currentPass, newUsername, newPass, newPhone1, newPhone2);
     if (res.success) {
       toast({
-        title: "Master Credentials Updated",
-        description: "New password hash securely committed.",
+        title: "Profile Updated",
+        description: res.message,
       });
       setCurrentPass("");
-      setNewUsername("");
       setNewPass("");
+      loadAllData();
     } else {
       toast({
         variant: "destructive",
-        title: "Credential Update Failed",
+        title: "Update Failed",
         description: res.message,
       });
     }
   };
 
+  // Create New Admin Account
+  const handleCreateNewAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await createAdminAccount({
+      username: addAdminUser,
+      password: addAdminPass,
+      primaryPhone: addAdminPhone1,
+      secondaryPhone: addAdminPhone2 || undefined,
+      role: addAdminRole,
+    });
+
+    if (res.success) {
+      toast({
+        title: "Admin Account Created",
+        description: res.message,
+      });
+      setAddAdminUser("");
+      setAddAdminPass("");
+      setAddAdminPhone1("");
+      setAddAdminPhone2("");
+      loadAllData();
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Creation Failed",
+        description: res.message,
+      });
+    }
+  };
+
+  // Remove Admin Account
+  const handleDeleteAdmin = (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete admin account '${name}'?`)) return;
+    const res = deleteAdminAccount(id);
+    if (res.success) {
+      toast({ title: "Admin Deleted", description: res.message });
+      loadAllData();
+    } else {
+      toast({ variant: "destructive", title: "Action Blocked", description: res.message });
+    }
+  };
+
   // Export Encrypted Backup
   const handleExportBackup = async () => {
-    if (!backupPasskey || backupPasskey.length < 6) {
-      alert("Please enter a secure passkey of at least 6 characters.");
+    if (!backupPasskey) {
+      alert("Please enter a passkey to secure your backup.");
       return;
     }
-    const dataToExport = {
+    const fullState = {
       institutes,
       verificationRequests,
       auditRequests,
       newInstRequests,
       studentApplications,
-      exportedAt: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
     };
-    const encrypted = await exportEncryptedBackup(backupPasskey, dataToExport);
-    
-    // Download as file
-    const blob = new Blob([encrypted], { type: "application/octet-stream" });
+    const b64 = await exportEncryptedBackup(backupPasskey, fullState);
+    const blob = new Blob([b64], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `careermap_backup_aes_${new Date().toISOString().split("T")[0]}.enc`;
+    a.download = `careermap_backup_${new Date().toISOString().split("T")[0]}.enc`;
     a.click();
-    URL.revokeObjectURL(url);
-
     toast({
-      title: "Encrypted Backup Exported",
-      description: "Data securely encrypted with AES-GCM and downloaded.",
+      title: "Encrypted Backup Saved",
+      description: "Data backup file securely generated and downloaded.",
     });
   };
 
   // Import Encrypted Backup
   const handleImportBackup = async () => {
     if (!backupPasskey || !importCipher) {
-      alert("Please provide the passkey and encrypted ciphertext.");
+      alert("Please provide the passkey and backup ciphertext.");
       return;
     }
     try {
       const data = await importEncryptedBackup(backupPasskey, importCipher);
       if (data && data.institutes) {
-        setInstitutes(data.institutes);
         saveInstitutes(data.institutes);
         loadAllData();
         toast({
-          title: "Backup Successfully Restored",
-          description: "All institutions and requests recovered.",
+          title: "Backup Restored Successfully",
+          description: `Restored ${data.institutes.length} institutions and requests.`,
         });
         setImportCipher("");
       }
     } catch (e: any) {
-      alert("Decryption failed: " + e.message);
+      toast({
+        variant: "destructive",
+        title: "Restore Failed",
+        description: e.message || "Invalid passkey or corrupted data.",
+      });
     }
   };
 
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs < 10 ? "0" : ""}${secs}s`;
+  };
+
+  // ==========================================
   // LOGIN SCREEN
+  // ==========================================
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center p-4">
@@ -388,45 +520,47 @@ export default function AdminDashboard() {
               <Shield className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-black tracking-tight text-white">
-              CareerMap High-Security Admin
+              CareerMap Admin Console
             </CardTitle>
             <CardDescription className="text-xs text-slate-300">
-              Cryptographically Protected Management Console
+              Multi-Factor Verified Management Portal
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {lockoutRemaining > 0 ? (
-              <div className="p-3.5 bg-red-950/60 border border-red-800 rounded-xl text-center space-y-1">
-                <AlertTriangle className="h-6 w-6 text-red-400 mx-auto" />
-                <div className="font-bold text-xs text-red-200">Security Lockout Active</div>
-                <p className="text-[11px] text-red-300">
-                  Brute-force protection activated. Please wait{" "}
-                  <strong>{lockoutRemaining}s</strong> before retrying.
+              <div className="p-4 bg-red-950/70 border border-red-800 rounded-xl text-center space-y-2">
+                <AlertTriangle className="h-7 w-7 text-red-400 mx-auto" />
+                <div className="font-bold text-sm text-red-200">Security Lockout Active</div>
+                <p className="text-xs text-red-300">
+                  Multiple consecutive incorrect attempts detected. Access is temporarily locked.
                 </p>
+                <div className="text-xs font-mono font-bold text-amber-300 bg-black/40 py-1.5 px-3 rounded-lg inline-block">
+                  Time Remaining: {formatTimer(lockoutRemaining)}
+                </div>
               </div>
             ) : (
               <form onSubmit={handleLogin} className="space-y-4 text-xs">
                 {authError && (
-                  <div className="p-2.5 bg-red-950/50 border border-red-800 rounded-lg text-red-300 text-xs flex items-center gap-2">
+                  <div className="p-2.5 bg-red-950/60 border border-red-800 rounded-lg text-red-300 text-xs flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
                     <span>{authError}</span>
                   </div>
                 )}
 
                 <div>
-                  <Label htmlFor="adminUser" className="text-slate-300">Admin Username</Label>
+                  <Label htmlFor="adminUser" className="text-slate-300 font-semibold">Admin Username</Label>
                   <Input
                     id="adminUser"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter admin username"
+                    placeholder="e.g. Himesh Singh"
                     className="mt-1 bg-slate-800/80 border-slate-700 text-white text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="adminPass" className="text-slate-300">Master Password</Label>
+                  <Label htmlFor="adminPass" className="text-slate-300 font-semibold">Password</Label>
                   <Input
                     id="adminPass"
                     type="password"
@@ -438,11 +572,27 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-blue-950/40 border border-blue-800/60 text-[11px] text-blue-200/90 leading-tight space-y-1">
-                  <div className="font-semibold text-blue-300 flex items-center gap-1">
-                    <Lock className="h-3 w-3" /> SHA-256 Salted Cryptographic Verification
+                <div>
+                  <Label htmlFor="adminPhone" className="text-slate-300 font-semibold flex items-center justify-between">
+                    <span>Registered Phone Number</span>
+                    <span className="text-[10px] text-slate-400">10 digits</span>
+                  </Label>
+                  <Input
+                    id="adminPhone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="mt-1 bg-slate-800/80 border-slate-700 text-white text-xs"
+                    required
+                  />
+                </div>
+
+                <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-800/60 text-[11px] text-blue-200/90 leading-relaxed space-y-1">
+                  <div className="font-semibold text-blue-300 flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Verified Dual-Credential Security
                   </div>
-                  <p>Passwords are never stored in plaintext. Lockout activates after 5 failed attempts.</p>
+                  <p>Login requires matching Username, Password, and your registered mobile phone number. 3 incorrect attempts trigger automatic lockout.</p>
                 </div>
 
                 <Button
@@ -450,7 +600,7 @@ export default function AdminDashboard() {
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs py-2 shadow-lg shadow-blue-600/30"
                 >
                   <KeyRound className="h-4 w-4 mr-1.5" />
-                  Authenticate & Unlock Panel
+                  Verify Credentials & Open Panel
                 </Button>
               </form>
             )}
@@ -460,37 +610,45 @@ export default function AdminDashboard() {
     );
   }
 
+  // ==========================================
   // AUTHENTICATED ADMIN DASHBOARD
+  // ==========================================
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 pb-20">
       {/* Top Admin Header Bar */}
-      <header className="bg-slate-950 border-b border-slate-800 py-4 px-6 sticky top-0 z-30 shadow-md">
+      <header className="bg-slate-950 border-b border-slate-800 py-3.5 px-6 sticky top-0 z-30 shadow-md">
         <div className="container max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md">
               <ShieldCheck className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-black text-white flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
                 CareerMap Admin Backend
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px]">
-                  Encrypted Session
+                  Verified Session
                 </Badge>
               </h1>
               <p className="text-xs text-slate-400">
-                Official Verification Desk: <strong className="text-slate-200">career.mapofficials@gmail.com</strong>
+                Support Desk: <strong className="text-slate-200">career.mapofficials@gmail.com</strong>
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* 30-Minute Session Countdown Timer */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-amber-300">
+              <Clock className="h-3.5 w-3.5 text-amber-400" />
+              <span>Session: {formatTimer(sessionSecondsRemaining)}</span>
+            </div>
+
             <Button
               variant="outline"
               size="sm"
               onClick={handleLogout}
               className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800 gap-1.5"
             >
-              <LogOut className="h-3.5 w-3.5" /> Logout Session
+              <LogOut className="h-3.5 w-3.5" /> Logout
             </Button>
           </div>
         </div>
@@ -499,569 +657,264 @@ export default function AdminDashboard() {
       {/* Main Tabs Navigation */}
       <main className="container max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-slate-950 border border-slate-800 p-1 flex flex-wrap gap-1 h-auto rounded-xl">
-            <TabsTrigger value="overview" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Overview & Security
-            </TabsTrigger>
-            <TabsTrigger value="institutes" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Institutes Manager ({institutes.length})
-            </TabsTrigger>
-            <TabsTrigger value="placements" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Placement Records
-            </TabsTrigger>
-            <TabsTrigger value="verification_requests" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Verification Requests ({verificationRequests.filter((r) => r.status === "pending").length})
-            </TabsTrigger>
-            <TabsTrigger value="audit_requests" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Campus Audits ({auditRequests.filter((a) => a.status === "pending_review").length})
-            </TabsTrigger>
-            <TabsTrigger value="new_institutes" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              New Institute Submissions ({newInstRequests.filter((n) => n.status === "pending").length})
-            </TabsTrigger>
-            <TabsTrigger value="student_apps" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Student Apps ({studentApplications.length})
-            </TabsTrigger>
-            <TabsTrigger value="security_settings" className="text-xs font-semibold data-[state=active]:bg-blue-600">
-              Security & Backup
-            </TabsTrigger>
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 bg-slate-950 p-1 border border-slate-800 text-xs">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="directory">Directory ({institutes.length})</TabsTrigger>
+            <TabsTrigger value="verification">Verification ({verificationRequests.filter((r) => r.status === "pending").length})</TabsTrigger>
+            <TabsTrigger value="audits">Audits ({auditRequests.filter((r) => r.status === "pending_review").length})</TabsTrigger>
+            <TabsTrigger value="new_inst">New Requests ({newInstRequests.filter((r) => r.status === "pending").length})</TabsTrigger>
+            <TabsTrigger value="student_apps">Inquiries ({studentApplications.length})</TabsTrigger>
+            <TabsTrigger value="security_settings">Security & Admins</TabsTrigger>
           </TabsList>
 
-          {/* TAB 1: OVERVIEW & SECURITY */}
+          {/* TAB 1: OVERVIEW */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="bg-slate-950 border-slate-800 text-white">
-                <CardContent className="p-4 space-y-1">
-                  <span className="text-xs text-slate-400">Total Live Institutes</span>
-                  <div className="text-2xl font-black text-blue-400">{institutes.length}</div>
-                  <div className="text-[11px] text-slate-500">
-                    {institutes.filter((i) => i.type === "school").length} Schools,{" "}
-                    {institutes.filter((i) => i.type === "college").length} Colleges
-                  </div>
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs text-slate-400">Total Institutions Mapped</CardDescription>
+                  <CardTitle className="text-3xl font-extrabold text-blue-400">{institutes.length}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-[11px] text-slate-400">
+                  {institutes.filter((i) => i.type === "college").length} Colleges • {institutes.filter((i) => i.type === "school").length} Schools
                 </CardContent>
               </Card>
 
               <Card className="bg-slate-950 border-slate-800 text-white">
-                <CardContent className="p-4 space-y-1">
-                  <span className="text-xs text-slate-400">Verified Placements</span>
-                  <div className="text-2xl font-black text-emerald-400">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs text-slate-400">Verified Placements</CardDescription>
+                  <CardTitle className="text-3xl font-extrabold text-emerald-400">
                     {institutes.filter((i) => i.placement.status === "verified").length}
-                  </div>
-                  <div className="text-[11px] text-emerald-500/80">Corporate Cross-Checked</div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-[11px] text-slate-400">
+                  {institutes.filter((i) => i.placement.status === "unverified").length} Pending employer cross-check
                 </CardContent>
               </Card>
 
               <Card className="bg-slate-950 border-slate-800 text-white">
-                <CardContent className="p-4 space-y-1">
-                  <span className="text-xs text-slate-400">Verified Campus Audits</span>
-                  <div className="text-2xl font-black text-indigo-400">
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs text-slate-400">Verified Campus Audits</CardDescription>
+                  <CardTitle className="text-3xl font-extrabold text-purple-400">
                     {institutes.filter((i) => i.audit.status === "verified").length}
-                  </div>
-                  <div className="text-[11px] text-indigo-400/80">Physical Inspection Done</div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-[11px] text-slate-400">
+                  {auditRequests.length} On-site inspection bookings
                 </CardContent>
               </Card>
 
               <Card className="bg-slate-950 border-slate-800 text-white">
-                <CardContent className="p-4 space-y-1">
-                  <span className="text-xs text-slate-400">Pending Actions</span>
-                  <div className="text-2xl font-black text-amber-400">
-                    {verificationRequests.filter((r) => r.status === "pending").length +
-                      auditRequests.filter((a) => a.status === "pending_review").length +
-                      newInstRequests.filter((n) => n.status === "pending").length}
-                  </div>
-                  <div className="text-[11px] text-amber-400/80">Awaiting admin review</div>
-                </CardContent>
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs text-slate-400">Student Inquiries</CardDescription>
+                  <CardTitle className="text-3xl font-extrabold text-amber-400">{studentApplications.length}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-[11px] text-slate-400">Direct admission submissions</CardContent>
               </Card>
             </div>
 
-            {/* Security Audit Log Stream */}
-            <Card className="bg-slate-950 border-slate-800 text-white">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-bold flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-emerald-400" />
-                    Security Audit Trail & Anti-Tamper Logs
-                  </CardTitle>
-                  <CardDescription className="text-xs text-slate-400">
-                    Real-time immutable log of administrative authentication and data mutations
-                  </CardDescription>
-                </div>
+            {/* Quick Actions Panel */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="bg-slate-950 border-slate-800 text-white p-5 space-y-3">
+                <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                  <Building className="h-4 w-4 text-blue-400" /> Institution Profiles Management
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Add new schools and colleges, or edit photos, ratings out of 10, fees, ownership tags, and seat capacity.
+                </p>
+                <Button
+                  onClick={handleOpenCreateInstitute}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-2"
+                >
+                  <Plus className="h-4 w-4" /> Add New School / College
+                </Button>
+              </Card>
+
+              <Card className="bg-slate-950 border-slate-800 text-white p-5 space-y-3">
+                <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                  <Users className="h-4 w-4 text-emerald-400" /> Admin Accounts & Phones
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {adminAccounts.length} authorized administrative account(s) registered with dual phone number verification.
+                </p>
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    clearSecurityAuditLogs();
-                    setAuditLogs([]);
-                  }}
-                  className="text-xs border-slate-700 text-slate-400 hover:text-white"
+                  onClick={() => setActiveTab("security_settings")}
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold gap-2"
                 >
-                  Clear Logs
+                  <Lock className="h-4 w-4" /> Manage Admin Accounts
                 </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 max-h-72 overflow-y-auto text-xs">
-                  {auditLogs.length === 0 ? (
-                    <p className="text-slate-500 py-4 text-center">No security incidents logged.</p>
-                  ) : (
-                    auditLogs.map((log) => (
-                      <div
-                        key={log.id}
-                        className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-start justify-between gap-3"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              className={`text-[9px] px-1.5 py-0 ${
-                                log.severity === "critical"
-                                  ? "bg-red-500/20 text-red-300 border-red-500/40"
-                                  : log.severity === "warning"
-                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                    : "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                              }`}
-                            >
-                              {log.action}
-                            </Badge>
-                            <span className="text-[11px] text-slate-400 font-mono">
-                              {new Date(log.timestamp).toLocaleTimeString()}
-                            </span>
-                          </div>
-                          <p className="text-slate-300 text-[11px]">{log.details}</p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              </Card>
+            </div>
           </TabsContent>
 
-          {/* TAB 2: INSTITUTES MANAGER */}
-          <TabsContent value="institutes" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-white">Live Schools & Colleges Database</h3>
+          {/* TAB 2: DIRECTORY WITH FULL EDITING FREEDOM */}
+          <TabsContent value="directory" className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-base text-white">Live Schools & Colleges Directory</h3>
+                <p className="text-xs text-slate-400">Full editing freedom: edit wallpaper, photos, ratings out of 10, fees, pros & cons.</p>
+              </div>
               <Button
                 size="sm"
-                onClick={() => {
-                  const newName = window.prompt("Enter new Institute Name:");
-                  if (!newName) return;
-                  const newCity = window.prompt("Enter City (e.g. Noida, Bangalore):") || "India";
-                  const newType = window.confirm("Is this a School? (Click OK for School, Cancel for College)")
-                    ? "school"
-                    : "college";
-                  const created: Institute = {
-                    id: newName.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Date.now().toString().slice(-4),
-                    name: newName,
-                    shortName: newName.split(" ")[0],
-                    type: newType,
-                    levels: newType === "school" ? ["class_8_10", "class_11_12"] : ["ug", "pg"],
-                    boards: newType === "school" ? ["CBSE"] : undefined,
-                    streams: ["Science (PCM)", "Commerce"],
-                    location: {
-                      city: newCity,
-                      state: "India",
-                      area: newCity,
-                      address: newCity,
-                      geo: { lat: 28.5, lng: 77.3 },
-                      googleMapsUrl: `https://maps.google.com/?q=${encodeURIComponent(newName)}`,
-                    },
-                    establishedYear: 2010,
-                    yearsInOperation: 16,
-                    website: "https://example.edu",
-                    contact: {
-                      email: "admin@example.edu",
-                      phone: "+91-9876543210",
-                      whatsapp: "+91-9876543210",
-                    },
-                    feeStructure: {
-                      tuitionPerYear: 120000,
-                      totalEstimated: 120000,
-                      scholarshipAvailable: true,
-                      notes: "Standard fee structure",
-                    },
-                    ratings: {
-                      overall: 4.2,
-                      faculty: 4.2,
-                      infrastructure: 4.2,
-                      studentCaliber: 4.0,
-                      sportsAndExtracurricular: 4.0,
-                      techLevel: 4.0,
-                    },
-                    advantages: ["Quality academic guidance"],
-                    disadvantages: ["Placement verification in progress"],
-                    placement: {
-                      status: "unverified",
-                      badgeNotice: "⚠️ Unverified Placement: Newly added institute.",
-                      lastYearPlacementRate: 85,
-                      allTimePlacementRate: 80,
-                      averagePackageLPA: 6.5,
-                      highestPackageLPA: 18.0,
-                      medianPackageLPA: 6.0,
-                      topRecruiters: [],
-                      students: [],
-                    },
-                    audit: {
-                      status: "unverified",
-                      badgeNotice: "⚠️ Pending Audit",
-                      studentSamplingConducted: false,
-                      randomStudentInterviewCount: 0,
-                      topStudentInterviewCount: 0,
-                    },
-                    photos: [],
-                    rankScore: 80,
-                    featured: false,
-                  };
-                  const updated = [created, ...institutes];
-                  setInstitutes(updated);
-                  saveInstitutes(updated);
-                  toast({ title: "Institute Created", description: `${newName} added to directory.` });
-                }}
+                onClick={handleOpenCreateInstitute}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5"
               >
-                <Plus className="h-4 w-4" /> Add New Institute
+                <Plus className="h-4 w-4" /> Add School / College
               </Button>
             </div>
 
-            <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-950 divide-y divide-slate-800 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {institutes.map((inst) => (
-                <div key={inst.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-900/60 transition-colors">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-white">{inst.name}</span>
-                      <Badge className={`text-[10px] ${inst.type === "school" ? "bg-amber-500/20 text-amber-300" : "bg-blue-500/20 text-blue-300"}`}>
-                        {inst.type}
-                      </Badge>
-                      <span className="text-slate-400">({inst.location.city})</span>
+                <Card key={inst.id} className="bg-slate-950 border-slate-800 text-white flex flex-col justify-between">
+                  <CardHeader className="p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="outline" className="text-[10px] uppercase border-slate-700 text-slate-300">
+                          {inst.type}
+                        </Badge>
+                        <Badge className={`text-[10px] ${inst.institutionCategory === "government" ? "bg-blue-500/20 text-blue-300 border-blue-500/40" : "bg-purple-500/20 text-purple-300 border-purple-500/40"}`}>
+                          {inst.institutionCategory === "government" ? "Government" : "Private"}
+                        </Badge>
+                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] uppercase">
+                          {inst.ownershipType?.replace("_", " ")}
+                        </Badge>
+                      </div>
+                      <span className="text-xs font-bold text-amber-400">⭐ {inst.ratings.overall} / 10.0</span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-                      <span>Tuition: ₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}/yr</span>
-                      <span>•</span>
-                      <span>Rank Score: {inst.rankScore}/100</span>
-                      <span>•</span>
-                      <span>Avg Package: ₹{inst.placement.averagePackageLPA} LPA</span>
+
+                    <CardTitle className="text-sm font-bold text-white line-clamp-1">
+                      {inst.name}
+                    </CardTitle>
+                    <CardDescription className="text-[11px] text-slate-400 flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-slate-500" />
+                      {inst.location.city}, {inst.location.state} • Est. {inst.establishedYear}
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="p-4 pt-0 space-y-3">
+                    <div className="text-[11px] grid grid-cols-2 gap-2 text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
+                      <div>Students: <strong className="text-white">{inst.totalStudentsEnrolled?.toLocaleString() || "N/A"}</strong></div>
+                      <div>Seats: <strong className="text-white">{inst.seatMatrix?.availableSeats || "N/A"} / {inst.seatMatrix?.totalSeats || "N/A"}</strong></div>
+                      <div>Tuition: <strong className="text-emerald-400">₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}</strong></div>
+                      <div>Photos: <strong className="text-white">{inst.photos?.length || 0}</strong></div>
                     </div>
-                  </div>
 
-                  {/* Actions & Verification Badges */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {/* Placement Tag Button */}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleTogglePlacementStatus(inst.id)}
-                      className={`text-xs h-7 ${
-                        inst.placement.status === "verified"
-                          ? "border-emerald-500 text-emerald-400 bg-emerald-950/20"
-                          : "border-amber-500 text-amber-400 bg-amber-950/20"
-                      }`}
-                    >
-                      {inst.placement.status === "verified" ? "✓ Placement Verified" : "⚠️ Placement Unverified"}
-                    </Button>
+                    {/* Verification Status Badges & 1-Click Toggles */}
+                    <div className="space-y-1.5 pt-1">
+                      {inst.type !== "school" && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-[11px] text-slate-400">Placement Status:</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleTogglePlacementStatus(inst.id)}
+                            className={`h-6 text-[10px] px-2 font-bold ${
+                              inst.placement.status === "verified"
+                                ? "bg-emerald-950/60 text-emerald-300 border border-emerald-700"
+                                : "bg-amber-950/60 text-amber-300 border border-amber-700"
+                            }`}
+                          >
+                            {inst.placement.status === "verified" ? "✓ Verified" : "⚠️ Unverified"}
+                          </Button>
+                        </div>
+                      )}
 
-                    {/* Audit Tag Button */}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleToggleAuditStatus(inst.id)}
-                      className={`text-xs h-7 ${
-                        inst.audit.status === "verified"
-                          ? "border-blue-500 text-blue-400 bg-blue-950/20"
-                          : "border-slate-600 text-slate-400 bg-slate-900"
-                      }`}
-                    >
-                      {inst.audit.status === "verified" ? "✓ Audit Verified" : "Audit Pending"}
-                    </Button>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[11px] text-slate-400">Campus Audit:</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleToggleAuditStatus(inst.id)}
+                          className={`h-6 text-[10px] px-2 font-bold ${
+                            inst.audit.status === "verified"
+                              ? "bg-purple-950/60 text-purple-300 border border-purple-700"
+                              : "bg-slate-800 text-slate-400 border border-slate-700"
+                          }`}
+                        >
+                          {inst.audit.status === "verified" ? "✓ Audited" : "⚠️ Pending"}
+                        </Button>
+                      </div>
+                    </div>
 
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDeleteInstitute(inst.id, inst.name)}
-                      className="text-xs h-7 px-2"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
+                    {/* Actions: Edit & Delete */}
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800/80">
+                      <Button
+                        size="sm"
+                        onClick={() => handleOpenEditInstitute(inst)}
+                        className="h-7 text-xs bg-indigo-600 hover:bg-indigo-700 text-white gap-1"
+                      >
+                        <Edit className="h-3.5 w-3.5" /> Edit Full Details
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteInstitute(inst.id, inst.name)}
+                        className="h-7 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/40 p-1.5"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </TabsContent>
 
-          {/* TAB 3: PLACEMENT RECORDS */}
-          <TabsContent value="placements" className="space-y-6">
-            <Card className="bg-slate-950 border-slate-800 text-white">
-              <CardHeader>
-                <CardTitle className="text-base font-bold">Add Individual Student Placement Record</CardTitle>
-                <CardDescription className="text-xs text-slate-400">
-                  Log verified offers from companies directly into an institute's profile
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddStudentRecord} className="space-y-4 text-xs">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-                    <div className="md:col-span-2">
-                      <Label className="text-slate-300">Target Institute</Label>
-                      <select
-                        value={selectedInstForStudents}
-                        onChange={(e) => setSelectedInstForStudents(e.target.value)}
-                        required
-                        className="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded-md text-xs text-white"
-                      >
-                        <option value="">-- Choose Institute --</option>
-                        {institutes.map((i) => (
-                          <option key={i.id} value={i.id}>{i.name} ({i.location.city})</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <Label className="text-slate-300">Student Name</Label>
-                      <Input
-                        value={newStudentName}
-                        onChange={(e) => setNewStudentName(e.target.value)}
-                        placeholder="e.g. Rahul Sharma"
-                        required
-                        className="mt-1 bg-slate-900 border-slate-700 text-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-slate-300">Company Name</Label>
-                      <Input
-                        value={newStudentCompany}
-                        onChange={(e) => setNewStudentCompany(e.target.value)}
-                        placeholder="e.g. Google India"
-                        required
-                        className="mt-1 bg-slate-900 border-slate-700 text-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-slate-300">Package (LPA)</Label>
-                      <Input
-                        type="number"
-                        step="0.5"
-                        value={newStudentPackage}
-                        onChange={(e) => setNewStudentPackage(Number(e.target.value))}
-                        required
-                        className="mt-1 bg-slate-900 border-slate-700 text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={newStudentVerified}
-                        onChange={(e) => setNewStudentVerified(e.target.checked)}
-                        className="rounded bg-slate-900 border-slate-700 text-blue-600"
-                      />
-                      <span className="text-slate-300 text-xs">Mark as Verified (Direct HR Confirmation Received)</span>
-                    </label>
-
-                    <Button type="submit" size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs">
-                      Save Student Record
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* TAB 4: PLACEMENT VERIFICATION REQUESTS */}
-          <TabsContent value="verification_requests" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-base text-white flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-emerald-400" />
-                  Placement Verification Inbound Requests
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Requests sent by colleges to verify their placement claims. Verified directly at{" "}
-                  <strong className="text-slate-200">career.mapofficials@gmail.com</strong>.
-                </p>
-              </div>
+          {/* TAB 3: VERIFICATION REQUESTS */}
+          <TabsContent value="verification" className="space-y-4">
+            <div>
+              <h3 className="font-bold text-base text-white">Corporate Placement Verification Queue</h3>
+              <p className="text-xs text-slate-400">
+                Official Verification Email: <strong className="text-blue-400">career.mapofficials@gmail.com</strong>
+              </p>
             </div>
 
             {verificationRequests.length === 0 ? (
               <p className="text-slate-500 py-8 text-center text-xs">No verification requests submitted yet.</p>
             ) : (
-              <div className="space-y-3 text-xs">
+              <div className="space-y-3">
                 {verificationRequests.map((req) => (
                   <Card key={req.id} className="bg-slate-950 border-slate-800 text-white">
-                    <CardContent className="p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-emerald-300">{req.instituteName}</span>
-                        <Badge
-                          className={`text-[10px] ${
-                            req.status === "verified"
-                              ? "bg-emerald-500/20 text-emerald-300"
-                              : req.status === "contacting_companies"
-                                ? "bg-blue-500/20 text-blue-300"
-                                : "bg-amber-500/20 text-amber-300"
-                          }`}
-                        >
-                          Status: {req.status}
-                        </Badge>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-400 text-[11px]">
-                        <div>Contact: <strong className="text-slate-200">{req.contactPerson}</strong></div>
-                        <div>Email: <strong className="text-slate-200">{req.officialEmail}</strong></div>
-                        <div>Phone: <strong className="text-slate-200">{req.phone}</strong></div>
-                      </div>
-
-                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-[11px]">
-                        <span className="text-slate-400 font-semibold block mb-0.5">Corporate HR References:</span>
-                        <span className="text-slate-200">{req.companyContactDetails}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                        <span className="text-[10px] text-slate-500">Submitted: {new Date(req.createdAt).toLocaleString()}</span>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              updatePlacementVerificationRequestStatus(req.id, "contacting_companies");
-                              loadAllData();
-                            }}
-                            className="text-[10px] h-6 px-2 border-slate-700"
-                          >
-                            Mark Contacting HR
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              updatePlacementVerificationRequestStatus(req.id, "verified");
-                              handleTogglePlacementStatus(req.instituteId);
-                              loadAllData();
-                            }}
-                            className="text-[10px] h-6 px-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                          >
-                            Approve & Mark Verified
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* TAB 5: CAMPUS AUDIT REQUESTS */}
-          <TabsContent value="audit_requests" className="space-y-4">
-            <div>
-              <h3 className="font-bold text-base text-white flex items-center gap-2">
-                <FileCheck className="h-4 w-4 text-blue-400" />
-                On-Site Campus Audit Bookings
-              </h3>
-              <p className="text-xs text-slate-400">
-                Audits requested by colleges/schools with preferred dates and team size (1-4 auditors).
-              </p>
-            </div>
-
-            {auditRequests.length === 0 ? (
-              <p className="text-slate-500 py-8 text-center text-xs">No campus audits requested yet.</p>
-            ) : (
-              <div className="space-y-3 text-xs">
-                {auditRequests.map((req) => (
-                  <Card key={req.id} className="bg-slate-950 border-slate-800 text-white">
-                    <CardContent className="p-4 space-y-2">
+                    <CardContent className="p-4 space-y-2 text-xs">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm text-blue-300">{req.instituteName}</span>
-                        <Badge className="bg-blue-500/20 text-blue-300 text-[10px]">
-                          Audit Date: {req.preferredAuditDate} ({req.teamSizeRequested} Auditors)
+                        <Badge className={`text-[10px] ${req.status === "verified" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}`}>
+                          {req.status}
                         </Badge>
                       </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-400 text-[11px]">
-                        <div>Coordinator: <strong className="text-slate-200">{req.contactPerson}</strong></div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-400 text-[11px]">
+                        <div>Contact Person: <strong className="text-slate-200">{req.contactPerson}</strong></div>
                         <div>Official Email: <strong className="text-slate-200">{req.officialEmail}</strong></div>
                         <div>Phone: <strong className="text-slate-200">{req.phone}</strong></div>
+                        <div>WhatsApp: <strong className="text-slate-200">{req.whatsapp}</strong></div>
                       </div>
-
-                      <div className="text-[11px] text-slate-300">
-                        <span className="text-slate-400 font-semibold">Departments to inspect: </span>
-                        {req.coursesToAudit.join(", ") || "Full Campus"}
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300">
+                        <strong>Companies to Contact:</strong> {req.companyContactDetails || "Standard recruiter list provided"}
                       </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                        <span className="text-[10px] text-slate-500">
-                          {req.travelLodgingAgreed ? "✓ Travel & Lodging Arranged by Institute" : "Pending Agreement"}
-                        </span>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              updateOnSiteAuditStatus(req.id, "team_assigned");
-                              loadAllData();
-                            }}
-                            className="text-[10px] h-6 px-2 border-slate-700"
-                          >
-                            Assign Audit Team
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              updateOnSiteAuditStatus(req.id, "completed");
-                              handleToggleAuditStatus(req.instituteId);
-                              loadAllData();
-                            }}
-                            className="text-[10px] h-6 px-2 bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            Mark Completed & Issue Verified Badge
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* TAB 6: NEW INSTITUTE SUBMISSIONS */}
-          <TabsContent value="new_institutes" className="space-y-4">
-            <div>
-              <h3 className="font-bold text-base text-white flex items-center gap-2">
-                <Building className="h-4 w-4 text-purple-400" />
-                New College & School Onboarding Applications
-              </h3>
-              <p className="text-xs text-slate-400">
-                Inbound requests from institutions to be added to CareerMap directory.
-              </p>
-            </div>
-
-            {newInstRequests.length === 0 ? (
-              <p className="text-slate-500 py-8 text-center text-xs">No pending onboarding applications.</p>
-            ) : (
-              <div className="space-y-3 text-xs">
-                {newInstRequests.map((req) => (
-                  <Card key={req.id} className="bg-slate-950 border-slate-800 text-white">
-                    <CardContent className="p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-purple-300">{req.instituteName}</span>
-                        <Badge className="bg-purple-500/20 text-purple-300 text-[10px] uppercase">
-                          {req.type}
-                        </Badge>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-400 text-[11px]">
-                        <div>Location: <strong className="text-slate-200">{req.locationName}</strong></div>
-                        <div>Established: <strong className="text-slate-200">{req.establishedYear}</strong></div>
-                        <div>Website: <a href={req.website} target="_blank" rel="noreferrer" className="text-blue-400 underline">{req.website}</a></div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                        <span className="text-[10px] text-slate-500">Email: {req.officialEmail} • Phone: {req.contactPhone}</span>
+                      <div className="flex items-center justify-end gap-2 pt-2">
                         <Button
                           size="sm"
-                          disabled={req.status === "approved"}
-                          onClick={() => handleApproveNewInstitute(req.id)}
-                          className="text-[10px] h-6 px-3 bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                          onClick={() => {
+                            updatePlacementVerificationRequestStatus(req.id, "verified");
+                            loadAllData();
+                            toast({ title: "Request Marked Verified" });
+                          }}
+                          className="text-[10px] h-6 bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
-                          {req.status === "approved" ? "✓ Already Published" : "Approve & Publish to Directory"}
+                          Mark Verified
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            updatePlacementVerificationRequestStatus(req.id, "rejected");
+                            loadAllData();
+                            toast({ title: "Request Rejected" });
+                          }}
+                          className="text-[10px] h-6 border-slate-700 text-slate-300"
+                        >
+                          Reject
                         </Button>
                       </div>
                     </CardContent>
@@ -1071,11 +924,96 @@ export default function AdminDashboard() {
             )}
           </TabsContent>
 
-          {/* TAB 7: DIRECT STUDENT APPLICATIONS */}
+          {/* TAB 4: AUDIT REQUESTS */}
+          <TabsContent value="audits" className="space-y-4">
+            <div>
+              <h3 className="font-bold text-base text-white">On-Site Campus Inspection Bookings</h3>
+              <p className="text-xs text-slate-400">Formal audit bookings requested by institutions.</p>
+            </div>
+
+            {auditRequests.length === 0 ? (
+              <p className="text-slate-500 py-8 text-center text-xs">No on-site audit requests pending.</p>
+            ) : (
+              <div className="space-y-3">
+                {auditRequests.map((req) => (
+                  <Card key={req.id} className="bg-slate-950 border-slate-800 text-white">
+                    <CardContent className="p-4 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-purple-300">{req.instituteName}</span>
+                        <Badge className="text-[10px] bg-purple-500/20 text-purple-300">{req.status}</Badge>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-400 text-[11px]">
+                        <div>Person: <strong className="text-slate-200">{req.contactPerson}</strong></div>
+                        <div>Date Requested: <strong className="text-slate-200">{req.preferredAuditDate}</strong></div>
+                        <div>Email: <strong className="text-slate-200">{req.officialEmail}</strong></div>
+                        <div>Phone: <strong className="text-slate-200">{req.phone}</strong></div>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            updateOnSiteAuditStatus(req.id, "completed");
+                            loadAllData();
+                            toast({ title: "Audit Marked Completed" });
+                          }}
+                          className="text-[10px] h-6 bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          Mark Completed
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* TAB 5: NEW INSTITUTE REQUESTS */}
+          <TabsContent value="new_inst" className="space-y-4">
+            <div>
+              <h3 className="font-bold text-base text-white">New Institute Listing Proposals</h3>
+              <p className="text-xs text-slate-400">Submissions from schools and colleges requesting onboarding.</p>
+            </div>
+
+            {newInstRequests.length === 0 ? (
+              <p className="text-slate-500 py-8 text-center text-xs">No pending listing requests.</p>
+            ) : (
+              <div className="space-y-3">
+                {newInstRequests.map((req) => (
+                  <Card key={req.id} className="bg-slate-950 border-slate-800 text-white">
+                    <CardContent className="p-4 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-white">{req.instituteName}</span>
+                        <Badge className="text-[10px]">{req.type}</Badge>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-400 text-[11px]">
+                        <div>Location: <strong className="text-slate-200">{req.locationName}</strong></div>
+                        <div>Established: <strong className="text-slate-200">{req.establishedYear}</strong></div>
+                        <div>Website: <a href={req.website} target="_blank" rel="noreferrer" className="text-blue-400 underline">{req.website}</a></div>
+                      </div>
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                        <span className="text-[10px] text-slate-500">Email: {req.officialEmail} • Phone: {req.contactPhone}</span>
+                        <Button
+                          size="sm"
+                          disabled={req.status === "approved"}
+                          onClick={() => handleApproveNewInstitute(req.id)}
+                          className="text-[10px] h-6 px-3 bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                        >
+                          {req.status === "approved" ? "✓ Already Published" : "Approve & Publish"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* TAB 6: INQUIRIES */}
           <TabsContent value="student_apps" className="space-y-4">
             <div>
               <h3 className="font-bold text-base text-white">Student Admissions Inquiries</h3>
-              <p className="text-xs text-slate-400">Applications submitted by students via "Apply Now" buttons.</p>
+              <p className="text-xs text-slate-400">Applications submitted by students via direct apply buttons.</p>
             </div>
 
             {studentApplications.length === 0 ? (
@@ -1103,24 +1041,135 @@ export default function AdminDashboard() {
             )}
           </TabsContent>
 
-          {/* TAB 8: SECURITY SETTINGS & ENCRYPTED BACKUP */}
+          {/* TAB 7: SECURITY & ADMIN ACCOUNTS */}
           <TabsContent value="security_settings" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Change Master Credentials */}
+              {/* Registered Admin Accounts & Phone Numbers */}
+              <Card className="bg-slate-950 border-slate-800 text-white md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base font-bold flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-blue-400" />
+                      Authorized Admin Accounts & Registered Phones
+                    </div>
+                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-xs">
+                      Max 2 Phones per Admin
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Each admin profile must register up to 2 verified mobile numbers. Admin login requires Username, Password, and one of these registered phone numbers.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* List of Admins */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {adminAccounts.map((acc) => (
+                      <div key={acc.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                            <Shield className="h-4 w-4 text-emerald-400" />
+                            {acc.username}
+                          </span>
+                          <Badge className={`text-[10px] ${acc.role === "super_admin" ? "bg-amber-500/20 text-amber-300 border-amber-500/40" : "bg-blue-500/20 text-blue-300 border-blue-500/40"}`}>
+                            {acc.role === "super_admin" ? "Super Admin" : "Admin"}
+                          </Badge>
+                        </div>
+                        <div className="space-y-1 text-slate-300 text-[11px]">
+                          <div>Primary Phone: <strong className="text-white">{acc.primaryPhone}</strong></div>
+                          {acc.secondaryPhone && (
+                            <div>Secondary Phone: <strong className="text-white">{acc.secondaryPhone}</strong></div>
+                          )}
+                          <div className="text-[10px] text-slate-500">Created: {new Date(acc.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        {acc.role !== "super_admin" && (
+                          <div className="pt-2 border-t border-slate-800 flex justify-end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeleteAdmin(acc.id, acc.username)}
+                              className="h-6 text-[11px] text-red-400 hover:text-red-300 hover:bg-red-950/40"
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" /> Remove Admin
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Admin Form */}
+                  <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <UserPlus className="h-4 w-4 text-emerald-400" /> Register Additional Admin Account
+                    </h4>
+                    <form onSubmit={handleCreateNewAdmin} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                      <div>
+                        <Label className="text-[11px] text-slate-300">Admin Username</Label>
+                        <Input
+                          value={addAdminUser}
+                          onChange={(e) => setAddAdminUser(e.target.value)}
+                          placeholder="e.g. CoAdmin Rohit"
+                          className="mt-1 bg-slate-800 border-slate-700 text-xs"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-[11px] text-slate-300">Password (Min 8 chars)</Label>
+                        <Input
+                          type="password"
+                          value={addAdminPass}
+                          onChange={(e) => setAddAdminPass(e.target.value)}
+                          placeholder="Passphrase"
+                          className="mt-1 bg-slate-800 border-slate-700 text-xs"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-[11px] text-slate-300">Primary Phone *</Label>
+                        <Input
+                          type="tel"
+                          value={addAdminPhone1}
+                          onChange={(e) => setAddAdminPhone1(e.target.value)}
+                          placeholder="10-digit number"
+                          className="mt-1 bg-slate-800 border-slate-700 text-xs"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-[11px] text-slate-300">Secondary Phone (Optional)</Label>
+                        <Input
+                          type="tel"
+                          value={addAdminPhone2}
+                          onChange={(e) => setAddAdminPhone2(e.target.value)}
+                          placeholder="Backup mobile"
+                          className="mt-1 bg-slate-800 border-slate-700 text-xs"
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold h-9">
+                          <Plus className="h-3.5 w-3.5 mr-1" /> Add Admin
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Change Active Credentials */}
               <Card className="bg-slate-950 border-slate-800 text-white">
                 <CardHeader>
                   <CardTitle className="text-base font-bold flex items-center gap-2">
                     <KeyRound className="h-4 w-4 text-amber-400" />
-                    Change Admin Master Password
+                    Update Master Password & Phone
                   </CardTitle>
                   <CardDescription className="text-xs text-slate-400">
-                    Updates your SHA-256 salted hash. Choose a strong passkey.
+                    Change your current admin password or registered phone numbers.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleChangeCredentials} className="space-y-3 text-xs">
                     <div>
-                      <Label className="text-slate-300">Current Password</Label>
+                      <Label className="text-slate-300">Current Password *</Label>
                       <Input
                         type="password"
                         value={currentPass}
@@ -1130,51 +1179,72 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <Label className="text-slate-300">New Admin Username</Label>
+                      <Label className="text-slate-300">Admin Username</Label>
                       <Input
                         value={newUsername}
                         onChange={(e) => setNewUsername(e.target.value)}
                         placeholder="e.g. Himesh Singh"
-                        required
                         className="mt-1 bg-slate-900 border-slate-700 text-xs"
                       />
                     </div>
                     <div>
-                      <Label className="text-slate-300">New Master Password (Min 8 chars)</Label>
+                      <Label className="text-slate-300">New Password (leave empty to keep current)</Label>
                       <Input
                         type="password"
                         value={newPass}
                         onChange={(e) => setNewPass(e.target.value)}
-                        required
+                        placeholder="Minimum 8 characters"
                         className="mt-1 bg-slate-900 border-slate-700 text-xs"
                       />
                     </div>
-                    <Button type="submit" size="sm" className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs">
-                      Update Master Credentials
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-slate-300">Primary Phone</Label>
+                        <Input
+                          type="tel"
+                          value={newPhone1}
+                          onChange={(e) => setNewPhone1(e.target.value)}
+                          placeholder="Primary 10 digits"
+                          className="mt-1 bg-slate-900 border-slate-700 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-slate-300">Secondary Phone</Label>
+                        <Input
+                          type="tel"
+                          value={newPhone2}
+                          onChange={(e) => setNewPhone2(e.target.value)}
+                          placeholder="Secondary mobile"
+                          className="mt-1 bg-slate-900 border-slate-700 text-xs"
+                        />
+                      </div>
+                    </div>
+                    <Button type="submit" size="sm" className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">
+                      Save Account Credentials
                     </Button>
                   </form>
                 </CardContent>
               </Card>
 
-              {/* AES-GCM Encrypted Backup / Restore */}
+              {/* Encrypted Backup / Restore */}
               <Card className="bg-slate-950 border-slate-800 text-white">
                 <CardHeader>
                   <CardTitle className="text-base font-bold flex items-center gap-2">
                     <Download className="h-4 w-4 text-blue-400" />
-                    Encrypted Backup & Recovery (AES-GCM)
+                    Encrypted Directory Backup & Recovery
                   </CardTitle>
                   <CardDescription className="text-xs text-slate-400">
-                    Export or restore your full directory with military-grade encryption
+                    Export or restore your full directory and verification records safely.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-xs">
                   <div>
-                    <Label className="text-slate-300">Encryption Passkey</Label>
+                    <Label className="text-slate-300">Passkey for Protection</Label>
                     <Input
                       type="password"
                       value={backupPasskey}
                       onChange={(e) => setBackupPasskey(e.target.value)}
-                      placeholder="Passkey for encryption/decryption"
+                      placeholder="Enter passkey to lock/unlock file"
                       className="mt-1 bg-slate-900 border-slate-700 text-xs"
                     />
                   </div>
@@ -1190,12 +1260,12 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="pt-2 border-t border-slate-800 space-y-2">
-                    <Label className="text-slate-300">Restore from Encrypted Text</Label>
+                    <Label className="text-slate-300">Restore from Encrypted Backup</Label>
                     <Textarea
                       rows={2}
                       value={importCipher}
                       onChange={(e) => setImportCipher(e.target.value)}
-                      placeholder="Paste encrypted base64 payload here..."
+                      placeholder="Paste backup text here..."
                       className="bg-slate-900 border-slate-700 text-xs"
                     />
                     <Button
@@ -1204,7 +1274,7 @@ export default function AdminDashboard() {
                       onClick={handleImportBackup}
                       className="w-full border-slate-700 text-slate-300 text-xs gap-1"
                     >
-                      <Upload className="h-3.5 w-3.5" /> Decrypt & Restore Backup
+                      <Upload className="h-3.5 w-3.5" /> Restore Backup
                     </Button>
                   </div>
                 </CardContent>
@@ -1213,6 +1283,14 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Full Institute Editor Modal */}
+      <InstituteEditorModal
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        institute={editingInstitute}
+        onSave={handleSaveInstituteFromEditor}
+      />
     </div>
   );
 }

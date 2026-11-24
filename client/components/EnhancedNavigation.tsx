@@ -64,16 +64,6 @@ export default function EnhancedNavigation() {
           href: "/jobs/by-interest",
           description: "Discover careers matching Indian subjects & passions",
         },
-        {
-          label: "Interactive Career Map",
-          href: "/career-map",
-          description: "Visual nodes & career progression paths",
-        },
-        {
-          label: "All Career Tracks",
-          href: "/latest-jobs",
-          description: "Explore detailed salaries, eligibility & milestones",
-        },
       ],
     },
     {

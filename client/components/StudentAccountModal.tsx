@@ -25,6 +25,8 @@ import {
   Trash2,
   ExternalLink,
   Lock,
+  Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import { loadInstitutes, Institute } from "@/lib/institutes-dataset";
 import { useNavigate } from "react-router-dom";
@@ -35,30 +37,65 @@ interface StudentAccountModalProps {
   onSelectInstitute?: (institute: Institute) => void;
 }
 
-interface StudentProfile {
+export interface StudentProfile {
   name: string;
   email: string;
   phone: string;
-  preferredCity: string;
+  preferredCities: string[];
   stream: string;
   educationLevel: string;
+  marksPercentage: number;
   alertOnPlacementVerified: boolean;
   alertOnAuditCompleted: boolean;
   alertOnNewInstitutesInArea: boolean;
   savedInstituteIds: string[];
 }
 
+const CITIES_LIST = [
+  "Delhi NCR",
+  "Noida",
+  "Greater Noida",
+  "Lucknow",
+  "Kanpur",
+  "Varanasi",
+  "Prayagraj",
+  "Dehradun",
+  "Pune",
+  "Mumbai",
+  "Bangalore",
+  "Hyderabad",
+  "Chennai",
+  "Kolkata",
+  "Jaipur",
+  "Chandigarh",
+  "Patna",
+  "Bhopal",
+  "Abroad (Global)",
+];
+
+const STAGES_LIST = [
+  "Class 10 Passed (Matriculation)",
+  "Class 11th (Stream Selected)",
+  "Class 12th Passed (Intermediate)",
+  "Undergraduate Student",
+  "Postgraduate Student",
+  "ITI/Polytechnic",
+  "PhD/Research",
+  "Working Professional",
+];
+
 const DEFAULT_PROFILE: StudentProfile = {
   name: "",
   email: "",
   phone: "",
-  preferredCity: "Delhi NCR",
-  stream: "Engineering / Science",
-  educationLevel: "Class 12",
+  preferredCities: ["Delhi NCR", "Lucknow"],
+  stream: "Engineering / Technology",
+  educationLevel: "Class 10 Passed (Matriculation)",
+  marksPercentage: 85,
   alertOnPlacementVerified: true,
   alertOnAuditCompleted: true,
   alertOnNewInstitutesInArea: true,
-  savedInstituteIds: ["inst-1", "inst-4"], // Default sample saved institutes (IIT Bombay, DPS R.K. Puram)
+  savedInstituteIds: ["iit-delhi", "dps-rk-puram"],
 };
 
 export default function StudentAccountModal({
@@ -71,7 +108,12 @@ export default function StudentAccountModal({
     try {
       const stored = localStorage.getItem("careermap_student_account");
       if (stored) {
-        return { ...DEFAULT_PROFILE, ...JSON.parse(stored) };
+        const parsed = JSON.parse(stored);
+        return {
+          ...DEFAULT_PROFILE,
+          ...parsed,
+          preferredCities: parsed.preferredCities || (parsed.preferredCity ? [parsed.preferredCity] : DEFAULT_PROFILE.preferredCities),
+        };
       }
     } catch (e) {
       // Ignore
@@ -89,6 +131,16 @@ export default function StudentAccountModal({
     profile.savedInstituteIds.includes(inst.id)
   );
 
+  const toggleCity = (city: string) => {
+    setProfile((prev) => {
+      const current = prev.preferredCities || [];
+      const updated = current.includes(city)
+        ? current.filter((c) => c !== city)
+        : [...current, city];
+      return { ...prev, preferredCities: updated };
+    });
+  };
+
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -101,29 +153,24 @@ export default function StudentAccountModal({
   };
 
   const handleRemoveSaved = (instId: string) => {
-    const updatedIds = profile.savedInstituteIds.filter((id) => id !== instId);
-    const updated = { ...profile, savedInstituteIds: updatedIds };
-    setProfile(updated);
-    try {
-      localStorage.setItem("careermap_student_account", JSON.stringify(updated));
-    } catch (e) {}
+    const updated = profile.savedInstituteIds.filter((id) => id !== instId);
+    const newProfile = { ...profile, savedInstituteIds: updated };
+    setProfile(newProfile);
+    localStorage.setItem("careermap_student_account", JSON.stringify(newProfile));
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl">
-        {/* Header with Map Banner */}
+        {/* Header with Map Banner (Clean, no 'Active' green badge) */}
         <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-6 rounded-t-lg relative">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                <span>Student Account Portal</span>
-                <Badge className="bg-emerald-500/30 text-emerald-200 border-emerald-400/40 text-xs">
-                  Active
-                </Badge>
+              <DialogTitle className="text-2xl font-bold text-white">
+                Student Account Portal
               </DialogTitle>
               <DialogDescription className="text-blue-100 text-xs">
                 Save your institutions, track placement verification updates, and receive area alerts.
@@ -163,12 +210,13 @@ export default function StudentAccountModal({
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                       className="text-xs h-9"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="text-xs font-semibold text-foreground flex items-center gap-1 mb-1">
-                      <Mail className="h-3.5 w-3.5 text-blue-500" /> Email ID (for verification alerts)
+                      <Mail className="h-3.5 w-3.5 text-blue-500" /> Email ID (for verification updates)
                     </label>
                     <Input
                       type="email"
@@ -176,6 +224,7 @@ export default function StudentAccountModal({
                       value={profile.email}
                       onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                       className="text-xs h-9"
+                      required
                     />
                   </div>
 
@@ -185,7 +234,7 @@ export default function StudentAccountModal({
                     </label>
                     <Input
                       type="tel"
-                      placeholder="e.g. +91 9876543210"
+                      placeholder="e.g. 9876543210"
                       value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                       className="text-xs h-9"
@@ -193,15 +242,20 @@ export default function StudentAccountModal({
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-foreground flex items-center gap-1 mb-1">
-                      <MapPin className="h-3.5 w-3.5 text-blue-500" /> Preferred City / State
+                    <label className="text-xs font-semibold text-foreground mb-1 block">
+                      Current Educational Stage
                     </label>
-                    <Input
-                      placeholder="e.g. Kanpur, Lucknow, Delhi NCR, Pune"
-                      value={profile.preferredCity}
-                      onChange={(e) => setProfile({ ...profile, preferredCity: e.target.value })}
-                      className="text-xs h-9"
-                    />
+                    <select
+                      value={profile.educationLevel}
+                      onChange={(e) => setProfile({ ...profile, educationLevel: e.target.value })}
+                      className="w-full text-xs p-2 border rounded-md bg-background"
+                    >
+                      {STAGES_LIST.map((stage) => (
+                        <option key={stage} value={stage}>
+                          {stage}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -213,29 +267,64 @@ export default function StudentAccountModal({
                       onChange={(e) => setProfile({ ...profile, stream: e.target.value })}
                       className="w-full text-xs p-2 border rounded-md bg-background"
                     >
-                      <option value="Engineering / Technology">Engineering / Technology</option>
-                      <option value="Medical / Healthcare">Medical / Healthcare</option>
-                      <option value="Commerce / Management">Commerce / Management</option>
-                      <option value="Arts / Humanities">Arts / Humanities</option>
-                      <option value="Class 8-10th Board Guidance">Class 8-10th Board Guidance</option>
+                      <option value="Engineering / Technology">Engineering / Technology (CS, IT, AI, Core)</option>
+                      <option value="Medical / Healthcare">Medical / Healthcare (MBBS, BDS, Biotech)</option>
+                      <option value="Commerce / Management">Commerce / Management (BBA, MBA, CA, Finance)</option>
+                      <option value="Arts / Humanities">Arts / Humanities (Law, Civil Services, Design)</option>
+                      <option value="Polytechnic / Vocational">Polytechnic & Vocational Skills</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-foreground mb-1 block">
-                      Current Stage
+                    <label className="text-xs font-semibold text-foreground mb-1 flex justify-between">
+                      <span>Last Academic Score (%)</span>
+                      <span className="font-bold text-blue-600">{profile.marksPercentage}%</span>
                     </label>
-                    <select
-                      value={profile.educationLevel}
-                      onChange={(e) => setProfile({ ...profile, educationLevel: e.target.value })}
-                      className="w-full text-xs p-2 border rounded-md bg-background"
-                    >
-                      <option value="Class 8-10">Class 8-10</option>
-                      <option value="Class 11-12">Class 11-12</option>
-                      <option value="Undergraduate">Undergraduate Student</option>
-                      <option value="Graduate / Professional">Graduate / Professional</option>
-                    </select>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={profile.marksPercentage}
+                      onChange={(e) => setProfile({ ...profile, marksPercentage: Number(e.target.value) })}
+                      className="text-xs h-9"
+                    />
                   </div>
+                </div>
+
+                {/* Multi-Select Preferred Cities */}
+                <div className="space-y-1.5 pt-2 border-t">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 text-blue-500" /> Preferred Cities & Regions (Multi-Select):
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CITIES_LIST.map((city) => {
+                      const isSelected = profile.preferredCities?.includes(city);
+                      return (
+                        <button
+                          key={city}
+                          type="button"
+                          onClick={() => toggleCity(city)}
+                          className={`px-2.5 py-1 rounded-full text-xs transition-all border ${
+                            isSelected
+                              ? "bg-blue-600 text-white border-blue-600 font-bold"
+                              : "bg-muted/40 hover:bg-muted text-muted-foreground border-border"
+                          }`}
+                        >
+                          {city} {isSelected && "✓"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Dynamic Recommendation Snippet */}
+                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-xs text-blue-900 dark:text-blue-200 space-y-1">
+                  <div className="font-semibold flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Personalized Pathway Guidance:
+                  </div>
+                  <p className="leading-relaxed">
+                    Based on your stage (<strong>{profile.educationLevel}</strong>) and score of <strong>{profile.marksPercentage}%</strong> in <strong>{profile.stream}</strong>, we recommend reviewing verified programs in {profile.preferredCities?.slice(0, 3).join(", ")}.
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t">
@@ -252,91 +341,64 @@ export default function StudentAccountModal({
               </form>
             </TabsContent>
 
-            {/* TAB 2: ALERTS & NOTIFICATIONS */}
+            {/* TAB 2: ALERTS */}
             <TabsContent value="alerts" className="space-y-4">
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-200">
-                Configure when CareerMap sends you real-time notifications about your saved schools and colleges.
-              </div>
-
               <div className="space-y-3">
-                {/* Alert 1 */}
-                <div className="p-3.5 rounded-xl border bg-card flex items-start gap-3">
+                <div className="p-4 rounded-xl border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-semibold">Placement Verification Notification</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Receive an instant alert when a saved college's placement record is verified by employer HRs.
+                    </div>
+                  </div>
                   <input
                     type="checkbox"
-                    id="alert1"
                     checked={profile.alertOnPlacementVerified}
                     onChange={(e) =>
                       setProfile({ ...profile, alertOnPlacementVerified: e.target.checked })
                     }
-                    className="mt-1 h-4 w-4 rounded text-blue-600 cursor-pointer"
+                    className="h-4 w-4 rounded"
                   />
-                  <label htmlFor="alert1" className="cursor-pointer flex-1">
-                    <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                      <span>Placement Data Verified Alert</span>
-                      <Badge className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] py-0">
-                        High Priority
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                      Send me an Email/SMS notification as soon as any of my saved institutions receive the{" "}
-                      <span className="font-semibold text-foreground">[VERIFIED PLACEMENT]</span> tag confirmed directly by hiring companies.
-                    </p>
-                  </label>
                 </div>
 
-                {/* Alert 2 */}
-                <div className="p-3.5 rounded-xl border bg-card flex items-start gap-3">
+                <div className="p-4 rounded-xl border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-semibold">Campus Audit Completion Notification</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Get notified when CareerMap completes an on-site physical inspection & lab verification.
+                    </div>
+                  </div>
                   <input
                     type="checkbox"
-                    id="alert2"
                     checked={profile.alertOnAuditCompleted}
                     onChange={(e) =>
                       setProfile({ ...profile, alertOnAuditCompleted: e.target.checked })
                     }
-                    className="mt-1 h-4 w-4 rounded text-blue-600 cursor-pointer"
+                    className="h-4 w-4 rounded"
                   />
-                  <label htmlFor="alert2" className="cursor-pointer flex-1">
-                    <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <FileCheck className="h-4 w-4 text-blue-600" />
-                      <span>Campus Audit Completion Alert</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                      Notify me when our on-site inspection team finishes the physical campus audit, student interviews, and lab verification for my saved colleges.
-                    </p>
-                  </label>
                 </div>
 
-                {/* Alert 3 */}
-                <div className="p-3.5 rounded-xl border bg-card flex items-start gap-3">
+                <div className="p-4 rounded-xl border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-semibold">New Institution Alert in Preferred Areas</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Receive updates when new verified schools or colleges are added in {profile.preferredCities?.join(", ")}.
+                    </div>
+                  </div>
                   <input
                     type="checkbox"
-                    id="alert3"
                     checked={profile.alertOnNewInstitutesInArea}
                     onChange={(e) =>
                       setProfile({ ...profile, alertOnNewInstitutesInArea: e.target.checked })
                     }
-                    className="mt-1 h-4 w-4 rounded text-blue-600 cursor-pointer"
+                    className="h-4 w-4 rounded"
                   />
-                  <label htmlFor="alert3" className="cursor-pointer flex-1">
-                    <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <MapPin className="h-4 w-4 text-purple-600" />
-                      <span>New Institutions In My Preferred Area ({profile.preferredCity || "Any City"})</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                      Alert me whenever a new school or college is officially mapped and added to the CareerMap registry in my preferred city.
-                    </p>
-                  </label>
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end">
-                <Button
-                  onClick={handleSaveProfile}
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-                >
-                  Save Notification Preferences
+              <div className="flex justify-end pt-3 border-t">
+                <Button onClick={handleSaveProfile} size="sm" className="bg-blue-600 text-white text-xs">
+                  Save Alert Settings
                 </Button>
               </div>
             </TabsContent>
@@ -344,131 +406,71 @@ export default function StudentAccountModal({
             {/* TAB 3: SAVED INSTITUTES */}
             <TabsContent value="saved" className="space-y-4">
               {savedInstitutes.length === 0 ? (
-                <div className="text-center py-8 border rounded-xl bg-muted/20">
-                  <Bookmark className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
-                  <p className="text-xs font-semibold text-foreground">No saved institutions yet</p>
-                  <p className="text-[11px] text-muted-foreground mt-1 max-w-sm mx-auto">
-                    Browse the Schools & Colleges Directory and click the bookmark icon to track verification updates.
+                <div className="text-center py-12 space-y-3">
+                  <Bookmark className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
+                  <p className="text-xs text-muted-foreground">
+                    You haven't saved any institutions yet. Explore the directory and bookmark institutions to track them here.
                   </p>
                   <Button
+                    size="sm"
                     onClick={() => {
                       onClose();
                       navigate("/institutes");
                     }}
-                    variant="outline"
-                    size="sm"
-                    className="mt-3 text-xs"
+                    className="text-xs"
                   >
-                    Browse Institutes Directory
+                    Explore Institutions Directory
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2.5">
-                  {savedInstitutes.map((inst) => {
-                    const isPlacementVerified = inst.placement.status === "verified";
-                    const isAuditVerified = inst.audit.status === "verified";
-
-                    return (
-                      <div
-                        key={inst.id}
-                        className="p-3 rounded-xl border bg-card hover:bg-accent/10 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-foreground">{inst.name}</span>
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] px-1.5 py-0"
-                            >
-                              {inst.type === "school" ? "School" : "College"}
-                            </Badge>
-                          </div>
-                          <div className="text-[11px] text-muted-foreground flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-blue-500" />
-                            <span>{inst.location.city}, {inst.location.state}</span>
-                            <span className="ml-2 font-medium text-foreground">
-                              Fee: ₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}/yr
-                            </span>
-                          </div>
-                          {/* Live Verification Badges */}
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            <span
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
-                                isPlacementVerified
-                                  ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                                  : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
-                              }`}
-                            >
-                              {isPlacementVerified ? (
-                                <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                              ) : (
-                                <AlertTriangle className="h-3 w-3 text-amber-600" />
-                              )}
-                              {isPlacementVerified ? "VERIFIED PLACEMENT" : "UNVERIFIED PLACEMENT"}
-                            </span>
-
-                            <span
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
-                                isAuditVerified
-                                  ? "bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800"
-                                  : "bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300 border border-orange-300 dark:border-orange-800"
-                              }`}
-                            >
-                              {isAuditVerified ? (
-                                <FileCheck className="h-3 w-3 text-blue-600" />
-                              ) : (
-                                <Compass className="h-3 w-3 text-orange-600" />
-                              )}
-                              {isAuditVerified ? "AUDIT VERIFIED" : "CAMPUS DETAIL: UNVERIFIED"}
-                            </span>
-                          </div>
+                <div className="space-y-3">
+                  {savedInstitutes.map((inst) => (
+                    <div
+                      key={inst.id}
+                      className="p-3.5 border rounded-xl flex items-center justify-between gap-3 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs text-foreground">{inst.name}</span>
+                          <Badge variant="outline" className="text-[10px]">
+                            {inst.type}
+                          </Badge>
                         </div>
-
-                        <div className="flex items-center gap-2 self-end sm:self-center">
-                          {onSelectInstitute && (
-                            <Button
-                              onClick={() => {
-                                onClose();
-                                onSelectInstitute(inst);
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="text-xs h-8"
-                            >
-                              <ExternalLink className="h-3 w-3 mr-1" /> View Dossier
-                            </Button>
-                          )}
-                          <Button
-                            onClick={() => handleRemoveSaved(inst.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-500 hover:text-red-700 h-8 px-2"
-                            title="Remove from saved"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                          <span>{inst.location.city}</span>
+                          <span>Rating: ⭐ {inst.ratings.overall} / 10.0</span>
+                          <span>Tuition: ₹{inst.feeStructure.tuitionPerYear.toLocaleString("en-IN")}/yr</span>
                         </div>
                       </div>
-                    );
-                  })}
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            onClose();
+                            if (onSelectInstitute) onSelectInstitute(inst);
+                          }}
+                          className="text-xs h-7"
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleRemoveSaved(inst.id)}
+                          className="text-red-500 hover:text-red-600 h-7 w-7 p-0"
+                          title="Remove bookmark"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </TabsContent>
           </Tabs>
-
-          {/* Discreet Admin Link at Bottom */}
-          <div className="border-t mt-6 pt-4 flex items-center justify-between text-xs text-muted-foreground">
-            <span>CareerMap Verified Institute Network</span>
-            <button
-              onClick={() => {
-                onClose();
-                navigate("/admin");
-              }}
-              className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              <Lock className="h-3 w-3" /> Institute / Admin Portal
-            </button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

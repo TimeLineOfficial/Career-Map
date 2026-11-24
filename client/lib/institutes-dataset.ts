@@ -73,6 +73,22 @@ export interface AuditDetails {
   infrastructureVerdict?: string;
 }
 
+export type OwnershipType = "central_govt" | "state_govt" | "deemed" | "private" | "international";
+export type InstitutionCategory = "government" | "private";
+
+export interface InstituteReview {
+  id: string;
+  studentName: string;
+  studentEmail: string;
+  studentRole?: string;
+  ratingOutOf10: number; // Out of 10.0
+  comment: string;
+  date: string;
+  parentReviewId?: string;
+  replies: InstituteReview[];
+  likes: number;
+}
+
 export type PhotoCategory = "campus" | "classrooms" | "labs" | "grounds" | "sports";
 
 export interface InstitutePhoto {
@@ -109,6 +125,13 @@ export interface Institute {
     phone: string;
     whatsapp: string;
   };
+  ownershipType: OwnershipType;
+  institutionCategory: InstitutionCategory;
+  totalStudentsEnrolled: number;
+  seatMatrix: {
+    availableSeats: number;
+    totalSeats: number;
+  };
   feeStructure: {
     tuitionPerYear: number;
     hostelPerYear?: number;
@@ -117,7 +140,7 @@ export interface Institute {
     notes: string;
   };
   ratings: {
-    overall: number; // Out of 5
+    overall: number; // Out of 10.0
     faculty: number;
     infrastructure: number;
     studentCaliber: number;
@@ -129,6 +152,7 @@ export interface Institute {
   placement: InstitutePlacementData;
   audit: AuditDetails;
   photos: InstitutePhoto[];
+  reviews: InstituteReview[];
   rankScore: number; // 1-100 calculated ranking
   featured: boolean;
 }
@@ -223,6 +247,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-11-2659-7135",
       whatsapp: "+91-9876543210",
     },
+    ownershipType: "central_govt",
+    institutionCategory: "government",
+    totalStudentsEnrolled: 11500,
+    seatMatrix: {
+      availableSeats: 340,
+      totalSeats: 1450,
+    },
     feeStructure: {
       tuitionPerYear: 225000,
       hostelPerYear: 45000,
@@ -231,12 +262,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Full fee waiver for SC/ST/PwD; merit-cum-means scholarship for general students.",
     },
     ratings: {
-      overall: 4.9,
-      faculty: 4.9,
-      infrastructure: 4.8,
-      studentCaliber: 5.0,
-      sportsAndExtracurricular: 4.7,
-      techLevel: 5.0,
+      overall: 9.8,
+      faculty: 9.8,
+      infrastructure: 9.6,
+      studentCaliber: 10.0,
+      sportsAndExtracurricular: 9.4,
+      techLevel: 10.0,
     },
     advantages: [
       "Top-tier international & domestic placements with marquee tech giants",
@@ -343,6 +374,43 @@ export const initialInstitutes: Institute[] = [
         caption: "Audited Ground Reality: Floodlit football and cricket facility",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_iitd_1",
+            "studentName": "Aarav Gupta",
+            "studentEmail": "aarav.g@iitd.ac.in",
+            "studentRole": "Final Year B.Tech CSE",
+            "ratingOutOf10": 9.8,
+            "comment": "Unmatched peer group and research funding. Supercomputing facilities at Bharti School are 24/7 accessible. Coding culture and hackathons are unmatched across India.",
+            "date": "2026-02-14",
+            "likes": 28,
+            "replies": [
+                  {
+                        "id": "rev_iitd_1_1",
+                        "studentName": "Pooja Deshmukh",
+                        "studentEmail": "pooja.d@iitd.ac.in",
+                        "studentRole": "3rd Year Electrical",
+                        "ratingOutOf10": 9.5,
+                        "comment": "Can confirm! The workload can get intense during minor exams week, but professors and TAs are very supportive.",
+                        "date": "2026-02-15",
+                        "parentReviewId": "rev_iitd_1",
+                        "likes": 12,
+                        "replies": []
+                  }
+            ]
+      },
+      {
+            "id": "rev_iitd_2",
+            "studentName": "Kunal Singhania",
+            "studentEmail": "kunal.s@alumni.iitd.ac.in",
+            "studentRole": "Alumni (2025 Batch)",
+            "ratingOutOf10": 9.6,
+            "comment": "Placement season was transparent and well-coordinated. Top international quant funds and AI labs visited campus.",
+            "date": "2026-01-20",
+            "likes": 19,
+            "replies": []
+      }
+],
     rankScore: 98,
     featured: true,
   },
@@ -373,6 +441,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-11-2787-1018",
       whatsapp: "+91-9876543211",
     },
+    ownershipType: "state_govt",
+    institutionCategory: "government",
+    totalStudentsEnrolled: 14200,
+    seatMatrix: {
+      availableSeats: 620,
+      totalSeats: 2500,
+    },
     feeStructure: {
       tuitionPerYear: 195000,
       hostelPerYear: 52000,
@@ -381,12 +456,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Delhi Government fee waiver schemes applicable for economically weaker sections.",
     },
     ratings: {
-      overall: 4.7,
-      faculty: 4.6,
-      infrastructure: 4.5,
-      studentCaliber: 4.8,
-      sportsAndExtracurricular: 4.6,
-      techLevel: 4.8,
+      overall: 9.4,
+      faculty: 9.2,
+      infrastructure: 9.2,
+      studentCaliber: 9.4,
+      sportsAndExtracurricular: 9.4,
+      techLevel: 9.4,
     },
     advantages: [
       "Legendary alumni network across Silicon Valley and Indian corporate sectors",
@@ -474,6 +549,32 @@ export const initialInstitutes: Institute[] = [
         caption: "Audited Ground Reality: High-speed gigabit LAN lab facilities",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_dtu_1",
+            "studentName": "Vikram Sethi",
+            "studentEmail": "vikram.s@dtu.ac.in",
+            "studentRole": "3rd Year IT",
+            "ratingOutOf10": 9.4,
+            "comment": "164-acre lush green campus in Rohini. Super active tech societies like IEEE, DTU Solar Car, and Defianz Racing. Placements for tech branches are exceptionally strong.",
+            "date": "2026-02-01",
+            "likes": 22,
+            "replies": [
+                  {
+                        "id": "rev_dtu_1_1",
+                        "studentName": "Ananya Roy",
+                        "studentEmail": "ananya.r@dtu.ac.in",
+                        "studentRole": "2nd Year Software Eng",
+                        "ratingOutOf10": 9.2,
+                        "comment": "Hostel facilities in new blocks are top tier. Library remains open till late night.",
+                        "date": "2026-02-05",
+                        "parentReviewId": "rev_dtu_1",
+                        "likes": 8,
+                        "replies": []
+                  }
+            ]
+      }
+],
     rankScore: 94,
     featured: true,
   },
@@ -505,6 +606,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-120-2445252",
       whatsapp: "+91-9876543212",
     },
+    ownershipType: "private",
+    institutionCategory: "private",
+    totalStudentsEnrolled: 35000,
+    seatMatrix: {
+      availableSeats: 2100,
+      totalSeats: 8000,
+    },
     feeStructure: {
       tuitionPerYear: 360000,
       hostelPerYear: 140000,
@@ -513,12 +621,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Up to 100% scholarship for high board marks / national entrance percentiles.",
     },
     ratings: {
-      overall: 4.0,
-      faculty: 3.9,
-      infrastructure: 4.8,
-      studentCaliber: 3.7,
-      sportsAndExtracurricular: 4.8,
-      techLevel: 4.2,
+      overall: 8.4,
+      faculty: 8.2,
+      infrastructure: 9.8,
+      studentCaliber: 7.8,
+      sportsAndExtracurricular: 9.6,
+      techLevel: 8.8,
     },
     advantages: [
       "Ultra-modern luxury campus with international exchange programs",
@@ -595,6 +703,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Air-conditioned amphitheater classrooms with AV controls",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_amity_1",
+            "studentName": "Manish Kapoor",
+            "studentEmail": "manish.k@s.amity.edu",
+            "studentRole": "Final Year BBA",
+            "ratingOutOf10": 8.4,
+            "comment": "State of the art air-conditioned classrooms, Olympic-sized swimming pool, indoor sports complex, and vibrant campus life. Best suited for students who take personal initiative.",
+            "date": "2026-01-18",
+            "likes": 14,
+            "replies": []
+      }
+],
     rankScore: 78,
     featured: false,
   },
@@ -624,6 +745,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-20-2550-7000",
       whatsapp: "+91-9876543213",
     },
+    ownershipType: "state_govt",
+    institutionCategory: "government",
+    totalStudentsEnrolled: 5200,
+    seatMatrix: {
+      availableSeats: 180,
+      totalSeats: 900,
+    },
     feeStructure: {
       tuitionPerYear: 145000,
       hostelPerYear: 38000,
@@ -632,12 +760,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Maharashtra State DTE scholarships applicable for eligible categories.",
     },
     ratings: {
-      overall: 4.7,
-      faculty: 4.6,
-      infrastructure: 4.5,
-      studentCaliber: 4.8,
-      sportsAndExtracurricular: 4.7,
-      techLevel: 4.7,
+      overall: 9.4,
+      faculty: 9.4,
+      infrastructure: 9.0,
+      studentCaliber: 9.6,
+      sportsAndExtracurricular: 9.2,
+      techLevel: 9.4,
     },
     advantages: [
       "Second oldest engineering institution in India with storied heritage",
@@ -725,6 +853,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Audited Ground Reality: Mula river boat club facilities",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_coep_1",
+            "studentName": "Tanvi Joshi",
+            "studentEmail": "tanvi.j@coep.ac.in",
+            "studentRole": "4th Year Mechanical",
+            "ratingOutOf10": 9.6,
+            "comment": "Heritage institution with incredible industrial ties in Pune's automotive and engineering hub. The student satellite team and boat club on Mula river are legendary.",
+            "date": "2026-02-10",
+            "likes": 17,
+            "replies": []
+      }
+],
     rankScore: 92,
     featured: true,
   },
@@ -755,6 +896,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-80-6717-8000",
       whatsapp: "+91-9876543214",
     },
+    ownershipType: "private",
+    institutionCategory: "private",
+    totalStudentsEnrolled: 6800,
+    seatMatrix: {
+      availableSeats: 240,
+      totalSeats: 1200,
+    },
     feeStructure: {
       tuitionPerYear: 280000,
       hostelPerYear: 85000,
@@ -763,12 +911,12 @@ export const initialInstitutes: Institute[] = [
       notes: "KCET subsidized fees for Karnataka residents; COMEDK & Management quota rates apply.",
     },
     ratings: {
-      overall: 4.8,
-      faculty: 4.7,
-      infrastructure: 4.6,
-      studentCaliber: 4.8,
-      sportsAndExtracurricular: 4.4,
-      techLevel: 4.9,
+      overall: 9.2,
+      faculty: 9.2,
+      infrastructure: 8.8,
+      studentCaliber: 9.4,
+      sportsAndExtracurricular: 8.6,
+      techLevel: 9.6,
     },
     advantages: [
       "Bangalore Tech Capital proximity ensures 400+ visiting tech recruiters every season",
@@ -837,6 +985,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Newly constructed computing and research tower",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_rvce_1",
+            "studentName": "Siddharth Rao",
+            "studentEmail": "siddharth.r@rvce.edu.in",
+            "studentRole": "3rd Year CSE",
+            "ratingOutOf10": 9.4,
+            "comment": "Located right in India's Silicon Valley. Exceptional placements with tier-1 product companies and startups visiting all year round.",
+            "date": "2026-01-28",
+            "likes": 21,
+            "replies": []
+      }
+],
     rankScore: 93,
     featured: true,
   },
@@ -870,6 +1031,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-11-4911-5555",
       whatsapp: "+91-9876543215",
     },
+    ownershipType: "private",
+    institutionCategory: "private",
+    totalStudentsEnrolled: 9500,
+    seatMatrix: {
+      availableSeats: 180,
+      totalSeats: 850,
+    },
     feeStructure: {
       tuitionPerYear: 185000,
       hostelPerYear: 120000,
@@ -878,12 +1046,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Fee structure covers all academic activities, computer club (Exun), and standard lab consumables.",
     },
     ratings: {
-      overall: 4.9,
-      faculty: 4.8,
-      infrastructure: 4.8,
-      studentCaliber: 4.9,
-      sportsAndExtracurricular: 4.9,
-      techLevel: 4.9,
+      overall: 9.8,
+      faculty: 9.6,
+      infrastructure: 9.6,
+      studentCaliber: 9.8,
+      sportsAndExtracurricular: 9.8,
+      techLevel: 9.8,
     },
     advantages: [
       "Nationally renowned for highest numbers of IIT-JEE, NEET, and AIIMS selections",
@@ -897,42 +1065,15 @@ export const initialInstitutes: Institute[] = [
       "Large batch sizes requiring student self-discipline",
     ],
     placement: {
-      status: "verified",
-      badgeNotice:
-        "Verified Academic Track Record: 450+ students placed into premier institutions (IITs, AIIMS, SRCC, Ivy Leagues) verified by CareerMap auditors.",
-      lastYearPlacementRate: 98.2,
-      allTimePlacementRate: 97.5,
-      averagePackageLPA: 0, // School metric (higher education admissions)
+      status: "unverified",
+      badgeNotice: "Schools prepare students for 10th and 12th Board examinations and premier university entrance tests (JEE, NEET, CUET, NDA). Job placement packages are not applicable.",
+      lastYearPlacementRate: 0,
+      allTimePlacementRate: 0,
+      averagePackageLPA: 0,
       highestPackageLPA: 0,
       medianPackageLPA: 0,
-      topRecruiters: [
-        "IITs Admission (140+ students)",
-        "AIIMS & Top Medical (65+ students)",
-        "Delhi University SRCC / St. Stephen's (110+ students)",
-        "US/UK Ivy League & Top 50 Global (45+ students)",
-      ],
-      students: [
-        {
-          id: "dps_st_1",
-          studentName: "Arnav Goel",
-          company: "Admitted: IIT Delhi Computer Science (AIR 48)",
-          packageLPA: 0,
-          year: 2025,
-          role: "B.Tech CSE Seat",
-          verified: true,
-          verificationSource: "Direct JOSAA Result Verification",
-        },
-        {
-          id: "dps_st_2",
-          studentName: "Riya Mathur",
-          company: "Admitted: AIIMS New Delhi (NEET AIR 23)",
-          packageLPA: 0,
-          year: 2025,
-          role: "MBBS Seat",
-          verified: true,
-          verificationSource: "Direct NTA NEET Allotment Record",
-        },
-      ],
+      topRecruiters: ["Top University Admissions", "IITs / AIIMS Entrance", "CUET Premier Colleges", "National Defense Academy (NDA)"],
+      students: [],
     },
     audit: {
       status: "verified",
@@ -976,6 +1117,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Audited Ground Reality: Active student robotics workbenches with 3D printers",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_dps_1",
+            "studentName": "Devika Mehra",
+            "studentEmail": "devika.m@alumni.dpsrkp.net",
+            "studentRole": "Class 12 Alumna (CBSE 98.4%)",
+            "ratingOutOf10": 9.8,
+            "comment": "Incredible academic grounding. Exun club teaches real software development from 8th grade. Highly disciplined environment with dedicated board faculties.",
+            "date": "2026-02-08",
+            "likes": 31,
+            "replies": []
+      }
+],
     rankScore: 99,
     featured: true,
   },
@@ -1003,6 +1157,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-522-2345678",
       whatsapp: "+91-9876543216",
     },
+    ownershipType: "state_govt",
+    institutionCategory: "government",
+    totalStudentsEnrolled: 3200,
+    seatMatrix: {
+      availableSeats: 95,
+      totalSeats: 450,
+    },
     feeStructure: {
       tuitionPerYear: 3200,
       hostelPerYear: 6000,
@@ -1011,12 +1172,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Subsidized government education. Free textbook & mid-day support schemes up to Class 8.",
     },
     ratings: {
-      overall: 4.1,
-      faculty: 4.3,
-      infrastructure: 3.6,
-      studentCaliber: 4.2,
-      sportsAndExtracurricular: 3.8,
-      techLevel: 3.5,
+      overall: 8.8,
+      faculty: 9.0,
+      infrastructure: 8.4,
+      studentCaliber: 9.2,
+      sportsAndExtracurricular: 8.6,
+      techLevel: 8.2,
     },
     advantages: [
       "Exceptional value with near-zero tuition cost and qualified permanent civil faculty",
@@ -1030,31 +1191,15 @@ export const initialInstitutes: Institute[] = [
       "Extracurricular clubs (coding, MUN) depend heavily on student-led initiatives",
     ],
     placement: {
-      status: "verified",
-      badgeNotice:
-        "Verified Academic Track Record: UP Board topper ranks and defense NDA entrance selections physically verified with board records.",
-      lastYearPlacementRate: 86.4,
-      allTimePlacementRate: 84.0,
+      status: "unverified",
+      badgeNotice: "Schools prepare students for 10th and 12th Board examinations and premier university entrance tests (JEE, NEET, CUET, NDA). Job placement packages are not applicable.",
+      lastYearPlacementRate: 0,
+      allTimePlacementRate: 0,
       averagePackageLPA: 0,
       highestPackageLPA: 0,
       medianPackageLPA: 0,
-      topRecruiters: [
-        "NDA Defense Academy (22 students)",
-        "Lucknow University Admissions (95 students)",
-        "JEE Mains Qualified (38 students)",
-      ],
-      students: [
-        {
-          id: "up_st_1",
-          studentName: "Shubham Yadav",
-          company: "Admitted: National Defence Academy (NDA Khadakwasla)",
-          packageLPA: 0,
-          year: 2025,
-          role: "Army Wing Cadet",
-          verified: true,
-          verificationSource: "Direct UPSC NDA Merit List Verification",
-        },
-      ],
+      topRecruiters: ["Top University Admissions", "IITs / AIIMS Entrance", "CUET Premier Colleges", "National Defense Academy (NDA)"],
+      students: [],
     },
     audit: {
       status: "verified",
@@ -1098,6 +1243,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Audited Ground Reality: Working optical benches, vernier calipers, and pendulum apparatus",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_up_1",
+            "studentName": "Abhishek Yadav",
+            "studentEmail": "abhishek.y@gov.in",
+            "studentRole": "Class 12th Board Student",
+            "ratingOutOf10": 9.0,
+            "comment": "Virtually zero fees with very strong state-level faculty. Exceptional physics and chemistry teachers who focus on competitive examinations alongside UP Board syllabus.",
+            "date": "2026-01-15",
+            "likes": 16,
+            "replies": []
+      }
+],
     rankScore: 82,
     featured: false,
   },
@@ -1125,6 +1283,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-135-252-6400",
       whatsapp: "+91-9876543217",
     },
+    ownershipType: "international",
+    institutionCategory: "private",
+    totalStudentsEnrolled: 520,
+    seatMatrix: {
+      availableSeats: 35,
+      totalSeats: 90,
+    },
     feeStructure: {
       tuitionPerYear: 680000,
       hostelPerYear: 520000,
@@ -1133,12 +1298,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Full boarding institution. Need-based bursaries available up to 100% of fees for qualifying applicants.",
     },
     ratings: {
-      overall: 4.9,
-      faculty: 4.9,
-      infrastructure: 5.0,
-      studentCaliber: 4.9,
-      sportsAndExtracurricular: 5.0,
-      techLevel: 4.8,
+      overall: 9.6,
+      faculty: 9.8,
+      infrastructure: 9.8,
+      studentCaliber: 9.6,
+      sportsAndExtracurricular: 10.0,
+      techLevel: 9.2,
     },
     advantages: [
       "India's pre-eminent all-boarding school with unmatched global alumni leadership network",
@@ -1152,31 +1317,15 @@ export const initialInstitutes: Institute[] = [
       "Boys-only enrollment model for residential school",
     ],
     placement: {
-      status: "verified",
-      badgeNotice:
-        "Verified Academic Track Record: 100% admission to world elite universities (Oxford, Cambridge, Harvard, Ashoka, St. Stephen's) verified by audit team.",
-      lastYearPlacementRate: 100.0,
-      allTimePlacementRate: 99.4,
+      status: "unverified",
+      badgeNotice: "Schools prepare students for 10th and 12th Board examinations and premier university entrance tests (JEE, NEET, CUET, NDA). Job placement packages are not applicable.",
+      lastYearPlacementRate: 0,
+      allTimePlacementRate: 0,
       averagePackageLPA: 0,
       highestPackageLPA: 0,
       medianPackageLPA: 0,
-      topRecruiters: [
-        "Oxford & Cambridge (12 offers)",
-        "US Top 20 Universities (35 offers)",
-        "Delhi University Top Colleges (40+ students)",
-      ],
-      students: [
-        {
-          id: "doon_st_1",
-          studentName: "Kabir Thapar",
-          company: "Admitted: University of Oxford (PPE Program)",
-          packageLPA: 0,
-          year: 2025,
-          role: "Undergraduate Scholar",
-          verified: true,
-          verificationSource: "Direct UCAS Official Allotment Verification",
-        },
-      ],
+      topRecruiters: ["Top University Admissions", "IITs / AIIMS Entrance", "CUET Premier Colleges", "National Defense Academy (NDA)"],
+      students: [],
     },
     audit: {
       status: "verified",
@@ -1211,6 +1360,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Historic Chandbagh campus surrounded by mountain greenery",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_doon_1",
+            "studentName": "Kabir Thapar",
+            "studentEmail": "kabir.t@alumni.doonschool.com",
+            "studentRole": "Old Boy / Alumnus",
+            "ratingOutOf10": 9.8,
+            "comment": "70-acre campus in Dehradun valley. Unrivaled character building, public speaking, mountaineering expeditions, and global university counselling.",
+            "date": "2026-01-12",
+            "likes": 25,
+            "replies": []
+      }
+],
     rankScore: 97,
     featured: true,
   },
@@ -1237,6 +1399,13 @@ export const initialInstitutes: Institute[] = [
       phone: "+91-11-2766-7905",
       whatsapp: "+91-9876543218",
     },
+    ownershipType: "central_govt",
+    institutionCategory: "government",
+    totalStudentsEnrolled: 2800,
+    seatMatrix: {
+      availableSeats: 110,
+      totalSeats: 650,
+    },
     feeStructure: {
       tuitionPerYear: 32000,
       hostelPerYear: 45000,
@@ -1245,12 +1414,12 @@ export const initialInstitutes: Institute[] = [
       notes: "Central University highly subsidized fee structure with multiple merit endowments.",
     },
     ratings: {
-      overall: 4.9,
-      faculty: 4.8,
-      infrastructure: 4.6,
-      studentCaliber: 5.0,
-      sportsAndExtracurricular: 4.7,
-      techLevel: 4.4,
+      overall: 9.8,
+      faculty: 9.8,
+      infrastructure: 9.2,
+      studentCaliber: 10.0,
+      sportsAndExtracurricular: 9.4,
+      techLevel: 9.2,
     },
     advantages: [
       "Asia's foremost commerce and economics institute; unmatched finance placements",
@@ -1336,6 +1505,19 @@ export const initialInstitutes: Institute[] = [
         caption: "Iconic red brick architecture in Maurice Nagar North Campus",
       },
     ],
+    reviews: [
+      {
+            "id": "rev_srcc_1",
+            "studentName": "Ishita Saxena",
+            "studentEmail": "ishita.s@srcc.du.ac.in",
+            "studentRole": "3rd Year B.Com (Hons)",
+            "ratingOutOf10": 9.8,
+            "comment": "India's premier commerce institution. Marquee consulting firms (McKinsey, BCG, Bain) and investment banks recruit every year. Peer group is 99+ percentile in CUET.",
+            "date": "2026-02-11",
+            "likes": 29,
+            "replies": []
+      }
+],
     rankScore: 96,
     featured: true,
   },
@@ -1355,7 +1537,58 @@ export function loadInstitutes(): Institute[] {
       saveInstitutes(initialInstitutes);
       return initialInstitutes;
     }
-    return JSON.parse(raw);
+    const list: Institute[] = JSON.parse(raw);
+    let modified = false;
+
+    // Migrate any legacy data from local storage
+    list.forEach((inst) => {
+      // 1. Migrate rating scale (if ratings <= 5.0, multiply by 2 for 10.0 scale)
+      if (inst.ratings && inst.ratings.overall <= 5.0) {
+        inst.ratings.overall = Math.round(inst.ratings.overall * 2 * 10) / 10;
+        inst.ratings.faculty = Math.round(inst.ratings.faculty * 2 * 10) / 10;
+        inst.ratings.infrastructure = Math.round(inst.ratings.infrastructure * 2 * 10) / 10;
+        inst.ratings.studentCaliber = Math.round(inst.ratings.studentCaliber * 2 * 10) / 10;
+        inst.ratings.sportsAndExtracurricular = Math.round(inst.ratings.sportsAndExtracurricular * 2 * 10) / 10;
+        inst.ratings.techLevel = Math.round(inst.ratings.techLevel * 2 * 10) / 10;
+        modified = true;
+      }
+      // 2. Ensure ownership fields
+      if (!inst.ownershipType) {
+        inst.ownershipType = inst.name.toLowerCase().includes("iit") || inst.name.toLowerCase().includes("srcc") ? "central_govt" : inst.type === "school" ? "private" : "state_govt";
+        modified = true;
+      }
+      if (!inst.institutionCategory) {
+        inst.institutionCategory = inst.ownershipType === "private" || inst.ownershipType === "international" ? "private" : "government";
+        modified = true;
+      }
+      if (!inst.totalStudentsEnrolled) {
+        inst.totalStudentsEnrolled = inst.type === "school" ? 4500 : 9200;
+        modified = true;
+      }
+      if (!inst.seatMatrix) {
+        inst.seatMatrix = { availableSeats: Math.floor(inst.totalStudentsEnrolled * 0.15), totalSeats: Math.floor(inst.totalStudentsEnrolled * 0.25) };
+        modified = true;
+      }
+      // 3. Ensure reviews array
+      if (!inst.reviews) {
+        inst.reviews = [];
+        modified = true;
+      }
+      // 4. For schools, clear placement job records
+      if (inst.type === "school" && inst.placement && inst.placement.students && inst.placement.students.length > 0) {
+        inst.placement.students = [];
+        inst.placement.lastYearPlacementRate = 0;
+        inst.placement.allTimePlacementRate = 0;
+        inst.placement.averagePackageLPA = 0;
+        inst.placement.badgeNotice = "Schools focus on 10th and 12th Board examinations and premier university entrance tests. Job placement packages are not applicable.";
+        modified = true;
+      }
+    });
+
+    if (modified) {
+      saveInstitutes(list);
+    }
+    return list;
   } catch {
     return initialInstitutes;
   }
@@ -1377,6 +1610,9 @@ export interface InstituteFilterOptions {
   board?: "all" | BoardType;
   stream?: "all" | StreamType;
   city?: "all" | string;
+  cities?: string[];
+  ownership?: "all" | OwnershipType;
+  category?: "all" | InstitutionCategory;
   minPlacementStatus?: "all" | "verified_only";
   auditStatus?: "all" | "verified_only";
   maxFee?: number;
@@ -1415,8 +1651,19 @@ export function queryInstitutes(filters: InstituteFilterOptions): Institute[] {
     list = list.filter((inst) => inst.streams.includes(filters.stream as StreamType));
   }
 
-  if (filters.city && filters.city !== "all") {
+  if (filters.cities && filters.cities.length > 0 && !filters.cities.includes("all")) {
+    const citySet = new Set(filters.cities.map((c) => c.toLowerCase()));
+    list = list.filter((inst) => citySet.has(inst.location.city.toLowerCase()));
+  } else if (filters.city && filters.city !== "all") {
     list = list.filter((inst) => inst.location.city.toLowerCase() === filters.city?.toLowerCase());
+  }
+
+  if (filters.ownership && filters.ownership !== "all") {
+    list = list.filter((inst) => inst.ownershipType === filters.ownership);
+  }
+
+  if (filters.category && filters.category !== "all") {
+    list = list.filter((inst) => inst.institutionCategory === filters.category);
   }
 
   if (filters.minPlacementStatus === "verified_only") {
@@ -1748,6 +1995,14 @@ export function approveNewInstituteRequest(id: string): Institute | null {
       phone: target.contactPhone,
       whatsapp: target.contactPhone,
     },
+    ownershipType: "private",
+    institutionCategory: "private",
+    totalStudentsEnrolled: target.type === "school" ? 3000 : 6000,
+    seatMatrix: {
+      availableSeats: 150,
+      totalSeats: 600,
+    },
+    reviews: [],
     feeStructure: {
       tuitionPerYear: target.type === "school" ? 85000 : 180000,
       totalEstimated: target.type === "school" ? 85000 : 180000,
@@ -1755,7 +2010,7 @@ export function approveNewInstituteRequest(id: string): Institute | null {
       notes: "Newly onboarded institution profile pending detailed fee verification.",
     },
     ratings: {
-      overall: 4.0,
+      overall: 8.0,
       faculty: 4.0,
       infrastructure: 4.0,
       studentCaliber: 4.0,
@@ -1823,4 +2078,118 @@ export function getDirectStudentApplications(): DirectApplication[] {
   } catch {
     return [];
   }
+}
+
+
+// Student Reviews Subsystem
+export function addInstituteReview(
+  instituteId: string,
+  review: {
+    studentName: string;
+    studentEmail: string;
+    studentRole?: string;
+    ratingOutOf10: number;
+    comment: string;
+    parentReviewId?: string;
+  }
+): InstituteReview {
+  const institutes = loadInstitutes();
+  const inst = institutes.find((i) => i.id === instituteId);
+  if (!inst) throw new Error("Institute not found");
+
+  const newReview: InstituteReview = {
+    id: "rev_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
+    studentName: sanitizeInput(review.studentName),
+    studentEmail: sanitizeInput(review.studentEmail),
+    studentRole: sanitizeInput(review.studentRole || "Student"),
+    ratingOutOf10: Math.min(10, Math.max(1, review.ratingOutOf10)),
+    comment: sanitizeInput(review.comment),
+    date: new Date().toISOString().split("T")[0],
+    parentReviewId: review.parentReviewId,
+    replies: [],
+    likes: 0,
+  };
+
+  if (!inst.reviews) inst.reviews = [];
+
+  if (review.parentReviewId) {
+    // Nested reply: find parent review recursively
+    const addToParent = (list: InstituteReview[]): boolean => {
+      for (const r of list) {
+        if (r.id === review.parentReviewId) {
+          if (!r.replies) r.replies = [];
+          r.replies.push(newReview);
+          return true;
+        }
+        if (r.replies && r.replies.length > 0) {
+          if (addToParent(r.replies)) return true;
+        }
+      }
+      return false;
+    };
+
+    const added = addToParent(inst.reviews);
+    if (!added) {
+      inst.reviews.unshift(newReview);
+    }
+  } else {
+    inst.reviews.unshift(newReview);
+  }
+
+  // Recalculate average rating if ratings available
+  const allRatings: number[] = [];
+  const collectRatings = (list: InstituteReview[]) => {
+    list.forEach((r) => {
+      allRatings.push(r.ratingOutOf10);
+      if (r.replies) collectRatings(r.replies);
+    });
+  };
+  collectRatings(inst.reviews);
+  if (allRatings.length > 0) {
+    const avg = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
+    inst.ratings.overall = Math.round(avg * 10) / 10;
+  }
+
+  saveInstitutes(institutes);
+  logSecurityEvent("REVIEW_POSTED", "data_mutation", "info", `Student review posted for ${inst.name} by ${newReview.studentName}`);
+  return newReview;
+}
+
+export function likeInstituteReview(instituteId: string, reviewId: string): void {
+  const institutes = loadInstitutes();
+  const inst = institutes.find((i) => i.id === instituteId);
+  if (!inst || !inst.reviews) return;
+
+  const likeInList = (list: InstituteReview[]): boolean => {
+    for (const r of list) {
+      if (r.id === reviewId) {
+        r.likes = (r.likes || 0) + 1;
+        return true;
+      }
+      if (r.replies && r.replies.length > 0) {
+        if (likeInList(r.replies)) return true;
+      }
+    }
+    return false;
+  };
+
+  likeInList(inst.reviews);
+  saveInstitutes(institutes);
+}
+
+export function updateInstitute(updated: Institute): void {
+  const institutes = loadInstitutes();
+  const index = institutes.findIndex((i) => i.id === updated.id);
+  if (index !== -1) {
+    institutes[index] = updated;
+    saveInstitutes(institutes);
+    logSecurityEvent("INSTITUTE_UPDATED", "data_mutation", "info", `Institute '${updated.name}' updated by Admin.`);
+  }
+}
+
+export function deleteInstitute(id: string): void {
+  const institutes = loadInstitutes();
+  const filtered = institutes.filter((i) => i.id !== id);
+  saveInstitutes(filtered);
+  logSecurityEvent("INSTITUTE_DELETED", "data_mutation", "warning", `Institute '${id}' deleted by Admin.`);
 }
