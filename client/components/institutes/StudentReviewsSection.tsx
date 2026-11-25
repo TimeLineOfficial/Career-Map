@@ -513,8 +513,10 @@ export default function StudentReviewsSection({
           <Button
             type="button"
             size="sm"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-student-account-modal"))}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("open-student-account-modal"));
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5 cursor-pointer"
           >
             <User className="h-3.5 w-3.5" /> Login / Register with Student Account
           </Button>

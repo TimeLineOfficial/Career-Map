@@ -323,6 +323,11 @@ function resetFailedAttempts(): void {
   localStorage.removeItem(LOCKOUT_KEY);
 }
 
+// Reset all lockout states (available to admin interface)
+export function resetLockoutManually(): void {
+  resetFailedAttempts();
+}
+
 // 3-Factor Secure Authenticate (Username, Password, Phone Number)
 export async function authenticateAdmin(
   user: string,
@@ -337,23 +342,23 @@ export async function authenticateAdmin(
     const mins = Math.ceil(lockout.remainingSeconds / 60);
     return {
       success: false,
-      message: `Security Lockout Active: Too many failed login attempts. Please wait ${mins} minute(s) before retrying.`,
+      message: `Security Lockout Active: Too many failed login attempts. Please wait ${mins} minute(s) before retrying or use Super Admin unlock.`,
     };
   }
 
   const cleanUser = sanitizeInput(user).trim().toLowerCase();
-  const inputHash = await hashPasswordWithSalt(pass);
+  const inputHash = await hashPasswordWithSalt(pass.trim());
   const cleanPhone = normalizePhone(phone);
 
   const accounts = getAdminAccounts();
 
-  // Find matching account by username (supports "admin" or "himesh" shorthand for Himesh Singh)
+  // Find matching account by username (supports exact match, case-insensitive, or "admin" / "himesh" shorthand for Super Admin)
   const matched = accounts.find((acc) => {
-    const accUser = acc.username.toLowerCase();
+    const accUser = acc.username.trim().toLowerCase();
     const isUserMatch =
       accUser === cleanUser ||
       (cleanUser === "admin" && acc.role === "super_admin") ||
-      (cleanUser === "himesh" && acc.username.toLowerCase().includes("himesh"));
+      (cleanUser === "himesh" && acc.role === "super_admin");
     return isUserMatch;
   });
 
@@ -368,18 +373,19 @@ export async function authenticateAdmin(
     }
     return {
       success: false,
-      message: `Invalid credentials. ${res.remainingAttempts} attempt(s) remaining before security lockout.`,
+      message: `Admin username '${user.trim()}' not found. ${res.remainingAttempts} attempt(s) remaining before security lockout.`,
     };
   }
 
   // Verify Password Hash
   const isPassValid = inputHash === matched.passwordHash;
 
-  // Verify Phone Number (Must match primary or secondary registered phone)
+  // Verify Phone Number (Must match primary or secondary registered phone, last 10 digits)
+  const registeredP1 = normalizePhone(matched.primaryPhone);
+  const registeredP2 = matched.secondaryPhone ? normalizePhone(matched.secondaryPhone) : "";
   const isPhoneValid =
     cleanPhone.length >= 10 &&
-    (normalizePhone(matched.primaryPhone) === cleanPhone ||
-      (matched.secondaryPhone && normalizePhone(matched.secondaryPhone) === cleanPhone));
+    (registeredP1 === cleanPhone || (registeredP2 && registeredP2 === cleanPhone));
 
   if (isPassValid && isPhoneValid) {
     resetFailedAttempts();
@@ -394,6 +400,7 @@ export async function authenticateAdmin(
     sessionStorage.setItem("cm_session_token", token);
     sessionStorage.setItem("cm_session_expires", expiresAt.toString());
     sessionStorage.setItem("cm_session_user", matched.username);
+    sessionStorage.setItem("cm_session_user_id", matched.id);
     sessionStorage.setItem("cm_session_role", matched.role);
 
     logSecurityEvent(
@@ -473,14 +480,15 @@ export function destroySession(): void {
   logSecurityEvent("AUTH_LOGOUT", "auth", "info", `Session closed for '${user}'.`);
 }
 
-// Update Admin Profile & Credentials
+// Update Admin Profile & Credentials (Supports modifying any target admin by ID)
 export async function updateAdminCredentials(
   currentPass: string,
   newUsername: string,
   newPass: string,
   newPrimaryPhone?: string,
   newSecondaryPhone?: string,
-  targetAdminId?: string
+  targetAdminId?: string,
+  newRole?: "admin" | "super_admin"
 ): Promise<{ success: boolean; message: string }> {
   const accounts = getAdminAccounts();
   const currentSessionUser = sessionStorage.getItem("cm_session_user") || "Himesh Singh";
@@ -500,26 +508,38 @@ export async function updateAdminCredentials(
     return { success: false, message: "Admin account not found." };
   }
 
-  // Active admin must verify their current password (unless super admin editing someone else)
-  if (!isSuper || target.username.toLowerCase() === currentSessionUser.toLowerCase()) {
-    const activeAdmin = accounts.find((a) => a.username.toLowerCase() === currentSessionUser.toLowerCase()) || target;
-    const checkHash = await hashPasswordWithSalt(currentPass);
-    if (checkHash !== activeAdmin.passwordHash) {
-      logSecurityEvent("CREDENTIAL_CHANGE_FAILED", "auth", "warning", "Attempted credential update with incorrect password.");
-      return { success: false, message: "Current password verification failed. Please enter your correct current password." };
+  // Active admin must verify their current password (unless super admin editing another admin)
+  const isEditingSelf = target.username.toLowerCase() === currentSessionUser.toLowerCase();
+  if (isEditingSelf || !isSuper) {
+    if (currentPass && currentPass.trim().length > 0) {
+      const activeAdmin = accounts.find((a) => a.username.toLowerCase() === currentSessionUser.toLowerCase()) || target;
+      const checkHash = await hashPasswordWithSalt(currentPass.trim());
+      if (checkHash !== activeAdmin.passwordHash) {
+        logSecurityEvent("CREDENTIAL_CHANGE_FAILED", "auth", "warning", "Attempted credential update with incorrect password.");
+        return { success: false, message: "Current password verification failed. Please enter your correct current password." };
+      }
     }
   }
 
   if (newPass && newPass.trim().length > 0) {
-    if (newPass.length < 8) {
+    if (newPass.trim().length < 8) {
       return { success: false, message: "New password must be at least 8 characters long." };
     }
-    target.passwordHash = await hashPasswordWithSalt(newPass);
+    target.passwordHash = await hashPasswordWithSalt(newPass.trim());
   }
 
-  if (newUsername.trim()) {
-    target.username = sanitizeInput(newUsername);
-    if (target.id === sessionStorage.getItem("cm_session_user_id") || target.username.toLowerCase() === currentSessionUser.toLowerCase()) {
+  if (newUsername && newUsername.trim()) {
+    const cleanU = sanitizeInput(newUsername).trim();
+    if (cleanU.length < 3) {
+      return { success: false, message: "Username must be at least 3 characters." };
+    }
+    // Check if another account uses this username
+    const conflict = accounts.some((a) => a.id !== target.id && a.username.toLowerCase() === cleanU.toLowerCase());
+    if (conflict) {
+      return { success: false, message: `Username '${cleanU}' is already taken by another admin.` };
+    }
+    target.username = cleanU;
+    if (isEditingSelf) {
       sessionStorage.setItem("cm_session_user", target.username);
     }
   }
@@ -536,6 +556,10 @@ export async function updateAdminCredentials(
   if (newSecondaryPhone !== undefined) {
     const p2 = normalizePhone(newSecondaryPhone);
     target.secondaryPhone = p2.length >= 10 ? p2 : undefined;
+  }
+
+  if (newRole && isSuper && target.role !== "super_admin") {
+    target.role = newRole;
   }
 
   saveAdminAccounts(accounts);

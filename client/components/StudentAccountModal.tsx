@@ -211,7 +211,11 @@ export default function StudentAccountModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative z-[120]">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative !z-[200]">
+        <DialogTitle className="sr-only">Student Account Portal</DialogTitle>
+        <DialogDescription className="sr-only">
+          Save your institutions, track placement verification updates, and receive area alerts.
+        </DialogDescription>
         {/* Sticky Header with Close Button pinned at top right */}
         <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-6 rounded-t-lg shadow-md flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -219,12 +223,12 @@ export default function StudentAccountModal({
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-white">
                 Student Account Portal
-              </DialogTitle>
-              <DialogDescription className="text-blue-100 text-xs">
+              </h2>
+              <p className="text-blue-100 text-xs">
                 Save your institutions, track placement verification updates, and receive area alerts.
-              </DialogDescription>
+              </p>
             </div>
           </div>
           <button

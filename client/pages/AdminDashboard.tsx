@@ -71,6 +71,7 @@ import {
   getAdminAccounts,
   createAdminAccount,
   deleteAdminAccount,
+  resetLockoutManually,
   AdminAccount,
 } from "@/lib/security-service";
 import InstituteEditorModal from "@/components/admin/InstituteEditorModal";
@@ -118,6 +119,14 @@ export default function AdminDashboard() {
   const [newPass, setNewPass] = useState("");
   const [newPhone1, setNewPhone1] = useState("");
   const [newPhone2, setNewPhone2] = useState("");
+
+  // Edit Selected Admin Modal State
+  const [editingAdmin, setEditingAdmin] = useState<AdminAccount | null>(null);
+  const [editAdminUser, setEditAdminUser] = useState("");
+  const [editAdminPass, setEditAdminPass] = useState("");
+  const [editAdminPhone1, setEditAdminPhone1] = useState("");
+  const [editAdminPhone2, setEditAdminPhone2] = useState("");
+  const [editAdminRole, setEditAdminRole] = useState<"admin" | "super_admin">("admin");
 
   // New Admin Account Creation State
   const [addAdminUser, setAddAdminUser] = useState("");
@@ -437,6 +446,47 @@ export default function AdminDashboard() {
     }
   };
 
+  // Open Edit Admin Modal
+  const handleOpenEditAdmin = (admin: AdminAccount) => {
+    setEditingAdmin(admin);
+    setEditAdminUser(admin.username);
+    setEditAdminPass("");
+    setEditAdminPhone1(admin.primaryPhone);
+    setEditAdminPhone2(admin.secondaryPhone || "");
+    setEditAdminRole(admin.role);
+  };
+
+  // Save Edit Admin
+  const handleSaveEditAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingAdmin) return;
+
+    const res = await updateAdminCredentials(
+      "", // Super admin / dashboard bypass
+      editAdminUser,
+      editAdminPass,
+      editAdminPhone1,
+      editAdminPhone2,
+      editingAdmin.id,
+      editAdminRole
+    );
+
+    if (res.success) {
+      toast({
+        title: "Admin Credentials Updated",
+        description: `Successfully modified credentials for '${editAdminUser}'.`,
+      });
+      setEditingAdmin(null);
+      loadAllData();
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: res.message,
+      });
+    }
+  };
+
   // Remove Admin Account
   const handleDeleteAdmin = (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to delete admin account '${name}'?`)) return;
@@ -536,6 +586,22 @@ export default function AdminDashboard() {
                 </p>
                 <div className="text-xs font-mono font-bold text-amber-300 bg-black/40 py-1.5 px-3 rounded-lg inline-block">
                   Time Remaining: {formatTimer(lockoutRemaining)}
+                </div>
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      resetLockoutManually();
+                      setLockoutRemaining(0);
+                      setAuthError("");
+                      toast({ title: "Lockout Reset", description: "You may now re-attempt login." });
+                    }}
+                    className="text-xs border-slate-700 hover:bg-slate-800 text-slate-300"
+                  >
+                    Reset Lockout
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -1074,18 +1140,27 @@ export default function AdminDashboard() {
                           )}
                           <div className="text-[10px] text-slate-500">Created: {new Date(acc.createdAt).toLocaleDateString()}</div>
                         </div>
-                        {acc.role !== "super_admin" && (
-                          <div className="pt-2 border-t border-slate-800 flex justify-end">
+                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenEditAdmin(acc)}
+                            className="h-6 text-[11px] border-blue-500/40 text-blue-400 hover:bg-blue-950/40"
+                          >
+                            <Edit className="h-3 w-3 mr-1" /> Edit Credentials
+                          </Button>
+
+                          {acc.role !== "super_admin" && (
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteAdmin(acc.id, acc.username)}
                               className="h-6 text-[11px] text-red-400 hover:text-red-300 hover:bg-red-950/40"
                             >
-                              <Trash2 className="h-3 w-3 mr-1" /> Remove Admin
+                              <Trash2 className="h-3 w-3 mr-1" /> Remove
                             </Button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1284,6 +1359,106 @@ export default function AdminDashboard() {
         institute={editingInstitute}
         onSave={handleSaveInstituteFromEditor}
       />
+
+      {/* Edit Admin Account Modal */}
+      {editingAdmin && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in-0">
+          <div className="w-full max-w-lg bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 text-white space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-400" />
+                <h3 className="font-bold text-base">Edit Admin Credentials: {editingAdmin.username}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingAdmin(null)}
+                className="text-slate-400 hover:text-white text-lg p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditAdmin} className="space-y-3 text-xs">
+              <div>
+                <Label className="text-slate-300 font-semibold">Username *</Label>
+                <Input
+                  value={editAdminUser}
+                  onChange={(e) => setEditAdminUser(e.target.value)}
+                  placeholder="Admin username"
+                  className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label className="text-slate-300 font-semibold">New Password (leave empty to keep unchanged)</Label>
+                <Input
+                  type="password"
+                  value={editAdminPass}
+                  onChange={(e) => setEditAdminPass(e.target.value)}
+                  placeholder="Min 8 characters"
+                  className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-slate-300 font-semibold">Primary Phone *</Label>
+                  <Input
+                    type="tel"
+                    value={editAdminPhone1}
+                    onChange={(e) => setEditAdminPhone1(e.target.value)}
+                    placeholder="10-digit number"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label className="text-slate-300 font-semibold">Secondary Phone (Optional)</Label>
+                  <Input
+                    type="tel"
+                    value={editAdminPhone2}
+                    onChange={(e) => setEditAdminPhone2(e.target.value)}
+                    placeholder="Backup mobile"
+                    className="mt-1 bg-slate-800 border-slate-700 text-white text-xs"
+                  />
+                </div>
+              </div>
+
+              {editingAdmin.role !== "super_admin" && (
+                <div>
+                  <Label className="text-slate-300 font-semibold">Role</Label>
+                  <select
+                    value={editAdminRole}
+                    onChange={(e) => setEditAdminRole(e.target.value as any)}
+                    className="w-full mt-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white text-xs"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="super_admin">Super Admin</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setEditingAdmin(null)}
+                  className="text-xs text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
