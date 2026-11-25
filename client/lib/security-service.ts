@@ -196,7 +196,8 @@ export async function createAdminAccount(newAdmin: {
   if (!newAdmin.username.trim() || newAdmin.username.length < 3) {
     return { success: false, message: "Username must be at least 3 characters." };
   }
-  if (!newAdmin.password || newAdmin.password.length < 8) {
+  const cleanPass = (newAdmin.password || "").trim();
+  if (!cleanPass || cleanPass.length < 8) {
     return { success: false, message: "Password must be at least 8 characters long." };
   }
   const cleanPhone1 = normalizePhone(newAdmin.primaryPhone);
@@ -216,7 +217,7 @@ export async function createAdminAccount(newAdmin: {
     return { success: false, message: `An admin account with username '${newAdmin.username}' already exists.` };
   }
 
-  const passwordHash = await hashPasswordWithSalt(newAdmin.password);
+  const passwordHash = await hashPasswordWithSalt(cleanPass);
   const created: AdminAccount = {
     id: "adm_" + Date.now(),
     username: sanitizeInput(newAdmin.username),

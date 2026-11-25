@@ -211,7 +211,7 @@ export default function StudentAccountModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative !z-[200]">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl !z-[200]">
         <DialogTitle className="sr-only">Student Account Portal</DialogTitle>
         <DialogDescription className="sr-only">
           Save your institutions, track placement verification updates, and receive area alerts.
