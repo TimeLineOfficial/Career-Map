@@ -11,6 +11,8 @@
  * 7. Comprehensive administrative audit logging
  */
 
+import { isSupabaseConfigured, callSupabaseRpc } from "./supabase-admin";
+
 export interface SecurityAuditLog {
   id: string;
   timestamp: string;
@@ -181,6 +183,23 @@ export function getAdminAccounts(): AdminAccount[] {
   }
 }
 
+export async function fetchAdminAccounts(): Promise<AdminAccount[]> {
+  if (isSupabaseConfigured()) {
+    try {
+      const token = sessionStorage.getItem("cm_session_token") || "";
+      const list = await callSupabaseRpc<AdminAccount[]>("list_admin_accounts", {
+        p_session_token: token,
+      });
+      if (Array.isArray(list)) {
+        return list.map((a) => ({ ...a, passwordHash: "" }));
+      }
+    } catch (e) {
+      console.error("Failed to fetch cloud admin accounts:", e);
+    }
+  }
+  return getAdminAccounts();
+}
+
 export function saveAdminAccounts(accounts: AdminAccount[]): void {
   localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(accounts));
 }
@@ -209,6 +228,26 @@ export async function createAdminAccount(newAdmin: {
     return { success: false, message: "Secondary phone number must be 10 digits if provided." };
   }
 
+  if (isSupabaseConfigured()) {
+    try {
+      const token = sessionStorage.getItem("cm_session_token") || "";
+      const res = await callSupabaseRpc<{ success: boolean; message: string }>("create_admin_account_rpc", {
+        p_session_token: token,
+        p_username: sanitizeInput(newAdmin.username),
+        p_password: cleanPass,
+        p_primary_phone: cleanPhone1,
+        p_secondary_phone: cleanPhone2 || null,
+        p_role: newAdmin.role,
+      });
+      if (res.success) {
+        logSecurityEvent("ADMIN_CREATED", "auth", "info", `Cloud admin '${newAdmin.username}' created in Supabase.`);
+      }
+      return res;
+    } catch (err: any) {
+      return { success: false, message: err.message || "Failed to create cloud admin." };
+    }
+  }
+
   const accounts = getAdminAccounts();
   const exists = accounts.some(
     (a) => a.username.toLowerCase() === newAdmin.username.trim().toLowerCase()
@@ -235,7 +274,23 @@ export async function createAdminAccount(newAdmin: {
 }
 
 // Delete admin account
-export function deleteAdminAccount(adminId: string): { success: boolean; message: string } {
+export async function deleteAdminAccount(adminId: string): Promise<{ success: boolean; message: string }> {
+  if (isSupabaseConfigured()) {
+    try {
+      const token = sessionStorage.getItem("cm_session_token") || "";
+      const res = await callSupabaseRpc<{ success: boolean; message: string }>("delete_admin_account_rpc", {
+        p_session_token: token,
+        p_target_id: adminId,
+      });
+      if (res.success) {
+        logSecurityEvent("ADMIN_DELETED", "auth", "warning", `Cloud admin '${adminId}' removed.`);
+      }
+      return res;
+    } catch (err: any) {
+      return { success: false, message: err.message || "Failed to delete cloud admin." };
+    }
+  }
+
   const accounts = getAdminAccounts();
   const target = accounts.find((a) => a.id === adminId);
   if (!target) return { success: false, message: "Account not found." };
@@ -335,6 +390,37 @@ export async function authenticateAdmin(
   pass: string,
   phone: string
 ): Promise<{ success: boolean; message: string; token?: string; account?: AdminAccount }> {
+  if (isSupabaseConfigured()) {
+    try {
+      const res = await callSupabaseRpc<{
+        success: boolean;
+        message: string;
+        token?: string;
+        account?: AdminAccount;
+      }>("verify_admin_login", {
+        p_username: sanitizeInput(user).trim(),
+        p_password: pass.trim(),
+        p_phone: normalizePhone(phone),
+      });
+
+      if (res.success && res.token && res.account) {
+        resetFailedAttempts();
+        const expiresAt = Date.now() + SESSION_DURATION_MS;
+        sessionStorage.setItem("cm_session_token", res.token);
+        sessionStorage.setItem("cm_session_expires", expiresAt.toString());
+        sessionStorage.setItem("cm_session_user", res.account.username);
+        sessionStorage.setItem("cm_session_user_id", res.account.id);
+        sessionStorage.setItem("cm_session_role", res.account.role);
+        logSecurityEvent("AUTH_SUCCESS", "auth", "info", `Cloud admin '${res.account.username}' authenticated.`);
+      } else {
+        logSecurityEvent("AUTH_FAILED", "auth", "warning", `Cloud admin login failed for '${user.trim()}'.`);
+      }
+      return res;
+    } catch (err: any) {
+      return { success: false, message: err.message || "Cloud authentication service unavailable." };
+    }
+  }
+
   await initializeSecurityCredentials();
 
   // Check lockout
@@ -474,9 +560,14 @@ export function extendSession(): void {
 
 export function destroySession(): void {
   const user = sessionStorage.getItem("cm_session_user") || "Admin";
+  const token = sessionStorage.getItem("cm_session_token");
+  if (isSupabaseConfigured() && token) {
+    callSupabaseRpc("logout_admin_session", { p_session_token: token }).catch(() => {});
+  }
   sessionStorage.removeItem("cm_session_token");
   sessionStorage.removeItem("cm_session_expires");
   sessionStorage.removeItem("cm_session_user");
+  sessionStorage.removeItem("cm_session_user_id");
   sessionStorage.removeItem("cm_session_role");
   logSecurityEvent("AUTH_LOGOUT", "auth", "info", `Session closed for '${user}'.`);
 }
@@ -491,6 +582,28 @@ export async function updateAdminCredentials(
   targetAdminId?: string,
   newRole?: "admin" | "super_admin"
 ): Promise<{ success: boolean; message: string }> {
+  if (isSupabaseConfigured()) {
+    try {
+      const token = sessionStorage.getItem("cm_session_token") || "";
+      const targetId = targetAdminId || sessionStorage.getItem("cm_session_user_id") || "";
+      const res = await callSupabaseRpc<{ success: boolean; message: string }>("update_admin_account_rpc", {
+        p_session_token: token,
+        p_target_id: targetId,
+        p_new_username: newUsername?.trim() ? sanitizeInput(newUsername) : null,
+        p_new_password: newPass?.trim() ? newPass.trim() : null,
+        p_primary_phone: newPrimaryPhone?.trim() ? normalizePhone(newPrimaryPhone) : null,
+        p_secondary_phone: newSecondaryPhone !== undefined ? normalizePhone(newSecondaryPhone) : null,
+        p_role: newRole || null,
+      });
+      if (res.success) {
+        logSecurityEvent("CREDENTIALS_UPDATED", "auth", "critical", `Cloud admin '${newUsername || targetId}' updated.`);
+      }
+      return res;
+    } catch (err: any) {
+      return { success: false, message: err.message || "Failed to update cloud admin." };
+    }
+  }
+
   const accounts = getAdminAccounts();
   const currentSessionUser = sessionStorage.getItem("cm_session_user") || "Himesh Singh";
   const currentSessionRole = sessionStorage.getItem("cm_session_role") || "admin";

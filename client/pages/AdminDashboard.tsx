@@ -70,6 +70,7 @@ import {
   logSecurityEvent,
   getSessionRemainingSeconds,
   getAdminAccounts,
+  fetchAdminAccounts,
   createAdminAccount,
   deleteAdminAccount,
   resetLockoutManually,
@@ -212,6 +213,9 @@ export default function AdminDashboard() {
     setStudentApplications(getDirectStudentApplications());
     setAuditLogs(getSecurityAuditLogs());
     setAdminAccounts(getAdminAccounts());
+    fetchAdminAccounts().then((list) => {
+      if (Array.isArray(list)) setAdminAccounts(list);
+    });
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -536,9 +540,9 @@ export default function AdminDashboard() {
   };
 
   // Remove Admin Account
-  const handleDeleteAdmin = (id: string, name: string) => {
+  const handleDeleteAdmin = async (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to delete admin account '${name}'?`)) return;
-    const res = deleteAdminAccount(id);
+    const res = await deleteAdminAccount(id);
     if (res.success) {
       toast({ title: "Admin Deleted", description: res.message });
       loadAllData();
