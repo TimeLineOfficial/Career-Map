@@ -4,8 +4,12 @@
  * Never stores secrets or plaintext passwords in the public repository.
  */
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+const SUPABASE_URL = (
+  import.meta.env.VITE_SUPABASE_URL || "https://sneiqarfqbwghmergpvo.supabase.co"
+).replace(/\/$/, "");
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuZWlxYXJmcWJ3Z2htZXJncHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MzMwMTIsImV4cCI6MjExMTIwOTAxMn0.yd1l8IwTFyoeMdi87N8eWSEZukGNxjBry7wDV0rQy6g";
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
