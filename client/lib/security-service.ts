@@ -657,3 +657,62 @@ export async function importEncryptedBackup(passkey: string, encryptedBase64: st
     throw new Error("Invalid passkey or corrupted backup package.");
   }
 }
+
+// Generate a safe shareable sync token (contains only hashed credentials, never plaintext password)
+export function exportAdminSyncToken(account: AdminAccount): string {
+  const payload = JSON.stringify({
+    v: 1,
+    acc: {
+      id: account.id,
+      username: account.username,
+      passwordHash: account.passwordHash,
+      primaryPhone: account.primaryPhone,
+      secondaryPhone: account.secondaryPhone,
+      role: account.role,
+      createdAt: account.createdAt,
+    },
+  });
+  const bytes = new TextEncoder().encode(payload);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// Import a synced admin account on a new browser/device
+export async function importAdminSyncToken(token: string): Promise<{ success: boolean; username?: string; message: string }> {
+  try {
+    await initializeSecurityCredentials();
+    const b64 = token.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+    const binary = atob(padded);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const json = new TextDecoder().decode(bytes);
+    const parsed = JSON.parse(json);
+    const acc: AdminAccount | undefined = parsed?.acc;
+    if (!acc || !acc.username || !acc.passwordHash || !acc.primaryPhone) {
+      return { success: false, message: "Invalid admin sync link." };
+    }
+
+    const accounts = getAdminAccounts();
+    const existingIdx = accounts.findIndex(
+      (a) => a.id === acc.id || a.username.trim().toLowerCase() === acc.username.trim().toLowerCase()
+    );
+    if (existingIdx >= 0) {
+      accounts[existingIdx] = { ...accounts[existingIdx], ...acc };
+    } else {
+      accounts.push(acc);
+    }
+    saveAdminAccounts(accounts);
+    logSecurityEvent("ADMIN_SYNCED", "auth", "info", `Admin account '${acc.username}' synced to this browser.`);
+    return {
+      success: true,
+      username: acc.username,
+      message: `Admin account '${acc.username}' is now ready on this device. Enter your username, password, and registered phone to log in.`,
+    };
+  } catch {
+    return { success: false, message: "Could not read admin sync link." };
+  }
+}

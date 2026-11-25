@@ -40,6 +40,7 @@ import {
   UserPlus,
   ShieldAlert,
   MapPin,
+  Share2,
 } from "lucide-react";
 import {
   Institute,
@@ -72,6 +73,8 @@ import {
   createAdminAccount,
   deleteAdminAccount,
   resetLockoutManually,
+  exportAdminSyncToken,
+  importAdminSyncToken,
   AdminAccount,
 } from "@/lib/security-service";
 import InstituteEditorModal from "@/components/admin/InstituteEditorModal";
@@ -139,8 +142,39 @@ export default function AdminDashboard() {
   const [backupPasskey, setBackupPasskey] = useState("");
   const [importCipher, setImportCipher] = useState("");
 
-  // Check existing session on load
+  // Check existing session & optional admin sync link on load
   useEffect(() => {
+    const checkSyncLink = async () => {
+      try {
+        const hashQuery = window.location.hash.includes("?") ? window.location.hash.split("?")[1] : "";
+        const params = new URLSearchParams(hashQuery || window.location.search);
+        const syncToken = params.get("sync");
+        if (syncToken) {
+          const res = await importAdminSyncToken(syncToken);
+          if (res.success) {
+            setUsername(res.username || "");
+            setAdminAccounts(getAdminAccounts());
+            toast({
+              title: "Admin Account Synced",
+              description: res.message,
+            });
+            // Clean sync token from URL hash
+            const cleanHash = window.location.hash.split("?")[0] || "#/admin";
+            window.history.replaceState(null, "", `${window.location.pathname}${cleanHash}`);
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Sync Link Error",
+              description: res.message,
+            });
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+    checkSyncLink();
+
     if (isSessionValid()) {
       setIsAuthenticated(true);
       loadAllData();
@@ -484,6 +518,20 @@ export default function AdminDashboard() {
         title: "Update Failed",
         description: res.message,
       });
+    }
+  };
+
+  const handleCopySyncLink = async (acc: AdminAccount) => {
+    const token = exportAdminSyncToken(acc);
+    const link = `${window.location.origin}${window.location.pathname}#/admin?sync=${token}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      toast({
+        title: "Admin Sync Link Copied",
+        description: `Send this link to '${acc.username}' so they can log in from their own browser or device.`,
+      });
+    } catch {
+      window.prompt(`Copy this Admin Sync Link for ${acc.username}:`, link);
     }
   };
 
@@ -1115,8 +1163,11 @@ export default function AdminDashboard() {
                       Max 2 Phones per Admin
                     </Badge>
                   </CardTitle>
-                  <CardDescription className="text-xs text-slate-400">
-                    Each admin profile must register up to 2 verified mobile numbers. Admin login requires Username, Password, and one of these registered phone numbers.
+                  <CardDescription className="text-xs text-slate-400 space-y-1">
+                    <div>Each admin profile must register up to 2 verified mobile numbers. Admin login requires Username, Password, and one of these registered phone numbers.</div>
+                    <div className="text-[11px] text-amber-300/90">
+                      Note: Because this site runs statically on GitHub Pages without a backend database, new admins are saved in this browser only. Click <strong>Sync Link</strong> on a co-admin's card and send it to them to enable login on their own device or browser.
+                    </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1140,14 +1191,24 @@ export default function AdminDashboard() {
                           )}
                           <div className="text-[10px] text-slate-500">Created: {new Date(acc.createdAt).toLocaleDateString()}</div>
                         </div>
-                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+                        <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between gap-1.5">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleOpenEditAdmin(acc)}
-                            className="h-6 text-[11px] border-blue-500/40 text-blue-400 hover:bg-blue-950/40"
+                            className="h-6 text-[11px] border-blue-500/40 text-blue-400 hover:bg-blue-950/40 px-2"
                           >
-                            <Edit className="h-3 w-3 mr-1" /> Edit Credentials
+                            <Edit className="h-3 w-3 mr-1" /> Edit
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCopySyncLink(acc)}
+                            className="h-6 text-[11px] border-emerald-500/40 text-emerald-400 hover:bg-emerald-950/40 px-2"
+                            title="Copy link to allow this admin to log in on another browser or device"
+                          >
+                            <Share2 className="h-3 w-3 mr-1" /> Sync Link
                           </Button>
 
                           {acc.role !== "super_admin" && (
@@ -1155,7 +1216,7 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="ghost"
                               onClick={() => handleDeleteAdmin(acc.id, acc.username)}
-                              className="h-6 text-[11px] text-red-400 hover:text-red-300 hover:bg-red-950/40"
+                              className="h-6 text-[11px] text-red-400 hover:text-red-300 hover:bg-red-950/40 px-2"
                             >
                               <Trash2 className="h-3 w-3 mr-1" /> Remove
                             </Button>
