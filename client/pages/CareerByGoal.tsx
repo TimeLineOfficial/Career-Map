@@ -574,12 +574,13 @@ export default function CareerByGoal() {
     
     const visibleSteps = getVisibleSteps();
     const currentIndex = visibleSteps.indexOf(currentStep);
-    
+
     return (
       <div className="flex items-center justify-center mb-8 space-x-2 overflow-x-auto pb-2">
         {visibleSteps.map((step, index) => {
           const isActive = currentStep === step;
           const isCompleted = currentIndex > index;
+          const canClick = isCompleted || index <= currentIndex + 1;
 
           const stepNames = {
             goal: "Goal",
@@ -592,25 +593,37 @@ export default function CareerByGoal() {
 
           return (
             <React.Fragment key={step}>
-              <div className="flex flex-col items-center">
+              <div
+                className={`flex flex-col items-center select-none ${
+                  canClick ? "cursor-pointer group" : "cursor-not-allowed opacity-60"
+                }`}
+                onClick={() => {
+                  if (canClick) {
+                    setCurrentStep(step);
+                  }
+                }}
+                title={canClick ? `Go to step: ${stepNames[step]}` : "Complete previous steps first"}
+              >
                 <div
                   className={`
                     w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all
                     ${
                       isActive
-                        ? "bg-blue-600 text-white scale-110 shadow-lg"
+                        ? "bg-blue-600 text-white scale-110 shadow-lg ring-2 ring-blue-400"
                         : isCompleted
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                          ? "bg-green-600 text-white group-hover:scale-105"
+                          : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-gray-300"
                     }
                   `}
                 >
                   {isCompleted ? "✓" : index + 1}
                 </div>
-                <span className={`text-xs mt-1 ${
+                <span className={`text-xs mt-1 transition-colors ${
                   isActive 
                     ? "font-semibold text-blue-600 dark:text-blue-400" 
-                    : "text-gray-600 dark:text-gray-300"
+                    : isCompleted
+                      ? "text-gray-700 dark:text-gray-300 group-hover:text-blue-600"
+                      : "text-gray-500 dark:text-gray-400"
                 }`}>
                   {stepNames[step]}
                 </span>
@@ -774,10 +787,24 @@ export default function CareerByGoal() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("goal")}>
-            Back to Goal Selection
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <Button variant="outline" onClick={() => setCurrentStep("goal")} className="gap-1.5">
+            ← Back to Goals
           </Button>
+          {selectedOptions.stage && (
+            <Button
+              onClick={() => {
+                if (selectedOptions.stage === "class_10_below") {
+                  setCurrentStep("personalization");
+                } else {
+                  setCurrentStep("stream");
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+            >
+              Next Step →
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -826,10 +853,24 @@ export default function CareerByGoal() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stage")}>
-            Back to Education Level
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <Button variant="outline" onClick={() => setCurrentStep("stage")} className="gap-1.5">
+            ← Back to Level
           </Button>
+          {selectedOptions.stream && (
+            <Button
+              onClick={() => {
+                if (selectedOptions.stage === "class_11_12" || selectedOptions.stage === "working_professional") {
+                  setCurrentStep("personalization");
+                } else {
+                  setCurrentStep("course");
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+            >
+              Next Step →
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -876,10 +917,18 @@ export default function CareerByGoal() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button variant="outline" onClick={() => setCurrentStep("stream")}>
-            Back to Stream Selection
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <Button variant="outline" onClick={() => setCurrentStep("stream")} className="gap-1.5">
+            ← Back to Stream
           </Button>
+          {selectedOptions.course && (
+            <Button
+              onClick={() => setCurrentStep("personalization")}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+            >
+              Next: Details →
+            </Button>
+          )}
         </div>
       </div>
     );

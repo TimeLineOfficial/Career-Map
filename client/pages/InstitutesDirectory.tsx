@@ -263,168 +263,166 @@ export default function InstitutesDirectory() {
         </div>
       </section>
 
-      {/* MARKS & STREAM ANALYZER */}
+      {/* MARKS & STREAM ANALYZER (Compact & Neat) */}
       {showCalculator && (
-        <section className="container max-w-7xl mx-auto px-4 -mt-4 relative z-20">
-          <Card className="border-2 border-amber-300 dark:border-amber-700 shadow-xl bg-gradient-to-br from-amber-50/90 via-white to-blue-50/90 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-            <CardHeader className="pb-3">
+        <section className="container max-w-4xl mx-auto px-4 -mt-4 relative z-20">
+          <Card className="border border-amber-300 dark:border-amber-700 shadow-lg bg-gradient-to-br from-amber-50/80 via-white to-blue-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+            <CardHeader className="py-2.5 px-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
                   <Sparkles className="h-4 w-4" />
-                  <CardTitle className="text-base font-bold">Student Marks & Career Recommendation Engine</CardTitle>
+                  <CardTitle className="text-sm font-bold">Marks & Stream Analyser</CardTitle>
                 </div>
-                <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs">
-                  Class 8th, 10th & 12th Custom Guidance
+                <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-[10px] py-0 px-2">
+                  Class 8th, 10th & 12th
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-                <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground">Current Stage</label>
+            <CardContent className="space-y-3 px-4 pb-4 pt-0">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] font-semibold text-muted-foreground block">Current Stage</label>
                   <select
                     value={currentClassInput}
                     onChange={(e) => setCurrentClassInput(e.target.value as any)}
-                    className="w-full mt-1 px-3 py-1.5 border rounded-md bg-background text-xs font-medium"
+                    className="w-full mt-0.5 px-2 py-1 border rounded bg-background text-[11px] font-medium h-7"
                   >
-                    <option value="class_8">Class 8th (Choosing 9th Board)</option>
-                    <option value="class_10">Class 10th (Choosing 11th Stream)</option>
-                    <option value="class_12">Class 12th (Choosing College & UG)</option>
+                    <option value="class_8">Class 8th</option>
+                    <option value="class_10">Class 10th</option>
+                    <option value="class_12">Class 12th</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground">Mathematics (%)</label>
+                  <label className="text-[10px] font-semibold text-muted-foreground block">Maths (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={mathScore}
                     onChange={(e) => setMathScore(Number(e.target.value))}
-                    className="mt-1 h-8 text-xs"
+                    className="mt-0.5 h-7 text-[11px] px-2"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground">Science / EVS (%)</label>
+                  <label className="text-[10px] font-semibold text-muted-foreground block">Science (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={scienceScore}
                     onChange={(e) => setScienceScore(Number(e.target.value))}
-                    className="mt-1 h-8 text-xs"
+                    className="mt-0.5 h-7 text-[11px] px-2"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground">English / Language (%)</label>
+                  <label className="text-[10px] font-semibold text-muted-foreground block">English (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={englishScore}
                     onChange={(e) => setEnglishScore(Number(e.target.value))}
-                    className="mt-1 h-8 text-xs"
+                    className="mt-0.5 h-7 text-[11px] px-2"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground">Social Sciences (%)</label>
+                  <label className="text-[10px] font-semibold text-muted-foreground block">Social Sci (%)</label>
                   <Input
                     type="number"
                     min={0}
                     max={100}
                     value={socialScore}
                     onChange={(e) => setSocialScore(Number(e.target.value))}
-                    className="mt-1 h-8 text-xs"
+                    className="mt-0.5 h-7 text-[11px] px-2"
                   />
                 </div>
               </div>
 
-              {/* Interests toggles */}
-              <div className="space-y-1.5">
-                <span className="text-[11px] font-semibold text-muted-foreground">Key Interests & Aspirations:</span>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setTechInterest(!techInterest)}
-                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
-                      techInterest ? "bg-blue-600 text-white border-blue-600 font-semibold" : "bg-muted/40 hover:bg-muted"
-                    }`}
-                  >
-                    💻 Tech & Coding
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMedicalInterest(!medicalInterest)}
-                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
-                      medicalInterest ? "bg-red-600 text-white border-red-600 font-semibold" : "bg-muted/40 hover:bg-muted"
-                    }`}
-                  >
-                    🩺 Biology & Medicine
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBusinessInterest(!businessInterest)}
-                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
-                      businessInterest ? "bg-amber-600 text-white border-amber-600 font-semibold" : "bg-muted/40 hover:bg-muted"
-                    }`}
-                  >
-                    📊 Commerce & Startups
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSportsInterest(!sportsInterest)}
-                    className={`px-3 py-1 rounded-full border text-xs transition-all ${
-                      sportsInterest ? "bg-emerald-600 text-white border-emerald-600 font-semibold" : "bg-muted/40 hover:bg-muted"
-                    }`}
-                  >
-                    ⚽ Sports & Athletics
-                  </button>
-                </div>
-              </div>
+              {/* Interests toggles - compact row */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] font-semibold text-muted-foreground mr-1">Interests:</span>
+                <button
+                  type="button"
+                  onClick={() => setTechInterest(!techInterest)}
+                  className={`px-2 py-0.5 rounded-full border text-[11px] transition-all ${
+                    techInterest ? "bg-blue-600 text-white border-blue-600 font-semibold" : "bg-muted/40 hover:bg-muted"
+                  }`}
+                >
+                  💻 Tech
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMedicalInterest(!medicalInterest)}
+                  className={`px-2 py-0.5 rounded-full border text-[11px] transition-all ${
+                    medicalInterest ? "bg-red-600 text-white border-red-600 font-semibold" : "bg-muted/40 hover:bg-muted"
+                  }`}
+                >
+                  🩺 Medicine
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBusinessInterest(!businessInterest)}
+                  className={`px-2 py-0.5 rounded-full border text-[11px] transition-all ${
+                    businessInterest ? "bg-amber-600 text-white border-amber-600 font-semibold" : "bg-muted/40 hover:bg-muted"
+                  }`}
+                >
+                  📊 Business
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSportsInterest(!sportsInterest)}
+                  className={`px-2 py-0.5 rounded-full border text-[11px] transition-all ${
+                    sportsInterest ? "bg-emerald-600 text-white border-emerald-600 font-semibold" : "bg-muted/40 hover:bg-muted"
+                  }`}
+                >
+                  ⚽ Sports
+                </button>
 
-              <div className="flex justify-end gap-3 pt-1">
-                <Button size="sm" onClick={handleRunAnalysis} className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5 h-8">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Generate Personalized Recommendations
-                </Button>
+                <div className="ml-auto">
+                  <Button size="sm" onClick={handleRunAnalysis} className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold gap-1 h-7 px-3">
+                    <Sparkles className="h-3 w-3" />
+                    Analyse Marks
+                  </Button>
+                </div>
               </div>
 
               {/* Results Preview */}
               {calculatorResult && (
-                <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-300 dark:border-blue-800 space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200">
-                      <div className="text-[11px] font-bold text-blue-900 dark:text-blue-200">Strongest Subject Domains</div>
-                      <ul className="mt-1 space-y-1 text-xs">
+                <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-800 space-y-2 mt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div className="p-2 rounded bg-blue-50 dark:bg-blue-950/30 border border-blue-200">
+                      <div className="text-[10px] font-bold text-blue-900 dark:text-blue-200">Strong Subjects</div>
+                      <ul className="mt-1 space-y-0.5 text-[11px]">
                         {calculatorResult.strongAreas.map((area, idx) => (
-                          <li key={idx} className="flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                          <li key={idx} className="flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3 text-blue-600 flex-shrink-0" />
                             <span>{area}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200">
-                      <div className="text-[11px] font-bold text-emerald-900 dark:text-emerald-200">Recommended Streams & Boards</div>
+                    <div className="p-2 rounded bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200">
+                      <div className="text-[10px] font-bold text-emerald-900 dark:text-emerald-200">Recommended Streams & Boards</div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {calculatorResult.recommendedBoards.map((b) => (
-                          <Badge key={b} className="bg-emerald-600 text-white text-[10px]">Board: {b}</Badge>
+                          <Badge key={b} className="bg-emerald-600 text-white text-[9px] py-0 px-1.5">Board: {b}</Badge>
                         ))}
                         {calculatorResult.recommendedStreams.map((s) => (
-                          <Badge key={s} variant="outline" className="text-emerald-950 dark:text-emerald-200 text-[10px]">{s}</Badge>
+                          <Badge key={s} variant="outline" className="text-emerald-950 dark:text-emerald-200 text-[9px] py-0 px-1.5">{s}</Badge>
                         ))}
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200">
-                      <div className="text-[11px] font-bold text-purple-900 dark:text-purple-200">Suggested Careers</div>
+                    <div className="p-2 rounded bg-purple-50 dark:bg-purple-950/30 border border-purple-200">
+                      <div className="text-[10px] font-bold text-purple-900 dark:text-purple-200">Suggested Careers</div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {calculatorResult.careerPaths.map((cp) => (
-                          <Badge key={cp} variant="secondary" className="text-[10px]">{cp}</Badge>
+                          <Badge key={cp} variant="secondary" className="text-[9px] py-0 px-1.5">{cp}</Badge>
                         ))}
                       </div>
                     </div>

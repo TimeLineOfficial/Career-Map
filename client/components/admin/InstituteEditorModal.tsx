@@ -76,9 +76,9 @@ export default function InstituteEditorModal({
         id: "inst_" + Date.now(),
         name: "",
         shortName: "",
-        type: "college",
-        ownershipType: "central_govt",
-        institutionCategory: "government",
+        type: "" as any,
+        ownershipType: "" as any,
+        institutionCategory: "" as any,
         totalStudentsEnrolled: undefined,
         seatMatrix: { availableSeats: 0, totalSeats: 0 },
         levels: ["ug"],
@@ -356,10 +356,12 @@ export default function InstituteEditorModal({
                 <div>
                   <Label className="text-xs text-slate-300">Institute Type *</Label>
                   <select
-                    value={formData.type || "college"}
+                    value={formData.type || ""}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value as InstituteType })}
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-slate-800 border-slate-700 text-white text-xs"
+                    required
                   >
+                    <option value="" disabled>-- Select Institute Type --</option>
                     <option value="college">College / Higher Education</option>
                     <option value="school">School (Class 8th-12th)</option>
                     <option value="university">University</option>
@@ -369,10 +371,12 @@ export default function InstituteEditorModal({
                 <div>
                   <Label className="text-xs text-slate-300">Category *</Label>
                   <select
-                    value={formData.institutionCategory || "government"}
+                    value={formData.institutionCategory || ""}
                     onChange={(e) => setFormData({ ...formData, institutionCategory: e.target.value as InstitutionCategory })}
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-slate-800 border-slate-700 text-white text-xs"
+                    required
                   >
+                    <option value="" disabled>-- Select Category --</option>
                     <option value="government">Government Institution</option>
                     <option value="private">Private Institution</option>
                   </select>
@@ -381,10 +385,12 @@ export default function InstituteEditorModal({
                 <div>
                   <Label className="text-xs text-slate-300">Specific Ownership *</Label>
                   <select
-                    value={formData.ownershipType || "central_govt"}
+                    value={formData.ownershipType || ""}
                     onChange={(e) => setFormData({ ...formData, ownershipType: e.target.value as OwnershipType })}
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-slate-800 border-slate-700 text-white text-xs"
+                    required
                   >
+                    <option value="" disabled>-- Select Ownership Type --</option>
                     <option value="central_govt">Central Government (IIT, NIT, AIIMS, Central Univ)</option>
                     <option value="state_govt">State Government (State Univ, Govt Model)</option>
                     <option value="deemed">Deemed University</option>

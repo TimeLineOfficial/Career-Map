@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useDataStore } from "@/lib/data-service";
 import { Button } from "@/components/ui/button";
 import StudentAccountModal from "./StudentAccountModal";
+import CareerMapLogo from "./CareerMapLogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -150,11 +151,9 @@ export default function Layout({ children }: LayoutProps) {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4">
-          {/* Logo (Clean map design with no top dot) */}
+          {/* Logo (Constellation career universe hub) */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <MapPin className="h-5 w-5 text-white" />
-            </div>
+            <CareerMapLogo className="h-9 w-9 group-hover:scale-105 transition-transform drop-shadow" size={36} />
             <div className="flex flex-col">
               <span className="text-lg font-bold text-foreground tracking-tight">
                 {siteTitle}
@@ -236,9 +235,7 @@ export default function Layout({ children }: LayoutProps) {
                 <SheetHeader>
                   <SheetTitle className="text-left">
                     <div className="flex items-center gap-2">
-                      <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-                        <MapPin className="h-4 w-4 text-white" />
-                      </div>
+                      <CareerMapLogo className="h-7 w-7" size={28} />
                       CareerMap
                     </div>
                   </SheetTitle>
@@ -326,9 +323,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-                  <MapPin className="h-4 w-4 text-white" />
-                </div>
+                <CareerMapLogo className="h-6 w-6" size={24} />
                 <span className="font-bold">CareerMap</span>
               </div>
               <p className="text-sm text-muted-foreground">

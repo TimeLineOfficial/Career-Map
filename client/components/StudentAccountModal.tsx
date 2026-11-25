@@ -211,7 +211,7 @@ export default function StudentAccountModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 shadow-2xl relative z-[120]">
         {/* Sticky Header with Close Button pinned at top right */}
         <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-6 rounded-t-lg shadow-md flex items-center justify-between">
           <div className="flex items-center gap-3">

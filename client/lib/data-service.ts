@@ -271,7 +271,16 @@ export const useDataStore = create<DataStore>()(
       extendedInterests: extendedInterestDataset,
       currentUser: null,
       currentLanguage: "en",
-      darkMode: false,
+      darkMode: (() => {
+        try {
+          const savedTheme = localStorage.getItem("careermap_theme");
+          if (savedTheme === "light") return false;
+          if (savedTheme === "dark") return true;
+        } catch (e) {
+          // ignore
+        }
+        return true; // Default to dark mode
+      })(),
       isLoading: false,
       businessIdeasPage: 1,
       businessIdeasPerPage: 6,
@@ -317,8 +326,21 @@ export const useDataStore = create<DataStore>()(
         }
 
         const initialBusinessIdeas = data.business_ideas?.slice(0, 6) || [];
-        const existingDarkMode = get().darkMode;
-        const finalDarkMode = existingDarkMode !== undefined ? existingDarkMode : data.site.design.dark_mode;
+        const savedTheme = (() => {
+          try {
+            return localStorage.getItem("careermap_theme");
+          } catch (e) {
+            return null;
+          }
+        })();
+        const finalDarkMode =
+          savedTheme === "light"
+            ? false
+            : savedTheme === "dark"
+              ? true
+              : get().darkMode !== undefined
+                ? get().darkMode
+                : true; // default dark mode
 
         set({
           careerMapData: data,
@@ -361,6 +383,12 @@ export const useDataStore = create<DataStore>()(
         const { darkMode } = get();
         const newDarkMode = !darkMode;
         set({ darkMode: newDarkMode });
+
+        try {
+          localStorage.setItem("careermap_theme", newDarkMode ? "dark" : "light");
+        } catch (e) {
+          // ignore
+        }
 
         if (newDarkMode) {
           document.documentElement.classList.add("dark");

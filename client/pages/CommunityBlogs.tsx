@@ -101,9 +101,7 @@ export default function CommunityBlogs() {
   const handlePublishPost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!storedStudent) {
-      if (window.confirm("You must be logged in with a Student Account to publish articles. Would you like to log in now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
 
@@ -178,9 +176,7 @@ export default function CommunityBlogs() {
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!storedStudent) {
-      if (window.confirm("Please log in with a Student Account to comment. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
 
@@ -198,9 +194,7 @@ export default function CommunityBlogs() {
 
   const handleAddReply = (parentCommentId: string) => {
     if (!storedStudent) {
-      if (window.confirm("Please log in with a Student Account to reply. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
 
@@ -220,9 +214,7 @@ export default function CommunityBlogs() {
 
   const handleLikePost = (id: string) => {
     if (!storedStudent) {
-      if (window.confirm("Please log in with a Student Account to like articles. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
     likeBlogPost(id);
@@ -456,9 +448,7 @@ export default function CommunityBlogs() {
               <Button
                 onClick={() => {
                   if (!storedStudent) {
-                    if (window.confirm("Please log in with a Student Account to publish articles. Would you like to log in now?")) {
-                      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-                    }
+                    window.dispatchEvent(new CustomEvent("open-student-account-modal"));
                     return;
                   }
                   setIsCreating(!isCreating);

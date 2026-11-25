@@ -91,9 +91,7 @@ export default function StudentReviewsSection({
   const handlePostReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!storedStudent) {
-      if (window.confirm("You must be signed in with a Student Account to submit an authentic review. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
 
@@ -123,9 +121,7 @@ export default function StudentReviewsSection({
 
   const handlePostReply = (parentReviewId: string) => {
     if (!storedStudent) {
-      if (window.confirm("Please log in with a Student Account to reply to reviews. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
 
@@ -154,9 +150,7 @@ export default function StudentReviewsSection({
 
   const handleLike = (reviewId: string) => {
     if (!storedStudent) {
-      if (window.confirm("Please sign in with a Student Account to like reviews. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
     likeInstituteReview(instituteId, reviewId);
@@ -165,9 +159,7 @@ export default function StudentReviewsSection({
 
   const handleDislike = (reviewId: string) => {
     if (!storedStudent) {
-      if (window.confirm("Please sign in with a Student Account to rate reviews. Open student account window now?")) {
-        window.dispatchEvent(new CustomEvent("open-student-account-modal"));
-      }
+      window.dispatchEvent(new CustomEvent("open-student-account-modal"));
       return;
     }
     dislikeInstituteReview(instituteId, reviewId);
