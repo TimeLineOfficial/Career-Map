@@ -333,14 +333,7 @@ export const useDataStore = create<DataStore>()(
             return null;
           }
         })();
-        const finalDarkMode =
-          savedTheme === "light"
-            ? false
-            : savedTheme === "dark"
-              ? true
-              : get().darkMode !== undefined
-                ? get().darkMode
-                : true; // default dark mode
+        const finalDarkMode = savedTheme === "light" ? false : true; // Default to dark mode unless user explicitly chose light
 
         set({
           careerMapData: data,
